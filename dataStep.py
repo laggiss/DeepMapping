@@ -53,7 +53,7 @@ class DataSplit(object):
         mask_no = duelsDF['winner'] == '0'
         no = duelsDF[mask_no]
 
-        print("Created yes/no lists....")
+        print("Created yes/no lists....\n")
         # Load validation images into array
         X_valid = []
         y_valid = []
