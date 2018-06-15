@@ -20,7 +20,7 @@ from keras.layers import Dense, Dropout, Flatten, Input
 from keras.optimizers import SGD
 from scipy import misc
 from sklearn.metrics import cohen_kappa_score, confusion_matrix
-
+from keras.models import load_model
 ## Import classes from same folder (only necessary when run interactively)
 sys.path.append(r'F:/OneDrive/DeepMapping')#F:/OneDrive/DeepMapping)
 from datagen_class_aug_test import myDataGeneratorAug
@@ -39,20 +39,13 @@ d=DataSplit()
 
 
 # Constants
-input_path=input_path+os.sep+''
+input_path=d.output_path
 
-validation_results_save = input_path+os.sep+'valid_results2.npy'
-training_results_save = input_path+os.sep+'all_results2.npy'
-valid_results_continue_training = input_path+os.sep+'valid_results2.npy'
-train_results_continue_training = input_path+os.sep+'all_results2.npy'
 history_continue_training = input_path+os.sep+'mdict14try_vgg_norm.npy'  # "c:/gist/mdict14try.npy"
-model_save = 'c:/gist/vgg19_siamese_14th_try_vgg_norm_model.h5'
-weights_file = 'c:/gist/vgg19_siamese_14th_try_vgg_norm.h5'
+model_save = input_path+os.sep+'vgg19_siamese_base_train.h5'
+weights_file = input_path+os.sep+'vgg19_siamese_base_train_weights.h5'
 #check_point_weights = "c:/gist/gentrinet_checkpoint_weights.h5"
-validation_array_X = input_path+os.sep+'validarrayX.npy'
-validation_array_Y = input_path+os.sep+'validarrayY.npy'
-test_array_X = input_path+os.sep+'testarrayX.npy'
-test_array_Y = input_path+os.sep+'testarrayY.npy'
+
 
 # fix random seed for reproducibility
 # np.random.seed(7)
@@ -63,14 +56,14 @@ K.set_image_dim_ordering('tf')
 # Variable corresponding to the images size in pixels. 224 is the usual value
 IMG_SIZE = 224
 
-valid_results = np.load(valid_results_continue_training)
-train_results = np.load(train_results_continue_training)  # c:/gist/all_results.npy')
-X_valid = np.load(validation_array_X)
-y_valid = np.load(validation_array_Y)
-X_test = np.load(test_array_X)
-y_test = np.load(test_array_Y)
-yes=pd.read_pickle(input_path+os.sep+'yes.npy')
-no=pd.read_pickle(input_path+os.sep+'no.npy')
+valid_results = np.load(d.validation_results_save)
+train_results = np.load(d.training_results_save)  # c:/gist/all_results.npy')
+X_valid = np.load(d.x_valid_fname)
+y_valid = np.load(d.y_valid_fname)
+X_test = np.load(d.x_test_fname)
+y_test = np.load(d.y_test_fname)
+yes=pd.read_pickle(d.yes_fname)
+no=pd.read_pickle(d.no_fname)
 
 
 def compute_accuracy(predictions, labels):
@@ -79,17 +72,10 @@ def compute_accuracy(predictions, labels):
     """
     return cohen_kappa_score(predictions, labels)
 
-
 def auc_score(labels, predictions):
     from sklearn.metrics import roc_auc_score
     return roc_auc_score(labels, predictions)
 
-
-# This is just the keras VGG19 function modified to take a locally downloaded version
-# of the imagenet weights rather than downloading each time it is run.
-
-
-# run_new=False
 def the_model(run_new=False, unfreeze=False):
     vision_model = VGG19(include_top=False,
                          weights='imagenet',
@@ -166,62 +152,28 @@ def the_model(run_new=False, unfreeze=False):
     # load list in format of
 
 
-
+run_new=True
 if run_new:
     # save all history params
     mdict = {
         'binary_accuracy': [], 'loss': [], 'mean_absolute_error': [], 'mean_squared_error': [],
         'val_binary_accuracy': [], 'val_loss': [], 'val_mean_absolute_error': [], 'val_mean_squared_error': []
         }
+    classification_model = the_model(run_new=True)
 else:
     mdict = np.load(history_continue_training)
     mdict = mdict.tolist()
-
-
-# X_stats = []
-#
-# for row in all_results:
-#     if row[2] != 'nof':
-#         path1 = row[0]
-#         path2 = row[1]
-#
-#         # We read the images and resize them
-#         img1 = misc.imread(path1)
-#         img2 = misc.imread(path2)
-#         img1 = misc.imresize(img1, (IMG_SIZE, IMG_SIZE))
-#         img2 = misc.imresize(img2, (IMG_SIZE, IMG_SIZE))
-#         X_stats.append([img1, img2])
-#
-# X_stats = np.array(X_stats)
-#
-# X_mean = X_stats.mean()
-# X_std = X_stats.std()
-# del X_stats
-# import gc
-
-# gc.collect()
-# Array that contains the kappa score of each iteration
-# Get model
-# weights_file="c:/gist/backup.h5"#check_point_weights
-run_model = True
-if run_model:
-    classification_model = the_model()
-else:
-    # This is the model after fine tuning top and then fine tuning the top convolutional layers
-    # Gives 90% test accuracy.
-    from keras.models import load_model
-
     classification_model = load_model(
         "f:/models/finetunded_gt_952_percent_fc_and_block5.h5")  # finetunded_gt_939_percent_fc_and_block5_class_weights.h5")
-    # ("f:/model/finetunded932percent_fc_and_block5.h5") #-model best before weight balance
+
 # number of wanted iterations. Each iteration takes a different set of augmented images so
 # keep this number high (depending on the learning rate) when training the model
-n_iter = 4
+n_iter = 10
 kappas = []
 test_eval = []
 # Initialisation of a confusion matrix
 conf_mat = np.zeros((2, 2))
-threashold = 0.92
+threashold = 0.85
 for iteration in range(n_iter):
     print(iteration / n_iter)
 
@@ -276,9 +228,9 @@ for iteration in range(n_iter):
             mdict[k].append(i)
 
     # Predictions to qulify the classification quality
-    pred = (classification_model.predict([X_test[:, 0], X_test[:, 1]]) > 0.5).astype(int)
+    pred = (classification_model.predict([X_valid[:, 0], X_valid[:, 1]]) > 0.5).astype(int)
     tr_acc = compute_accuracy(pred, y_test)
-    ev = classification_model.evaluate([X_test[:, 0], X_test[:, 1]], y_test, batch_size=24)
+    ev = classification_model.evaluate([X_valid[:, 0], X_valid[:, 1]], y_valid, batch_size=24)
     test_eval.append(ev)
     print("MODEL EVAL: {}".format(ev))
     print("PRED KAPPA: {}".format(tr_acc))
@@ -288,10 +240,11 @@ for iteration in range(n_iter):
     kappas.append(tr_acc)
     conf_mat = confusion_matrix(y_test, pred)
     print(conf_mat)
+
     if ev[1] > threashold:
-        classification_model.save("f:/models/finetunded_gt_934_percent_fc_and_block5.h5")
+        classification_model.save(model_save)
         threashold = ev[1]
-    classification_model.save_weights("f:/models/backup_922.h5")  # )weights_file)#
+    #classification_model.save_weights(weights_file)  # )weights_file)#
 
 # classification_model.save(model_save)
 classification_model.save("f:/models/finetunded932percent_fc_and_block5.h5")
