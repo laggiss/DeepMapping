@@ -19,12 +19,14 @@ from keras.layers import Dense, Dropout, Flatten, Input
 from keras.optimizers import SGD
 from scipy import misc
 from sklearn.metrics import cohen_kappa_score, confusion_matrix
-
+from dataStep import DataSplit
 # sys.path.append(rF:/OneDrive/DeepMappingF:/OneDrive/DeepMapping)
 from datagen_class_aug_test import myDataGeneratorAug
 
 K.clear_session()
 
+
+d=DataSplit()
 # Constants
 input_path=input_path+os.sep+''
 
