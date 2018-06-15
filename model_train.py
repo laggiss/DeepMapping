@@ -12,6 +12,8 @@ import sys
 from random import randint
 import numpy as np
 import pandas as pd
+import keras
+from keras import Model
 from keras import backend as K, metrics
 from keras.applications import VGG19
 from keras.applications.vgg19 import preprocess_input
