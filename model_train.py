@@ -8,6 +8,7 @@ This script was modified from gentriNetConvServer2 for retraining of network to 
 # Importing the keras framework
 from __future__ import absolute_import, print_function
 import os
+import sys
 from random import randint
 import numpy as np
 import pandas as pd
@@ -19,14 +20,24 @@ from keras.layers import Dense, Dropout, Flatten, Input
 from keras.optimizers import SGD
 from scipy import misc
 from sklearn.metrics import cohen_kappa_score, confusion_matrix
-from dataStep import DataSplit
-# sys.path.append(rF:/OneDrive/DeepMappingF:/OneDrive/DeepMapping)
+
+## Import classes from same folder (only necessary when run interactively)
+sys.path.append(r'F:/OneDrive/DeepMapping')#F:/OneDrive/DeepMapping)
 from datagen_class_aug_test import myDataGeneratorAug
+from dataStep import DataSplit
 
 K.clear_session()
 
 
+## Create instance of DataSplit class to get paths
+#
 d=DataSplit()
+#
+## Create instance of DataSplit class and run create method to create new datasets
+##   and return paths with instance of class
+# d.create()
+
+
 # Constants
 input_path=input_path+os.sep+''
 

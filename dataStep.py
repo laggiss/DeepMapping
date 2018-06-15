@@ -109,4 +109,5 @@ class DataSplit(object):
         sys.stdout.flush()
 
 # run class to create new training,validation and test arrays.
-x=DataSplit().create()
+# Uncomment to run alone
+# x=DataSplit().create()
