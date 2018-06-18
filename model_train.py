@@ -1,6 +1,6 @@
 """
 This script was modified from gentriNetConvServer2 for retraining of network to ensure:
- 1. no information leakage of the validation set to the training weight adjustments;
+ 1. No information leakage of the validation set to the training weight adjustments;
  2. Include data augmentation in the training set;
  3. vgg image normalization of training and validation data separately using keras imagenet preprocesssing
  4. Fine tuning of the vgg bottleneck layers (conv-layers).
