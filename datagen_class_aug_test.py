@@ -18,8 +18,9 @@ class myDataGeneratorAug(object):
     def generate(self, labels, list_IDs, seed, datagenargs):
         """Generates batches of samples"""
         # Infinite loop
+        print("hello\n")
         while 1:
-            sys.stdout.write("hello\n")
+            print("hello\n")
             # Generate order of exploration of dataset
             indexes = self.__get_exploration_order(list_IDs)
             # print(indexes)
@@ -63,7 +64,7 @@ class myDataGeneratorAug(object):
             seed = randint(1,50000)#.random.seed()
             left_datagen = ImageDataGenerator(**datagenargs)  # , augment=True, seed=seed)
             right_datagen = ImageDataGenerator(**datagenargs)  # , augment=True, seed=seed)
-            #print(i)
+            print(i)
             # print(ID[1][0])
             img1 = misc.imread(ID[1][0])[:610,:]
             x_left = img1.reshape((1,) + img1.shape)
