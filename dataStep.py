@@ -62,6 +62,7 @@ class DataSplit(object):
         # as in the datagen_class_aug_test class, e.g., preprocessing of imagenet data.
         cnt=0
         for row in valid_results:
+
             self.__drawProgressBar(cnt/valid_results.shape[0])
             if (row[2] == '0') | (row[2] == '1'):
                 # print(row)

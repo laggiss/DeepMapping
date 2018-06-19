@@ -19,6 +19,7 @@ class myDataGeneratorAug(object):
         """Generates batches of samples"""
         # Infinite loop
         while 1:
+            sys.stdout.write("hello\n")
             # Generate order of exploration of dataset
             indexes = self.__get_exploration_order(list_IDs)
             # print(indexes)
@@ -56,6 +57,7 @@ class myDataGeneratorAug(object):
         cnt=0
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
+            print(len(list_IDs_temp))
             self.__drawProgressBar(cnt / len(list_IDs_temp))
             # Store volume
             seed = randint(1,50000)#.random.seed()

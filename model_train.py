@@ -157,16 +157,18 @@ def the_model(run_new=False, unfreeze=False):
 run_new=True
 if run_new:
     # save all history params
+    print("\n\nNew run of model\n\n")
     mdict = {
         'binary_accuracy': [], 'loss': [], 'mean_absolute_error': [], 'mean_squared_error': [],
         'val_binary_accuracy': [], 'val_loss': [], 'val_mean_absolute_error': [], 'val_mean_squared_error': []
         }
     classification_model = the_model(run_new=True)
 else:
+    print("\n\nLoading existing model\n\n")
     mdict = np.load(history_continue_training)
     mdict = mdict.tolist()
     classification_model = load_model(
-        "f:/models/finetunded_gt_952_percent_fc_and_block5.h5")  # finetunded_gt_939_percent_fc_and_block5_class_weights.h5")
+        model_save)  # finetunded_gt_939_percent_fc_and_block5_class_weights.h5")
 
 # number of wanted iterations. Each iteration takes a different set of augmented images so
 # keep this number high (depending on the learning rate) when training the model
@@ -244,12 +246,13 @@ for iteration in range(n_iter):
     print(conf_mat)
 
     if ev[1] > threashold:
+        print("\n\nSaving model....\n\n")
         classification_model.save(model_save)
         threashold = ev[1]
     #classification_model.save_weights(weights_file)  # )weights_file)#
 
 # classification_model.save(model_save)
-classification_model.save("f:/models/finetunded932percent_fc_and_block5.h5")
+#classification_model.save("f:/models/finetunded932percent_fc_and_block5.h5")
 
 
 np.save(history_continue_training, np.array(mdict))
