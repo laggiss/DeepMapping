@@ -3,6 +3,7 @@ from scipy import misc
 from keras.preprocessing.image import ImageDataGenerator
 from keras.applications.vgg19 import preprocess_input
 from random import randint
+import sys
 class myDataGeneratorAug(object):
     """Data Generator for Siamese model inputs"""
 
@@ -52,8 +53,10 @@ class myDataGeneratorAug(object):
         # y = np.empty(self.batch_size, dtype=int)
 
         X1, X2, y = [], [], []
+        cnt=0
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
+            self.__drawProgressBar(cnt / len(list_IDs_temp))
             # Store volume
             seed = randint(1,50000)#.random.seed()
             left_datagen = ImageDataGenerator(**datagenargs)  # , augment=True, seed=seed)
@@ -76,6 +79,7 @@ class myDataGeneratorAug(object):
             X2.append(x_rightb)
 
             y.append(labels[ID[0]])
+            cnt+=1
         # print("somethingnewert")
         return np.array(X1), np.array(X2), np.array(y)
         # return X, y  # sparsify(y)
@@ -85,3 +89,15 @@ class myDataGeneratorAug(object):
         n_classes = 2  # Enter number of classes
         return np.array([[1 if y[i] == j else 0 for j in range(n_classes)]
                          for i in range(y.shape[0])])
+
+    def __drawProgressBar(self,percent, barLen=20):
+        sys.stdout.write("\r")
+        sys.stdout.write("Using data generator for batch...")
+        progress = ""
+        for i in range(barLen):
+            if i < int(barLen * percent):
+                progress += "="
+            else:
+                progress += " "
+        sys.stdout.write("[ %s ] %.2f%%" % (progress, percent * 100))
+        sys.stdout.flush()

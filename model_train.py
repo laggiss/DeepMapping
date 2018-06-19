@@ -170,7 +170,7 @@ else:
 
 # number of wanted iterations. Each iteration takes a different set of augmented images so
 # keep this number high (depending on the learning rate) when training the model
-n_iter = 10
+n_iter = 8
 kappas = []
 test_eval = []
 # Initialisation of a confusion matrix
@@ -250,9 +250,13 @@ for iteration in range(n_iter):
 
 # classification_model.save(model_save)
 classification_model.save("f:/models/finetunded932percent_fc_and_block5.h5")
-np.save(history_continue_training, np.array(mdict))
+
 
 np.save(history_continue_training, np.array(mdict))
+
+
+
+classification_model = load_model(model_save)
 
 pred = (classification_model.predict([X_valid[:, 0], X_valid[:, 1]]) > 0.5).astype(int)
 tr_acc = compute_accuracy(pred, y_valid)
