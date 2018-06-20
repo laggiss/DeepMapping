@@ -120,7 +120,7 @@ def the_model(run_new=False, unfreeze=False):
     classification_model = Model([img_a, img_b], main_out)
 
     if not run_new:
-        classification_model.load_weights("f:/models/sw.h5")  # ""f:/models/backup_92_fc_only.h5")#
+        classification_model.load_weights(weights_file)  # ""f:/models/backup_92_fc_only.h5")#
         # "f:/models/vgg19_siamese_14th_try_vgg_norm_fine_tuned_29_Dec_17_514pm.h5")#weights_file)#,by_name=True))#
         print("Weights loaded..")
 
@@ -164,11 +164,12 @@ if run_new:
         }
     classification_model = the_model(run_new=True)
 else:
-    print("\n\nLoading existing model\n\n")
+    print("\n\nLoading training history\n\n")
     mdict = np.load(history_continue_training)
     mdict = mdict.tolist()
-    classification_model = load_model(
-        model_save)  # finetunded_gt_939_percent_fc_and_block5_class_weights.h5")
+    classification_model = the_model(run_new=False,unfreeze=True)
+    # classification_model = load_model(
+    #     model_save)  # finetunded_gt_939_percent_fc_and_block5_class_weights.h5")
 
 # number of wanted iterations. Each iteration takes a different set of augmented images so
 # keep this number high (depending on the learning rate) when training the model
@@ -177,7 +178,7 @@ kappas = []
 test_eval = []
 # Initialisation of a confusion matrix
 conf_mat = np.zeros((2, 2))
-threashold = 0.85
+threashold = 0.92
 for iteration in range(n_iter):
     print(iteration / n_iter)
 
@@ -232,24 +233,30 @@ for iteration in range(n_iter):
             mdict[k].append(i)
 
     # Predictions to qulify the classification quality
-    pred = (classification_model.predict([X_valid[:, 0], X_valid[:, 1]]) > 0.5).astype(int)
-    tr_acc = compute_accuracy(pred, y_test)
-    ev = classification_model.evaluate([X_valid[:, 0], X_valid[:, 1]], y_valid, batch_size=24)
-    test_eval.append(ev)
-    print("MODEL EVAL: {}".format(ev))
-    print("PRED KAPPA: {}".format(tr_acc))
-    print("AUC SCORE: {}".format(auc_score(y_test, pred)))
-    # pred = (classification_model.predict([X_test[:, 0], X_test[:, 1]]) > 0.5).astype(int)
-    # te_acc = compute_accuracy(pred, y_test)
-    kappas.append(tr_acc)
-    conf_mat = confusion_matrix(y_test, pred)
-    print(conf_mat)
-
-    if ev[1] > threashold:
+    # pred = (classification_model.predict([X_valid[:, 0], X_valid[:, 1]]) > 0.5).astype(int)
+    # tr_acc = compute_accuracy(pred, y_valid)
+    # ev = classification_model.evaluate([X_valid[:, 0], X_valid[:, 1]], y_valid, batch_size=24)
+    # test_eval.append(ev)
+    # print("MODEL EVAL: {}".format(ev))
+    # print("PRED KAPPA: {}".format(tr_acc))
+    # print("AUC SCORE: {}".format(auc_score(y_valid, pred)))
+    test_val=mdict['val_binary_accuracy'][-1]
+    if test_val > threashold:
         print("\n\nSaving model....\n\n")
         classification_model.save(model_save)
-        threashold = ev[1]
-    #classification_model.save_weights(weights_file)  # )weights_file)#
+        classification_model.save_weights(weights_file)
+        np.save(history_continue_training, np.array(mdict))
+        threashold = test_val
+
+
+    # pred = (classification_model.predict([X_test[:, 0], X_test[:, 1]]) > 0.5).astype(int)
+    # te_acc = compute_accuracy(pred, y_test)
+    # kappas.append(tr_acc)
+    # conf_mat = confusion_matrix(y_test, pred)
+    # print(conf_mat)
+
+
+      # )weights_file)#
 
 # classification_model.save(model_save)
 #classification_model.save("f:/models/finetunded932percent_fc_and_block5.h5")
@@ -267,7 +274,7 @@ ev = classification_model.evaluate([X_valid[:, 0], X_valid[:, 1]], y_valid, batc
 
 print("MODEL EVAL: {}".format(ev))
 print("PRED KAPPA: {}".format(tr_acc))
-print("AUC SCORE: {}".format(auc_score(y_test, pred)))
+print("AUC SCORE: {}".format(auc_score(y_valid, pred)))
 
 import matplotlib.pyplot as plt
 
