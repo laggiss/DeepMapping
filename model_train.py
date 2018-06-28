@@ -47,13 +47,13 @@ d=DataSplit()
 # Constants
 input_path=d.output_path
 
-history_continue_training = input_path+os.sep+'mdict14try_vgg_norm.npy'  # "c:/gist/mdict14try.npy"
+history_continue_training = input_path+os.sep+'mdict14try_vgg_norma.npy'  # "c:/gist/mdict14try.npy"
 
-model_save = input_path+os.sep+'vgg19_siamese_base_train.h5'
+model_save = input_path+os.sep+'vgg19_siamese_base_traina.h5'
 
-weights_file = "f:/deepmappingdata/new/vgg19_siamese_base_train_w.h5"
+weights_file = "f:/deepmappingdata/new/vgg19_siamese_base_train_wa.h5"
 
-fine_tune_model_path='f:/deepmappingdata/new/model_FC_Block5_952.h5'
+fine_tune_model_path='f:/deepmappingdata/new/model_FC_Block5_952a.h5'
 #check_point_weights = "c:/gist/gentrinet_checkpoint_weights.h5"
 
 # fix random seed for reproducibility
@@ -190,7 +190,7 @@ def fine_tune_existing(model_path=fine_tune_model_path, unfreeze="block5_conv1")
     return classification_model
 
 
-run_new=False
+run_new=True
 if run_new:
     # save all history params
     print("\n\nNew run of model\n\n")
@@ -216,12 +216,12 @@ conf_mat = np.zeros((2, 2))
 threashold = 0.92
 for iteration in range(n_iter):
     print(iteration / n_iter)
-    check_point_weights=input_path+os.sep+"checkpoint_FC_{}.npy".format(iteration)
+    check_point_weights=input_path+os.sep+"checkpoint_FC_a{}.npy".format(iteration)
 
     # sample positive and negative cases for current iteration. It is faster to use fit on batch of n yesno and augment
     # that batch using datagen_class_aug_test than to use fit_generator with the datagen_class_aug_test and small batch
     # sizes.
-    yesno = yes.sample(700).append(no.sample(3500))
+    yesno = yes.sample(5).append(no.sample(5))
     labels = dict(zip([str(x) for x in yesno.index.tolist()],
                       [1 if x == '1' else 0 for x in yesno.winner.tolist()]))
     partition = {'train': list(zip([str(x) for x in yesno.index.tolist()], zip(yesno.left_id, yesno.right_id)))}
