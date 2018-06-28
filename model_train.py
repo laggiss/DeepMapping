@@ -221,7 +221,7 @@ for iteration in range(n_iter):
     # sample positive and negative cases for current iteration. It is faster to use fit on batch of n yesno and augment
     # that batch using datagen_class_aug_test than to use fit_generator with the datagen_class_aug_test and small batch
     # sizes.
-    yesno = yes.sample(5).append(no.sample(5))
+    yesno = yes.sample(1).append(no.sample(2))
     labels = dict(zip([str(x) for x in yesno.index.tolist()],
                       [1 if x == '1' else 0 for x in yesno.winner.tolist()]))
     partition = {'train': list(zip([str(x) for x in yesno.index.tolist()], zip(yesno.left_id, yesno.right_id)))}
