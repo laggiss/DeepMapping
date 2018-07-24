@@ -10,7 +10,7 @@ from scipy import misc
 
 class DataSplit(object):
 
-    def __init__(self,train_list_path= 'f:/deepmappingdata/retrain.txt',output_path='f:/deepmappingdata/new',img_size=224):
+    def __init__(self,train_list_path= 'f:/deepmappingdata/retrain_exclusion2.txt',output_path='f:/deepmappingdata/exclusiontrain',img_size=224):
         self.train_list_path = train_list_path
         self.output_path=output_path
         self.yes_fname=output_path+os.sep+"yes.npy"
@@ -111,4 +111,4 @@ class DataSplit(object):
 
 # run class to create new training,validation and test arrays.
 # Uncomment to run alone
-# x=DataSplit().create()
+#x=DataSplit().create()

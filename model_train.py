@@ -190,7 +190,7 @@ def fine_tune_existing(model_path=fine_tune_model_path, unfreeze="block5_conv1")
     return classification_model
 
 
-run_new=False
+run_new=True
 if run_new:
     # save all history params
     print("\n\nNew run of model\n\n")
@@ -208,7 +208,7 @@ else:
 
 # number of wanted iterations. Each iteration takes a different set of augmented images so
 # keep this number high (depending on the learning rate) when training the model
-n_iter = 4
+n_iter = 1
 kappas = []
 test_eval = []
 # Initialisation of a confusion matrix
