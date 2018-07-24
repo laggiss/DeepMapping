@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/DeepMapping.iml" filepath="$PROJECT_DIR$/.idea/DeepMapping.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../a11PyCharmCNN/.idea/a11PyCharmCNN.iml" filepath="$PROJECT_DIR$/../a11PyCharmCNN/.idea/a11PyCharmCNN.iml" />
     </modules>
   </component>
 </project>
