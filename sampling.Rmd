@@ -1,0 +1,221 @@
+---
+title: "GentriNet"
+author: "M. Sawada"
+date: "June 27, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+ can embed an R code chunk like this:
+
+```{r}
+library(spatstat)
+library(maptools)
+library(stringr)
+library(raster)
+library(dplyr)
+library(arcgisbinding)
+arc.check_product()
+
+# Get training data list
+x = read.delim("f:/deepmappingdata/retrain.txt",
+               sep = " ",
+               header = FALSE)
+
+ll = lapply(str_split(x[, 1], "/"), function(x)
+  x[4])
+yy = unlist(lapply(str_split(ll, ","), function(x)
+  x[1]))
+xx = unlist(lapply(str_split(ll, ","), function(x)
+  x[2]))
+
+yy = unlist(lapply(str_split(yy, "new-"), function(x) {
+  if (length(x) == 2) {
+    x[2]
+  }
+  else{
+    x[1]
+  }
+}))
+
+# Check for NA
+yy[is.na(as.numeric(yy))]
+
+
+xx = unlist(lapply(str_split(xx, "new-"), function(x) {
+  if (length(x) == 2) {
+    x[2]
+  }
+  else{
+    x[1]
+  }
+}))
+
+# Check for NA
+xx[is.na(as.numeric(xx))]
+
+
+# put x,y into x dataframe for coordinates of each pair
+
+x$Long = xx
+x$Lat = yy
+x = x[which(x$V3 != "np"),]
+x = x[which(x$V3 != "nof"),]
+
+# Remove nonused levels of factors
+x = droplevels(x)
+
+#
+# Make spdf of training data duels file
+
+spd = SpatialPointsDataFrame(cbind(x = as.numeric(x$Long), y = as.numeric(x$Lat)), x)
+
+# Assign NAD83
+cr = CRS("+init=epsg:4269")
+proj4string(spd) = cr
+
+# Reproject to MTM9 NAD83
+cr = CRS("+init=epsg:32189")
+spd = spTransform(spd, cr)
+
+# Make unique point file for probabilities
+#spdU=remove.duplicates(spd)
+
+# Open study area mask, convert to spdf and reproject to MTM9
+
+m = arc.open('C:/GIST/core_multi.shp')
+m2 = arc.select(m)
+m3 = arc.data2sp(m2)
+m4 = spTransform(m3, CRS(proj4string(spd)))
+
+# Calculate KDE on training locations & convert to raster obj
+kde = density.ppp(as.ppp(spd),
+                  eps = 80,
+                  kernel = 'quartic',
+                  sigma = 750)
+
+kde = raster(kde)
+
+# Extract probabilities from KDE surface
+probs = extract(kde, spd)
+
+# Add the raster probabilities to spdf after standardizing and inverting
+probs[is.na(probs)]=0
+maxv = max(probs, na.rm = TRUE)
+minv = min(probs, na.rm = TRUE)
+probs=1 - (probs - minv) / (maxv - minv)
+spd@data$RASTERVALU=probs
+
+
+#
+# Crop and mask raster to study area
+r2 <- crop(kde, extent(m4))
+r3 <- mask(r2, m4)
+
+# Plot raster
+plot(r3)
+plot(m3, add = TRUE, lwd = 2)
+
+# Create a thinned dataset
+idx=1:length(spd@data$RASTERVALU)
+ytest=sample(idx,600, replace = FALSE, prob = spd@data$RASTERVALU/sum(spd@data$RASTERVALU))
+plot(spd@data$Long,spd@data$Lat,pch=16)
+x=spd@data$Long[ytest]
+y=spd@data$Lat[ytest]
+points(x,y,col=2)
+
+pts=spd[ytest,]
+kde=density.ppp(as.ppp(pts),eps = 80,
+                  kernel = 'quartic',
+                  sigma = 750)
+kde=raster(kde)
+r2 <- crop(kde, extent(m4))
+r3 <- mask(r2, m4)
+plot(r3)
+plot(spd[ytest,],add=TRUE,col=2,pch=16)
+
+
+
+
+
+
+
+```
+
+
+
+
+```{r data}
+library(arcgisbinding)
+arc.check_product()
+da=arc.open('C:/Users/laggi/Documents/ArcGIS/Default.gdb/Extract_trainin1')
+
+da2=arc.select(da)
+da3=arc.data2sp(da2)
+
+vals=da3@data$RASTERVALU
+maxv=max(vals)
+minv=min(vals)
+
+da3@data$RASTERVALU=1-(da3@data$RASTERVALU-minv)/(maxv-minv)
+library(dplyr)
+
+stest=sample_n(da3@data, 100, replace = FALSE, weight = da3@data$RASTERVALU)
+plot(da3@data$Long,da3@data$Lat,pch=16)
+points(stest$Long,stest$Lat,col=2)
+
+idx=1:length(da3@data$RASTERVALU)
+ytest=sample(idx,600, replace = FALSE, prob = da3@data$RASTERVALU/sum(da3@data$RASTERVALU))
+plot(da3@data$Long,da3@data$Lat,pch=16)
+x=da3@data$Long[ytest]
+y=da3@data$Lat[ytest]
+points(x,y,col=2)
+
+pts=da3[ytest,]
+plot(density.ppp(as.ppp(pts),kernel='quartic',sigma=750))
+
+# No density
+idx=1:length(da3@data$RASTERVALU)
+ytest=sample(idx,500, replace = FALSE)#, prob = da3@data$RASTERVALU)
+plot(da3@data$Long,da3@data$Lat,pch=16)
+x=da3@data$Long[ytest]
+y=da3@data$Lat[ytest]
+points(x,y,col=2)
+
+
+
+#### Density
+library(raster)
+
+tloc=arc.open('C:/Users/laggi/Documents/ArcGIS/Default.gdb/Extract_trainin2')
+
+tloc2=arc.select(tloc)
+tloc3=arc.data2sp(tloc2)
+vals=tloc3@data$RASTERVALU
+maxv=max(vals,na.rm=TRUE)
+minv=min(vals,na.rm=TRUE)
+
+tloc3@data$RASTERVALU=1-(tloc3@data$RASTERVALU-minv)/(maxv-minv)
+r=density.ppp(as.ppp(tloc3),eps=100,kernel='quartic',sigma=750)
+r=raster(r)
+#,weights=tloc3@data$RASTERVALU))
+m=arc.open('C:/GIST/core_multi.shp')
+
+m2=arc.select(m)
+m3=arc.data2sp(m2)
+m4=spTransform(m3, CRS(proj4string(tloc3)))
+
+r2 <- crop(r, extent(m4))
+r3 <- mask(r2, m4)
+
+plot(r3)
+plot(m3, add=TRUE, lwd=2)
+
+
+
+```
+
