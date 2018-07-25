@@ -127,7 +127,7 @@ y=spd@data$Lat[ytest]
 points(x,y,col=2)
 
 pts=spd[ytest,]
-kde=density.ppp(as.ppp(pts),eps = 80,
+kde=density.ppp(as.ppp(pts),eps = 50,
                   kernel = 'quartic',
                   sigma = 750)
 kde=raster(kde)
@@ -140,15 +140,56 @@ plot(spd[ytest,],add=TRUE,col=2,pch=16)
 library(classInt)
 vals=values(r3)
 vals=vals[!is.na(vals)]
-cint = classIntervals(vals,n=5,style='jenks')
+cint = classIntervals(vals,n=9,style='equal')
 
 library(RColorBrewer)
-my.palette <- brewer.pal(n = 5, name = "OrRd")
-plot(us.pop.logged, col = my.palette)
+my.palette <- brewer.pal(n = 9, name = "OrRd")
+plot(r3, breaks=cint$brks,col = my.palette)
 
 
 ```
 
+Results
+```{r}
+
+predictedpoints = arc.open('./shapefiles/predicted.shp')
+predictedpoints.a = arc.select(predictedpoints)
+predictedpoints.b = arc.data2sp(predictedpoints.a)
+predpts = spTransform(predictedpoints.b, CRS(proj4string(spd)))
+
+masklyr = arc.open('./shapefiles/core_multi.shp')
+masklyr.a = arc.select(masklyr)
+masklyr.b = arc.data2sp(masklyr.a)
+studyarea = spTransform(masklyr.b, CRS(proj4string(spd)))
+
+hoods = arc.open('./shapefiles/core.shp')
+hoods.a = arc.select(hoods)
+hoods.b = arc.data2sp(hoods.a)
+nbrhoods = spTransform(hoods.b, CRS(proj4string(spd)))
+
+# Calculate KDE on training locations & convert to raster obj
+kde = density.ppp(as.ppp(predpts),
+                  eps = 20,
+                  kernel = 'quartic',
+                  sigma = 200)
+
+kde = raster(kde)
+r2 <- crop(kde, extent(studyarea))
+r3 <- mask(r2, studyarea)
+
+library(classInt)
+vals=values(r3)
+vals=vals[!is.na(vals)]
+cint = classIntervals(vals,n=9,style='equal')
+
+# library(RColorBrewer)
+# my.palette <- brewer.pal(n = 9, name = "Blues")
+my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
+plot(r3, breaks=cint$brks,col = my.palette)
+
+plot(nbrhoods,add=TRUE)
+
+```
 
 
 
