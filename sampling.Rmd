@@ -170,7 +170,7 @@ nbrhoods = spTransform(hoods.b, CRS(proj4string(spd)))
 # Calculate KDE on training locations & convert to raster obj
 kde = density.ppp(as.ppp(predpts),
                   eps = 20,
-                  kernel = 'quartic',
+                  kernel = 'gaussian',
                   sigma = 200)
 
 kde = raster(kde)
