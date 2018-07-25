@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7912cac4-f054-46f0-9690-f2f0973b80bb" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predict_gentrinet.py" beforeDir="false" afterPath="$PROJECT_DIR$/predict_gentrinet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sampling.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/sampling.Rmd" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -26,11 +30,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="model_train.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="model_train.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/model_train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="274">
-              <caret line="286" selection-end-line="286" />
+            <state relative-caret-position="241">
+              <caret line="284" column="29" selection-start-line="210" selection-end-line="284" selection-end-column="29" />
               <folding>
                 <element signature="e#400#454#0" expanded="true" />
                 <element signature="e#6497#7371#0" />
@@ -39,28 +43,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dataset.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../DeepMappingBuildings/dataset.py">
+      <file leaf-file-name="predict_gentrinet.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="616">
-              <caret line="28" column="32" lean-forward="true" selection-start-line="28" selection-start-column="32" selection-end-line="28" selection-end-column="32" />
+            <state relative-caret-position="418">
+              <caret line="19" column="64" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="64" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tensorbuild2_mod.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../a11PyCharmCNN/tensorbuild2_mod.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="550">
-              <caret line="319" column="23" selection-start-line="319" selection-start-column="23" selection-end-line="319" selection-end-column="23" />
-              <folding>
-                <element signature="e#0#38#0" expanded="true" />
-                <element signature="e#1192#3050#0" />
-                <element signature="e#3214#10711#0" />
-                <element signature="e#10739#11680#0" />
+                <element signature="e#0#54#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -78,7 +67,7 @@
     </dirStrings>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../DeepMappingBuildings" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="master" />
@@ -89,8 +78,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/../a11PyCharmCNN/tensorbuild2_mod.py" />
-        <option value="$PROJECT_DIR$/model_train.py" />
         <option value="$PROJECT_DIR$/dataStep.py" />
+        <option value="$PROJECT_DIR$/predict_gentrinet.py" />
+        <option value="$PROJECT_DIR$/model_train.py" />
       </list>
     </option>
   </component>
@@ -104,10 +94,10 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="220" />
-    <option name="y" value="40" />
-    <option name="width" value="2800" />
-    <option name="height" value="1920" />
+    <option name="x" value="440" />
+    <option name="y" value="80" />
+    <option name="width" value="5600" />
+    <option name="height" value="3840" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -122,10 +112,6 @@
             <path>
               <item name="DeepMapping" type="b2602c69:ProjectViewProjectNode" />
               <item name="DeepMapping" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DeepMapping" type="b2602c69:ProjectViewProjectNode" />
-              <item name="a11PyCharmCNN" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="DeepMapping" type="b2602c69:ProjectViewProjectNode" />
@@ -156,7 +142,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.predict_gentrinet">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="DeepMapping" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -195,8 +181,32 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
+    <configuration name="predict_gentrinet" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="DeepMapping" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/predict_gentrinet.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.dataStep" />
+      <item itemvalue="Python.predict_gentrinet" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.predict_gentrinet" />
         <item itemvalue="Python.dataStep" />
       </list>
     </recent_temporary>
@@ -247,26 +257,32 @@
       <option name="project" value="LOCAL" />
       <updated>1532459911987</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="testcommit">
+      <created>1532461906514</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1532461906514</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="2576" height="1576" extended-state="6" />
-    <editor active="true" />
+    <frame x="-6" y="-6" width="1633" height="1053" extended-state="6" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="right" x="0" y="0" width="594" height="1376" id="Documentation" order="9" sideWeight="0.50051814" side_tool="true" visible="true" weight="0.25079492" />
+      <window_info anchor="right" x="0" y="0" width="594" height="1376" id="Documentation" order="9" sideWeight="0.5011236" side_tool="true" weight="0.4006349" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Python Console" order="7" visible="true" weight="0.32892907" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32962447" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="7" visible="true" weight="0.32026145" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32897604" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32962447" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17607313" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.28126985" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="5" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="right" id="SciView" order="7" sideWeight="0.49948186" visible="true" weight="0.25079492" />
+      <window_info anchor="right" id="SciView" order="7" sideWeight="0.4988764" weight="0.4006349" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
@@ -473,23 +489,33 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model_train.py">
+    <entry file="file://$PROJECT_DIR$/../DeepMappingBuildings/dataset.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="274">
-          <caret line="286" selection-end-line="286" />
+        <state relative-caret-position="-383">
+          <caret line="28" column="32" lean-forward="true" selection-start-line="28" selection-start-column="32" selection-end-line="28" selection-end-column="32" />
           <folding>
-            <element signature="e#400#454#0" expanded="true" />
-            <element signature="e#6497#7371#0" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../DeepMappingBuildings/dataset.py">
+    <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="616">
-          <caret line="28" column="32" lean-forward="true" selection-start-line="28" selection-start-column="32" selection-end-line="28" selection-end-column="32" />
+        <state relative-caret-position="418">
+          <caret line="19" column="64" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="64" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="284" column="29" selection-start-line="210" selection-end-line="284" selection-end-column="29" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
+            <element signature="e#6497#7371#0" />
           </folding>
         </state>
       </provider>

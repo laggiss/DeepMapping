@@ -22,9 +22,7 @@ library(arcgisbinding)
 arc.check_product()
 
 # Get training data list
-x = read.delim("f:/deepmappingdata/retrain.txt",
-               sep = " ",
-               header = FALSE)
+x = read.delim("./rproject/retrain.txt",sep = " ",header = FALSE)
 
 ll = lapply(str_split(x[, 1], "/"), function(x)
   x[4])
@@ -87,7 +85,7 @@ spd = spTransform(spd, cr)
 
 # Open study area mask, convert to spdf and reproject to MTM9
 
-m = arc.open('C:/GIST/core_multi.shp')
+m = arc.open('./shapefiles/core_multi.shp')
 m2 = arc.select(m)
 m3 = arc.data2sp(m2)
 m4 = spTransform(m3, CRS(proj4string(spd)))
@@ -139,9 +137,14 @@ plot(r3)
 plot(spd[ytest,],add=TRUE,col=2,pch=16)
 
 
+library(classInt)
+vals=values(r3)
+vals=vals[!is.na(vals)]
+cint = classIntervals(vals,n=5,style='jenks')
 
-
-
+library(RColorBrewer)
+my.palette <- brewer.pal(n = 5, name = "OrRd")
+plot(us.pop.logged, col = my.palette)
 
 
 ```
