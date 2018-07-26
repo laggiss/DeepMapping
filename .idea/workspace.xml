@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7912cac4-f054-46f0-9690-f2f0973b80bb" name="Default" comment="testcommit" />
+    <list default="true" id="7912cac4-f054-46f0-9690-f2f0973b80bb" name="Default" comment="testcommit">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -12,7 +14,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="dataStep.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="dataStep.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dataStep.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="198">
@@ -24,16 +26,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sampling.Rmd" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sampling.Rmd">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file leaf-file-name="model_train.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="model_train.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/model_train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="858">
-              <caret line="39" column="11" selection-start-line="39" selection-start-column="2" selection-end-line="39" selection-end-column="11" />
+            <state relative-caret-position="44">
+              <caret line="209" column="50" lean-forward="true" selection-start-line="209" selection-start-column="50" selection-end-line="209" selection-end-column="50" />
               <folding>
                 <element signature="e#400#454#0" expanded="true" />
               </folding>
@@ -161,17 +158,18 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="-6" width="1633" height="1053" extended-state="6" />
+    <frame x="-8" y="-8" width="2576" height="1576" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" x="0" y="0" width="594" height="1376" id="Documentation" order="9" sideWeight="0.5011236" side_tool="true" weight="0.4006349" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32897604" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="7" visible="true" weight="0.32026145" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32897604" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32892907" />
+      <window_info anchor="bottom" id="Python Console" order="7" weight="0.20445062" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32892907" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32962447" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.28126985" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17607313" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="5" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -582,8 +580,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="19" column="64" selection-start-line="19" selection-start-column="64" selection-end-line="19" selection-end-column="64" />
+        <state relative-caret-position="896">
+          <caret line="136" selection-start-line="136" selection-end-line="136" />
           <folding>
             <element signature="e#0#54#0" expanded="true" />
           </folding>
@@ -637,25 +635,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model_train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="858">
-          <caret line="39" column="11" selection-start-line="39" selection-start-column="2" selection-end-line="39" selection-end-column="11" />
-          <folding>
-            <element signature="e#400#454#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sampling.Rmd">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/dataStep.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
           <caret line="9" selection-start-line="9" selection-end-line="9" />
           <folding>
             <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sampling.Rmd">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3696" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="209" column="50" lean-forward="true" selection-start-line="209" selection-start-column="50" selection-end-line="209" selection-end-column="50" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
           </folding>
         </state>
       </provider>
