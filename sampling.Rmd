@@ -154,7 +154,7 @@ KDE Function
 ptDensity = function(predpts, sarea) {
   # Calculate KDE on training locations & convert to raster obj
   kdepredict = density.ppp(as.ppp(predpts),
-  eps = 20,
+  eps = 10,
   kernel = 'gaussian',
   sigma = 200)
   
@@ -181,12 +181,20 @@ openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
 }
 ```
 
-Results
+Results: KDE of permits and predictions
 ```{r}
 permits=openSPDF(shapefilepath = './shapefiles/permits.shp')
+
 predpts=openSPDF(shapefilepath = './shapefiles/predicted.shp')
+# Get predictions after 2011
+predpts=subset(predpts,YEAR2>=2011)
+
 studyarea=openSPDF(shapefilepath = './shapefiles/core_multi.shp')
 nbrhoods=openSPDF(shapefilepath = './shapefiles/core.shp')
+
+permits@bbox=studyarea@bbox
+predpts@bbox=studyarea@bbox
+
 
 
 # Calculate KDE on training locations & convert to raster obj
@@ -200,13 +208,17 @@ cint=densBreaks(kdepredict,9,'equal')
 my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
 
 # makeplot
-win.graph(width=8,height=4)
-par(mfrow=c(1,2),mai=c(0,0,0,0))
+windows(width=8,height=4,xpinch=300,ypinch=300)
+par(mfrow=c(1,2),mai=c(0,0,0,0),bty="n")
 plot(kdepredict, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(nbrhoods,add=TRUE)
+plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"A",cex=3)
 plot(kdepermits, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(nbrhoods,add=TRUE)
-
+plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"B",cex=3)
+savePlot("f:/test.png",type="png")
 
 
 
