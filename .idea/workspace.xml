@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7912cac4-f054-46f0-9690-f2f0973b80bb" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_train.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_train.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predict_gentrinet.py" beforeDir="false" afterPath="$PROJECT_DIR$/predict_gentrinet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sampling.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/sampling.Rmd" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -21,7 +19,7 @@
       <file leaf-file-name="dataStep.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dataStep.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="980">
+            <state relative-caret-position="2244">
               <caret line="102" column="21" selection-start-line="102" selection-start-column="21" selection-end-line="102" selection-end-column="21" />
               <folding>
                 <element signature="e#0#54#0" expanded="true" />
@@ -30,11 +28,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="model_train.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="model_train.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model_train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="241">
-              <caret line="284" column="29" selection-start-line="210" selection-end-line="284" selection-end-column="29" />
+            <state relative-caret-position="964">
+              <caret line="317" lean-forward="true" selection-start-line="310" selection-end-line="317" />
               <folding>
                 <element signature="e#400#454#0" expanded="true" />
                 <element signature="e#6497#7371#0" />
@@ -43,11 +41,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="predict_gentrinet.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="predict_gentrinet.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="19" column="64" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="64" />
+            <state relative-caret-position="-2178">
+              <caret selection-end-line="142" />
               <folding>
                 <element signature="e#0#54#0" expanded="true" />
               </folding>
@@ -79,8 +77,8 @@
       <list>
         <option value="$PROJECT_DIR$/../a11PyCharmCNN/tensorbuild2_mod.py" />
         <option value="$PROJECT_DIR$/dataStep.py" />
-        <option value="$PROJECT_DIR$/predict_gentrinet.py" />
         <option value="$PROJECT_DIR$/model_train.py" />
+        <option value="$PROJECT_DIR$/predict_gentrinet.py" />
       </list>
     </option>
   </component>
@@ -208,6 +206,8 @@
       <list>
         <item itemvalue="Python.predict_gentrinet" />
         <item itemvalue="Python.dataStep" />
+        <item itemvalue="Python.predict_gentrinet" />
+        <item itemvalue="Python.dataStep" />
       </list>
     </recent_temporary>
   </component>
@@ -268,17 +268,18 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="-6" width="1633" height="1053" extended-state="6" />
+    <frame x="-8" y="-8" width="2576" height="1576" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" x="0" y="0" width="594" height="1376" id="Documentation" order="9" sideWeight="0.5011236" side_tool="true" weight="0.4006349" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="7" visible="true" weight="0.32026145" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32897604" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="7" visible="true" weight="0.20445062" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32897604" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32962447" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.28126985" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17607313" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="5" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -301,11 +302,13 @@
       <window_info anchor="right" id="R Packages" order="3" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" x="0" y="0" width="594" height="1376" id="Documentation" order="9" sideWeight="0.5011236" side_tool="true" weight="0.4006349" />
       <window_info anchor="right" id="R Graphics" order="4" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" visible="true" weight="0.32892907" />
     </layout>
@@ -321,6 +324,32 @@
     <option name="LAST_COMMIT_MESSAGE" value="testcommit" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="19" column="64" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="64" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sampling.Rmd">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2819" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="284" column="29" selection-start-line="210" selection-end-line="284" selection-end-column="29" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
+            <element signature="e#6497#7371#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dataStep.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="154">
@@ -445,26 +474,14 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../a11PyCharmCNN/dataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/../a11PyCharmCNN/tensorbuildvggMITaugmentation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="484">
           <caret line="34" column="14" selection-start-line="34" selection-end-line="34" selection-end-column="14" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sampling.Rmd">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/dataStep.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -480,12 +497,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="550">
           <caret line="319" column="23" selection-start-line="319" selection-start-column="23" selection-end-line="319" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-            <element signature="e#1192#3050#0" />
-            <element signature="e#3214#10711#0" />
-            <element signature="e#10739#11680#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -501,8 +512,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="19" column="64" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="64" />
+        <state relative-caret-position="242">
+          <caret line="19" column="64" selection-start-line="19" selection-start-column="64" selection-end-line="19" selection-end-column="64" />
           <folding>
             <element signature="e#0#54#0" expanded="true" />
           </folding>
@@ -516,6 +527,256 @@
           <folding>
             <element signature="e#400#454#0" expanded="true" />
             <element signature="e#6497#7371#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
+            <element signature="e#6497#7371#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" lean-forward="true" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="17" lean-forward="true" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sampling.Rmd">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3661" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="39" column="11" selection-start-line="39" selection-start-column="2" selection-end-line="39" selection-end-column="11" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
+            <element signature="e#6497#7371#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
+            <element signature="e#6497#7371#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" lean-forward="true" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="17" lean-forward="true" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="100" column="22" lean-forward="true" selection-start-line="100" selection-start-column="22" selection-end-line="100" selection-end-column="22" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
+            <element signature="e#6497#7371#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" lean-forward="true" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="17" lean-forward="true" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
+            <element signature="e#6497#7371#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="22" lean-forward="true" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="8" column="17" lean-forward="true" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/keras/callbacks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../a11PyCharmCNN/dataset.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../a11PyCharmCNN/tensorbuildvggMITaugmentation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="484">
+          <caret line="34" column="14" selection-start-line="34" selection-end-line="34" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../a11PyCharmCNN/tensorbuild2_mod.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="319" column="23" selection-start-line="319" selection-start-column="23" selection-end-line="319" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../DeepMappingBuildings/dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-383">
+          <caret line="28" column="32" lean-forward="true" selection-start-line="28" selection-start-column="32" selection-end-line="28" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataStep.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2244">
+          <caret line="102" column="21" selection-start-line="102" selection-start-column="21" selection-end-line="102" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sampling.Rmd">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3941" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="964">
+          <caret line="317" lean-forward="true" selection-start-line="310" selection-end-line="317" />
+          <folding>
+            <element signature="e#400#454#0" expanded="true" />
+            <element signature="e#6497#7371#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2178">
+          <caret selection-end-line="142" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
           </folding>
         </state>
       </provider>

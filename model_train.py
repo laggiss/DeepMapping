@@ -293,7 +293,7 @@ plot_loss()
 
 classification_model.load_weights(check_point_weights)
 
-classification_model.save("f:/deepmappingdata/exclusiontrain/exclusionmod.h5")
+classification_model.save("f:/deepmappingdata/exclusiontrain/exclusionmod_6epocs.h5")
 
 K.clear_session()
 
