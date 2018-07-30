@@ -1,18 +1,20 @@
 ---
-title: "GentriNet"
-author: "M. Sawada"
-date: "June 27, 2018"
-output: html_document
+output:
+  pdf_document:
+    fig_caption: yes
+  html_document:
+    df_print: paged
+    fig_caption: yes
+  word_document: 
+    fig_caption: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
- can embed an R code chunk like this:
-
-```{r}
+Import libraries,
+```{r message=FALSE}
 library(spatstat)
 library(maptools)
 library(stringr)
@@ -21,7 +23,10 @@ library(dplyr)
 library(classInt)
 library(arcgisbinding)
 arc.check_product()
+```
 
+Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9.  Also open studyarea polygons.
+```{r trainingdata,eval=FALSE, message=FALSE}
 # Get training data list
 x = read.delim("./rproject/retrain.txt",sep = " ",header = FALSE)
 
@@ -65,7 +70,7 @@ x$Lat = yy
 x = x[which(x$V3 != "np"),]
 x = x[which(x$V3 != "nof"),]
 
-# Remove nonused levels of factors
+# Remove nonused levels of factors (3 or 4 bad rows)
 x = droplevels(x)
 
 #
@@ -84,13 +89,17 @@ spd = spTransform(spd, cr)
 # Make unique point file for probabilities
 #spdU=remove.duplicates(spd)
 
+
 # Open study area mask, convert to spdf and reproject to MTM9
 
 m = arc.open('./shapefiles/core_multi.shp')
 m2 = arc.select(m)
 m3 = arc.data2sp(m2)
 m4 = spTransform(m3, CRS(proj4string(spd)))
+```
 
+
+```{r comparemodelpermit, echo=TRUE,eval=FALSE}
 # Calculate KDE on training locations & convert to raster obj
 kde = density.ppp(as.ppp(spd),
                   eps = 80,
@@ -150,14 +159,13 @@ plot(r3, breaks=cint$brks,col = my.palette)
 
 ```
 KDE Function
-```{r}
+```{r functions}
 ptDensity = function(predpts, sarea) {
-  # Calculate KDE on training locations & convert to raster obj
+  # Calculate KDE
   kdepredict = density.ppp(as.ppp(predpts),
-  eps = 10,
+  eps = 100,
   kernel = 'gaussian',
   sigma = 200)
-  
   kdepredict = raster(kdepredict)
   kdepredict <- crop(kdepredict, extent(studyarea))
   kdepredict <- mask(kdepredict, studyarea)
@@ -181,11 +189,64 @@ openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
 }
 ```
 
-Results: KDE of permits and predictions
-```{r}
+##EDA: Timespan of GSV
+
+Get oldest date for GSV imagery, youngest date and span
+```{python py, eval=FALSE}
+import glob
+import os
+basedir='f:/ottawa_image_db/'
+dirlist = os.listdir(basedir)
+
+with open(r"F:\OneDrive\DeepMapping\rproject\gsvdatesspan.csv", "w") as f:
+    for d in dirlist:
+        images = glob.glob(basedir+d+ '/*.jpg')
+        if len(images)!=0:
+            dlist=[]
+            for image in images:
+                fn=os.path.basename(image)
+                dlist.append(fn[0:4])
+            mx=max(dlist)
+            mn=min(dlist)
+            diff=int(mx)-int(mn)
+            f.write("{},{},{},{}\n".format(d, mn,mx,diff))
+            print(dlist,min(dlist))
+```
+
+##Load GSV dates, create SPDF, assign and project.
+```{r gsvdates}
+# Get GSV date list
+x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = FALSE)
+names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
+# Make spdf of training data duels file
+
+gsvdates = SpatialPointsDataFrame(cbind(x = x$LONG, y = x$LAT), x)
+
+# Assign NAD83
+cr = CRS("+init=epsg:4269")
+proj4string(gsvdates) = cr
+
+# Reproject to MTM9 NAD83
+cr = CRS("+init=epsg:32189")
+gsvdates = spTransform(gsvdates, cr)
+
+y2007=subset(gsvdates,OLDEST==2007)
+```
+Examine date distribution
+```{r figs, fig.width=7,fig.height=6,fig.cap="\\label{fig:figs}Distribution of GSV dates within accessed GSV imagery"}
+hist(gsvdates$OLDEST,xlab="Date",ylab="Frequency",main="")
+```
+
+The \ref{fig:figs} indicates the approximate 2-year update frequency for GSV imagery.
+
+##Results: KDE of permits and predictions
+```{r aname}
+arc.check_product()
+
 permits=openSPDF(shapefilepath = './shapefiles/permits.shp')
 
 predpts=openSPDF(shapefilepath = './shapefiles/predicted.shp')
+
 # Get predictions after 2011
 predpts=subset(predpts,YEAR2>=2011)
 
@@ -194,8 +255,6 @@ nbrhoods=openSPDF(shapefilepath = './shapefiles/core.shp')
 
 permits@bbox=studyarea@bbox
 predpts@bbox=studyarea@bbox
-
-
 
 # Calculate KDE on training locations & convert to raster obj
 kdepredict=ptDensity(predpts,studyarea)
@@ -206,7 +265,25 @@ cint=densBreaks(kdepredict,9,'equal')
 
 # Make color palette
 my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
+```
+Plot comparison between permits and model results.
 
+```{r densf, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:densf}Distribution of GSV dates within accessed GSV imagery"}
+# makeplot
+#windows(width=8,height=4,xpinch=300,ypinch=300)
+par(mfrow=c(1,2),mai=c(0,0,0,0),bty="n")
+plot(kdepredict, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"A",cex=3)
+plot(kdepermits, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"B",cex=3)
+```
+
+
+```{r, saveplot, eval=TRUE, echo=FALSE}
 # makeplot
 windows(width=8,height=4,xpinch=300,ypinch=300)
 par(mfrow=c(1,2),mai=c(0,0,0,0),bty="n")
@@ -219,14 +296,15 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
 par(usr=c(0,1,0,1))
 text(0.05,0.9,"B",cex=3)
 savePlot("f:/test.png",type="png")
-
-
-
 ```
 
 
 
-```{r data}
+
+
+The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:densf}.
+
+```{r data, eval=FALSE}
 library(arcgisbinding)
 arc.check_product()
 da=arc.open('C:/Users/laggi/Documents/ArcGIS/Default.gdb/Extract_trainin1')
@@ -263,8 +341,6 @@ x=da3@data$Long[ytest]
 y=da3@data$Lat[ytest]
 points(x,y,col=2)
 
-
-
 #### Density
 library(raster)
 
@@ -291,8 +367,5 @@ r3 <- mask(r2, m4)
 
 plot(r3)
 plot(m3, add=TRUE, lwd=2)
-
-
-
 ```
 

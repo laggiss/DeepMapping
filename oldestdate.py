@@ -11,7 +11,9 @@ with open("f:/models/ff.csv", "w") as f:
             for image in images:
                 fn=os.path.basename(image)
                 dlist.append(fn[0:4])
-
-            f.write("{},{}\n".format(d, min(dlist)))
+            mx=max(dlist)
+            mn=min(dlist)
+            diff=int(mx)-int(mn)
+            f.write("{},{},{},{}\n".format(d, mn,mx,diff))
             print(dlist,min(dlist))
 
