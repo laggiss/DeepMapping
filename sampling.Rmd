@@ -21,10 +21,45 @@ library(stringr)
 library(raster)
 library(dplyr)
 library(classInt)
+library(rgdal)
 library(arcgisbinding)
 arc.check_product()
 ```
 
+###Functions
+```{r functions}
+ptDensity = function(predpts, sarea) {
+  # Calculate KDE
+  kdepredict = density.ppp(as.ppp(predpts),
+  eps = 100,
+  kernel = 'gaussian',
+  sigma = 200)
+  kdepredict = raster(kdepredict)
+  kdepredict <- crop(kdepredict, extent(sarea))
+  kdepredict <- mask(kdepredict, sarea)
+  return(kdepredict)
+}
+
+
+densBreaks = function(kdepredict,n,style) {
+  vals = values(kdepredict)
+  vals = vals[!is.na(vals)]
+  cint = classIntervals(vals, n = n, style = style)
+  return(cint)
+}
+
+openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
+  permitpts.b=readOGR(shapefilepath)
+  # arc.check_product()
+  # permitpts = arc.open(shapefilepath)
+  # permitpts.a = arc.select(permitpts)
+  # permitpts.b = arc.data2sp(permitpts.a)
+  permits = spTransform(permitpts.b, outCS)
+  return(permits)
+}
+```
+
+#Training data distribution
 Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9.  Also open studyarea polygons.
 ```{r trainingdata,eval=FALSE, message=FALSE}
 # Get training data list
@@ -79,32 +114,69 @@ x = droplevels(x)
 spd = SpatialPointsDataFrame(cbind(x = as.numeric(x$Long), y = as.numeric(x$Lat)), x)
 
 # Assign NAD83
-cr = CRS("+init=epsg:4269")
-proj4string(spd) = cr
+srNAD83= CRS("+init=epsg:4269")
+proj4string(spd) = srNAD83
 
 # Reproject to MTM9 NAD83
-cr = CRS("+init=epsg:32189")
-spd = spTransform(spd, cr)
+srMTM9 = CRS("+init=epsg:32189")
+spd = spTransform(spd, srMTM9)
 
 # Make unique point file for probabilities
 #spdU=remove.duplicates(spd)
 
-
 # Open study area mask, convert to spdf and reproject to MTM9
+m4 = openSPDF(shapefilepath = './shapefiles/core_multi.shp')
 
-m = arc.open('./shapefiles/core_multi.shp')
-m2 = arc.select(m)
-m3 = arc.data2sp(m2)
-m4 = spTransform(m3, CRS(proj4string(spd)))
+permits=openSPDF(shapefilepath = './shapefiles/permits.shp')
+
+predpts=openSPDF(shapefilepath = './shapefiles/predicted.shp')
+
+studyarea=openSPDF(shapefilepath = './shapefiles/core_multi.shp')
+
+nbrhoods=openSPDF(shapefilepath = './shapefiles/core.shp')
+
+outercore=openSPDF(shapefilepath = './shapefiles/outercore.shp')
+
+```
+
+Create KDE estimates of training data distrbution
+```{r}
+kde.training = ptDensity(spd,outercore)
+spd.yes=subset(spd,V3==1)
+spd.no=subset(spd,V3==0)
+kde.training.yes = ptDensity(spd.yes,outercore)
+kde.training.no = ptDensity(spd.no,outercore)
+
+# Create class breaks
+cint=densBreaks(kde.training,9,'equal')
+
+# Make color palette
+my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
+
+```
+
+```{r kdetrain, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:densf}Distribution of GSV dates within accessed GSV imagery"}
+# makeplot
+#windows(width=8,height=11,xpinch=300,ypinch=300)
+par(mfrow=c(3,1),mai=c(0,0,0,0),bty="n")
+plot(kde.training, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"A",cex=3)
+plot(kde.training.yes, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"B",cex=3)
+plot(kde.training.no, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"C",cex=3)
 ```
 
 
 ```{r comparemodelpermit, echo=TRUE,eval=FALSE}
 # Calculate KDE on training locations & convert to raster obj
-kde = density.ppp(as.ppp(spd),
-                  eps = 80,
-                  kernel = 'quartic',
-                  sigma = 750)
+kde = ptDensity(spd,studyarea)
 
 kde = raster(kde)
 
@@ -158,36 +230,6 @@ plot(r3, breaks=cint$brks,col = my.palette)
 
 
 ```
-KDE Function
-```{r functions}
-ptDensity = function(predpts, sarea) {
-  # Calculate KDE
-  kdepredict = density.ppp(as.ppp(predpts),
-  eps = 100,
-  kernel = 'gaussian',
-  sigma = 200)
-  kdepredict = raster(kdepredict)
-  kdepredict <- crop(kdepredict, extent(studyarea))
-  kdepredict <- mask(kdepredict, studyarea)
-  return(kdepredict)
-}
-
-
-densBreaks = function(kdepredict,n,style) {
-  vals = values(kdepredict)
-  vals = vals[!is.na(vals)]
-  cint = classIntervals(vals, n = n, style = style)
-  return(cint)
-}
-
-openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
-  permitpts = arc.open(shapefilepath)
-  permitpts.a = arc.select(permitpts)
-  permitpts.b = arc.data2sp(permitpts.a)
-  permits = spTransform(permitpts.b, outCS)
-  return(permits)
-}
-```
 
 ##EDA: Timespan of GSV
 
@@ -213,7 +255,8 @@ with open(r"F:\OneDrive\DeepMapping\rproject\gsvdatesspan.csv", "w") as f:
             print(dlist,min(dlist))
 ```
 
-##Load GSV dates, create SPDF, assign and project.
+#GSV panorama locations
+Load GSV dates, create SPDF, assign and project.
 ```{r gsvdates}
 # Get GSV date list
 x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = FALSE)
@@ -223,12 +266,12 @@ names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
 gsvdates = SpatialPointsDataFrame(cbind(x = x$LONG, y = x$LAT), x)
 
 # Assign NAD83
-cr = CRS("+init=epsg:4269")
-proj4string(gsvdates) = cr
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates) = srNAD83
 
 # Reproject to MTM9 NAD83
-cr = CRS("+init=epsg:32189")
-gsvdates = spTransform(gsvdates, cr)
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates = spTransform(gsvdates, srMTM9)
 
 y2007=subset(gsvdates,OLDEST==2007)
 ```
@@ -241,17 +284,9 @@ The \ref{fig:figs} indicates the approximate 2-year update frequency for GSV ima
 
 ##Results: KDE of permits and predictions
 ```{r aname}
-arc.check_product()
-
-permits=openSPDF(shapefilepath = './shapefiles/permits.shp')
-
-predpts=openSPDF(shapefilepath = './shapefiles/predicted.shp')
 
 # Get predictions after 2011
 predpts=subset(predpts,YEAR2>=2011)
-
-studyarea=openSPDF(shapefilepath = './shapefiles/core_multi.shp')
-nbrhoods=openSPDF(shapefilepath = './shapefiles/core.shp')
 
 permits@bbox=studyarea@bbox
 predpts@bbox=studyarea@bbox
@@ -297,10 +332,6 @@ par(usr=c(0,1,0,1))
 text(0.05,0.9,"B",cex=3)
 savePlot("f:/test.png",type="png")
 ```
-
-
-
-
 
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:densf}.
 
