@@ -145,7 +145,7 @@ outercore=openSPDF(shapefilepath = './shapefiles/outercore.shp')
 ```
 
 Create KDE estimates of training data distrbution
-```{r}
+```{r traindistribution}
 kde.training = ptDensity(spd,outercore)
 spd.yes=subset(spd,V3==1)
 spd.no=subset(spd,V3==0)
