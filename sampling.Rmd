@@ -28,9 +28,9 @@ arc.check_product()
 
 ###Functions
 ```{r functions}
-ptDensity = function(predpts, sarea) {
+ptDensity = function(a, sarea) {
   # Calculate KDE
-  kdepredict = density.ppp(as.ppp(predpts),
+  kdepredict = density.ppp(as.ppp(a),
   eps = 100,
   kernel = 'gaussian',
   sigma = 200)
@@ -49,7 +49,7 @@ densBreaks = function(kdepredict,n,style) {
 }
 
 openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
-  permitpts.b=readOGR(shapefilepath)
+  permitpts.b=readOGR(shapefilepath)#,stringsAsFactors = FALSE)
   # arc.check_product()
   # permitpts = arc.open(shapefilepath)
   # permitpts.a = arc.select(permitpts)
@@ -61,7 +61,7 @@ openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
 
 #Training data distribution
 Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9.  Also open studyarea polygons.
-```{r trainingdata,eval=FALSE, message=FALSE}
+```{r trainingdata, message=FALSE}
 # Get training data list
 x = read.delim("./rproject/retrain.txt",sep = " ",header = FALSE)
 
@@ -129,7 +129,12 @@ m4 = openSPDF(shapefilepath = './shapefiles/core_multi.shp')
 
 permits=openSPDF(shapefilepath = './shapefiles/permits.shp')
 
+options(stringsAsFactors = FALSE)
 predpts=openSPDF(shapefilepath = './shapefiles/predicted.shp')
+predpts@data$YEAR1=as.numeric(predpts@data$YEAR1)
+predpts@data$YEAR2=as.numeric(predpts@data$YEAR2)
+predpts@data$PRED=as.numeric(predpts@data$PRED)
+options(stringsAsFactors = TRUE)
 
 studyarea=openSPDF(shapefilepath = './shapefiles/core_multi.shp')
 
@@ -149,7 +154,8 @@ kde.training.no = ptDensity(spd.no,outercore)
 
 # Create class breaks
 cint=densBreaks(kde.training,9,'equal')
-
+cint2=densBreaks(kde.training.yes,9,'equal')
+cint3=densBreaks(kde.training.no,9,'equal')
 # Make color palette
 my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
 
@@ -163,16 +169,33 @@ plot(kde.training, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
 plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
 par(usr=c(0,1,0,1))
 text(0.05,0.9,"A",cex=3)
-plot(kde.training.yes, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(kde.training.yes, breaks=cint2$brks,col = my.palette,axes=FALSE,legend=FALSE)
 plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
 par(usr=c(0,1,0,1))
 text(0.05,0.9,"B",cex=3)
-plot(kde.training.no, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(kde.training.no, breaks=cint3$brks,col = my.palette,axes=FALSE,legend=FALSE)
 plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
 par(usr=c(0,1,0,1))
 text(0.05,0.9,"C",cex=3)
 ```
-
+```{r kdetrain_fig, eval=TRUE,echo=FALSE}
+# makeplot
+windows(width=8,height=11,xpinch=300,ypinch=300)
+par(mfrow=c(3,1),mai=c(0,0,0,0),bty="n")
+plot(kde.training, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"A",cex=3)
+plot(kde.training.yes, breaks=cint2$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"B",cex=3)
+plot(kde.training.no, breaks=cint3$brks,col = my.palette,axes=FALSE,legend=FALSE)
+plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+par(usr=c(0,1,0,1))
+text(0.05,0.9,"C",cex=3)
+savePlot("f:/KDE_TRAINING_DISTRIB.png",type="png")
+```
 
 ```{r comparemodelpermit, echo=TRUE,eval=FALSE}
 # Calculate KDE on training locations & convert to raster obj
@@ -284,19 +307,19 @@ The \ref{fig:figs} indicates the approximate 2-year update frequency for GSV ima
 
 ##Results: KDE of permits and predictions
 ```{r aname}
-
 # Get predictions after 2011
-predpts=subset(predpts,YEAR2>=2011)
+predpts.gt2011=subset(predpts,YEAR2>=2011)
 
 permits@bbox=studyarea@bbox
-predpts@bbox=studyarea@bbox
+predpts.gt2011@bbox=studyarea@bbox
 
 # Calculate KDE on training locations & convert to raster obj
-kdepredict=ptDensity(predpts,studyarea)
+kdepredict=ptDensity(predpts.gt2011,studyarea)
 kdepermits=ptDensity(permits,studyarea)
 
 # Create class breaks
 cint=densBreaks(kdepredict,9,'equal')
+
 
 # Make color palette
 my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
@@ -330,7 +353,7 @@ plot(kdepermits, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
 plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
 par(usr=c(0,1,0,1))
 text(0.05,0.9,"B",cex=3)
-savePlot("f:/test.png",type="png")
+savePlot("f:/figure_pred_vs_permit.png",type="png")
 ```
 
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:densf}.
