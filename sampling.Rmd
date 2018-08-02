@@ -1,9 +1,9 @@
 ---
 output:
+  pdf_document:
+    fig_caption: yes
   html_document:
     df_print: paged
-    fig_caption: yes
-  pdf_document:
     fig_caption: yes
   word_document: 
     fig_caption: yes
@@ -15,7 +15,7 @@ library(reticulate)
 use_python("c:/programdata/anaconda3/python.exe")
 ```
 
-Import libraries,
+#Import required libraries
 ```{r message=FALSE}
 library(spatstat)
 library(maptools)
@@ -24,8 +24,7 @@ library(raster)
 library(dplyr)
 library(classInt)
 library(rgdal)
-library(arcgisbinding)
-arc.check_product()
+library(fields)
 ```
 
 ###Functions
@@ -163,41 +162,32 @@ my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255
 
 ```
 
-```{r kdetrain, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:densf}a)Distribution of all GSV training images; b) only training pairs that are positive for change; c) only pairs that are negative for change. "}
+```{r kdetrain, fig.width=8,fig.height=4,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; b) only training pairs that are positive for change; c) only pairs that are negative for change."}
 # makeplot
 #windows(width=8,height=11,xpinch=300,ypinch=300)
 par(mfrow=c(3,1),mai=c(0,0,0,0),bty="n")
-plot(kde.training, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-par(usr=c(0,1,0,1))
-text(0.4,0.9,"A",cex=2)
-plot(kde.training.yes, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-par(usr=c(0,1,0,1))
-text(0.4,0.9,"B",cex=2)
-plot(kde.training.no, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-par(usr=c(0,1,0,1))
-text(0.4,0.9,"C",cex=2)
+p.plot=function(tras,cbreaks,outercore,letter){
+  plot(tras, breaks=cbreaks$brks,col = my.palette,axes=FALSE,legend=FALSE)
+  plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+  par(usr=c(0,1,0,1))
+  text(0.1,0.9,letter,cex=2)
+}
+p.plot(kde.training,cint,outercore,"A")
+p.plot(kde.training.yes,cint2,outercore,"B")
+p.plot(kde.training.no,cint3,outercore,"C")
 ```
+
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:kdetrain}.
 
-```{r kdetrain_fig, eval=TRUE,echo=FALSE}
+```{r kdetrain_fig, eval=TRUE,echo=FALSE,message=FALSE}
 # makeplot
 png("./figures/KDE_TRAINING_DISTRIB.png",units="in",width=7,height=12,res=300)
 par(mfrow=c(3,1),mai=c(0.1,0,0.1,0),bty="n")
-plot(kde.training, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-par(usr=c(0,1,0,1))
-text(0.1,0.9,"A",cex=2)
-plot(kde.training.yes, breaks=cint2$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-par(usr=c(0,1,0,1))
-text(0.1,0.9,"B",cex=2)
-plot(kde.training.no, breaks=cint3$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-par(usr=c(0,1,0,1))
-text(0.1,0.9,"C",cex=2)
+
+p.plot(kde.training,cint,outercore,"A")
+p.plot(kde.training.yes,cint2,outercore,"B")
+p.plot(kde.training.no,cint3,outercore,"C")
+
 dev.off()
 ```
 
@@ -229,7 +219,7 @@ with open(r"F:\OneDrive\DeepMapping\rproject\gsvdatesspan.csv", "w") as f:
 
 #GSV panorama locations
 Load GSV dates, create SPDF, assign and project.
-```{r gsvdates}
+```{r gsvdates, fig.width=7,fig.height=9.5,fig.cap="\\label{fig:gsvdates}Spatial distribution of the oldest date found at each location where GSV images were accessed."}
 # Get GSV date list
 x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = FALSE)
 names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
@@ -245,14 +235,26 @@ proj4string(gsvdates) = srNAD83
 srMTM9 = CRS("+init=epsg:32189")
 gsvdates = spTransform(gsvdates, srMTM9)
 
-y2007=subset(gsvdates,OLDEST==2007)
+#win.graph(8.5,11)
+par(mfrow=c(5,2),mai=c(0,0,0,0),bty="n")
+for(i in seq(2007,2016,1)){
+  y2007=subset(gsvdates,OLDEST==i)
+  plot(studyarea)
+  plot(y2007,pch=16,cex=0.5,add=TRUE)
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  text(0.1,0.9,i,cex=2)
+}
+
+
+
 ```
 Examine date distribution
-```{r figs, fig.width=7,fig.height=6,fig.cap="\\label{fig:figs}Distribution of GSV dates within accessed GSV imagery"}
-hist(gsvdates$OLDEST,xlab="Date",ylab="Frequency",main="")
+```{r histdates, fig.width=7,fig.height=6,fig.cap="\\label{fig:histdates}Distribution of the oldest GSV date accessed at a location"}
+hist(gsvdates$OLDEST,xlab="Date",ylab="Number of GSV locations",main="")
 ```
 
-The \ref{fig:figs} indicates the approximate 2-year update frequency for GSV imagery.
+Both Figure \ref{fig:histdates} and \ref{fig:gsvdates} provide evidence of an approximate 2-3 year update frequency of GSV imagery. Both distributions also indicate that over the 10-year period there has been a decreasing overall investement in the total number of images captured at each location. That decreasing trend is suggestive of perhaps an evolving collection strategy that is informed by satellite imagery, different goals for the product or less investment in the resources Google assigns to established collections of GSV imagery.  Moreover, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdates} shows that only the region of our current study area contains GSV imagery in 2007.
 
 #Results
 ##Comparison between SCNN-FC-8 predictions and building permits
@@ -270,131 +272,65 @@ kdepermits=ptDensity(permits,studyarea)
 # Create class breaks
 cint=densBreaks(kdepredict,9,'equal')
 
-
 # Make color palette
-my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
+my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(10)
 ```
 Plot comparison between permits and model results.
 
-```{r plot_comparison_model_permits, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:plot_comparison_model_permits}Distribution of GSV dates within accessed GSV imagery"}
-
-par(mfrow = c(1, 2),
-    mai = c(0, 0, 0, 0),
-    bty = "n",oma=c(0,0,0,4))
-
-
-plot(
-  kdepredict,
-  breaks = cint$brks,
-  col = my.palette,
-  axes = FALSE,
-  legend = FALSE
-)
-
-plot(
-  nbrhoods,
-  add = TRUE,
-  border = rgb(144 / 255, 144 / 255, 144 / 255, 1),
-  lwd = 0.5
-)
-scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
-par(usr = c(0, 1, 0, 1))
-
-text(0.05, 0.9, "A", cex = 3)
-
-plot(
-  kdepermits,
-  breaks = cint$brks,
-  col = my.palette,
-  axes = FALSE,
-  legend = FALSE
-)
-
-plot(
-  nbrhoods,
-  add = TRUE,
-  border = rgb(144 / 255, 144 / 255, 144 / 255, 1),
-  lwd = 0.5
-)
-
-par(usr = c(0, 1, 0, 1))
-text(0.05, 0.9, "B", cex = 3)
-set.panel(1,1)
-par(oma=c(0,0,0,1))
-tokmsq=1000^2
-r.range <- c(minValue(kdepredict), maxValue(kdepredict))*tokmsq
-
-# Add legend
-set.panel(1,1)
-par(oma=c(0,0,0,1))
-tokmsq=1000^2
-r.range <- c(minValue(kdepredict), maxValue(kdepredict))*tokmsq
-plot(
-  kdepredict,
-  legend.only = TRUE,
-  breaks = pretty(r.range),
-  col = my.palette,
-  axes = FALSE,
-  legend.width = 1,
-  legend.shrink = 0.35,
-  horizontal = FALSE,zlim=pretty(r.range),
-  axis.args = list(cex.axis = 0.5),
-  legend.args = list(
-    text = expression(lambda*phantom(" ")(s[italic('x,y')] %.% km^-2)),
-    side = 4,
-    font = 2,
-    line = 2,
-    cex = 0.6
+```{r comparemodelpermit, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:comparemodelpermit}Comparison of SCNN-FC-8 predictions (a) with building permits (b)."}
+plot.comparemodel=function(kdepredict,kdepermits,my.palette){
+  set.panel()
+  par(mfrow=c(1,2),mai=c(0,0,0,0),oma=c(0,0,0,4),bty="n")
+  plot(kdepredict, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+  plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+  scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  par(usr=c(0,1,0,1))
+  text(0.05,0.9,"A",cex=2)
+  plot(kdepermits, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
+  plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+  
+  par(usr=c(0,1,0,1))
+  text(0.05,0.9,"B",cex=2)
+  
+  # Add legend
+  set.panel(1,1)
+  par(oma=c(0,0,0,1))
+  tokmsq=1000^2
+  r.range <- c(minValue(kdepredict), maxValue(kdepredict))*tokmsq
+  plot(
+    kdepredict,
+    legend.only = TRUE,
+    breaks = round(cint$brks*tokmsq,digits=0),
+    col = my.palette,
+    axes = FALSE,
+    legend.width = 1,
+    legend.shrink = 0.45,
+    horizontal = FALSE,
+    axis.args = list(cex.axis = 0.5),
+    legend.args = list(
+      text = expression(lambda*phantom(" ")(s[italic('x,y')] %.% km^-2)),
+      side = 4,
+      font = 2,
+      line = 2,
+      cex = 0.6
+      )
     )
-  )
-```
-The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:plot_comparison_model_permits}.
+}
 
-```{r, savedensfplot, eval=TRUE, echo=FALSE}
+plot.comparemodel(kdepredict,kdepermits,my.palette)
+```
+
+The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:comparemodelpermit}.
+
+```{r, savedensfplot, eval=FALSE, echo=FALSE,message=FALSE}
 # makeplot
 png("./figures/figure_pred_vs_permit.png",units="in",width=11,height=4,res=300)
-set.panel()
-par(mfrow=c(1,2),mai=c(0,0,0,0),oma=c(0,0,0,4),bty="n")
-plot(kdepredict, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
-par(usr=c(0,1,0,1))
-text(0.05,0.9,"A",cex=2)
-plot(kdepermits, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-
-par(usr=c(0,1,0,1))
-text(0.05,0.9,"B",cex=2)
-
-# Add legend
-set.panel(1,1)
-par(oma=c(0,0,0,1))
-tokmsq=1000^2
-r.range <- c(minValue(kdepredict), maxValue(kdepredict))*tokmsq
-plot(
-  kdepredict,
-  legend.only = TRUE,
-  breaks = pretty(r.range),
-  col = my.palette,
-  axes = FALSE,
-  legend.width = 1,
-  legend.shrink = 0.35,
-  horizontal = FALSE,zlim=pretty(r.range),
-  axis.args = list(cex.axis = 0.5),
-  legend.args = list(
-    text = expression(lambda*phantom(" ")(s[italic('x,y')] %.% km^-2)),
-    side = 4,
-    font = 2,
-    line = 2,
-    cex = 0.6
-    )
-  )
-
+plot.comparemodel(kdepredict,kdepermits,my.palette)
 dev.off()
 ```
 
 
-```{r comparemodelpermit, echo=FALSE,eval=FALSE}
+```{r thinset, echo=FALSE,eval=FALSE}
 # Calculate KDE on training locations & convert to raster obj
 kde = ptDensity(spd,studyarea)
 
