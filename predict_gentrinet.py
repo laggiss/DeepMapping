@@ -17,7 +17,7 @@ K.set_image_dim_ordering('tf')
 
 # Variable corresponding to the images size in pixels. 224 is the usual value
 IMG_SIZE = 224
-model_save = "f:/deepmappingdata/exclusiontrain/exclusionmod_6epocs.h5"#'F:/DeepMappingData/new/vgg19_siamese_base_train.h5'
+model_save = "f:/deepmappingdata/exclusiontrain2/vgg19_siamese_base_train.h5"#'F:/DeepMappingData/new/vgg19_siamese_base_train.h5'
 
 with tf.device('/gpu:0'):
 
@@ -133,7 +133,7 @@ with tf.device('/gpu:0'):
 
         concatenation = np.concatenate((loc_year, pred), axis=1)
 
-        np.save('f:/preds/predval/classification_results_all_images_%i.h5' % portion, concatenation)
+        np.save('f:/preds/exclusion2/classification_results_all_images_%i.h5' % portion, concatenation)
 
     # test_array_X = 'c:/gist/testarrayX.npy'
     # test_array_Y = 'c:/gist/testarrayY.npy'
@@ -142,8 +142,8 @@ with tf.device('/gpu:0'):
     # ev = classification_model.evaluate([X_test[:, 0], X_test[:, 1]], y_test, batch_size=24)
 
 ## reconsrruct
-results = glob.glob('f:/preds/predval' + '/*.npy')
-with open("f:/models/fullres_replicate_exclude_6e.csv", 'w') as f:
+results = glob.glob('f:/preds/exclusion2' + '/*.npy')
+with open("f:/models/fullres_replicate_exclude_6f.csv", 'w') as f:
     f.write('LAT,LONG,YEAR1,YEAR2,PRED\n')
     for item in results:
         print("item x")
@@ -152,8 +152,8 @@ with open("f:/models/fullres_replicate_exclude_6e.csv", 'w') as f:
             stringout=','.join(map(str, row))
             f.write("{}\n".format(stringout))
 
-with open("f:/models/fullres_replicate_onesonly_6e.csv", "w") as o:
-    with open("f:/models/fullres_replicate_exclude_6e.csv", 'r') as f:
+with open("f:/models/fullres_replicate_onesonly_6f.csv", "w") as o:
+    with open("f:/models/fullres_replicate_exclude_6f.csv", 'r') as f:
         f.__next__()
         o.write('LAT,LONG,YEAR1,YEAR2,PRED\n')
         for i in f:
