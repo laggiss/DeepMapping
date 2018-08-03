@@ -439,12 +439,30 @@ plot.time()
 
 ```
 
+
 ```{r, savetimeplot, eval=TRUE, echo=FALSE,message=FALSE}
 # makeplot
 png("./figures/predovertime.png",units="in",width=6,height=9,res=300)
 plot.time()
 dev.off()
 ```
+
+
+
+
+```{r}
+predex=read.csv("F:/models/fullres_replicate_onesonly_6f.csv")
+
+
+```
+
+
+
+
+
+
+
+#Other stuff
 ```{r thinset, echo=FALSE,eval=FALSE}
 # Calculate KDE on training locations & convert to raster obj
 kde = ptDensity(spd,studyarea)
