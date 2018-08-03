@@ -32,7 +32,7 @@ library(fields)
 ptDensity = function(a, sarea) {
   # Calculate KDE
   kdepredict = density.ppp(as.ppp(a),
-  eps = 10,
+  eps = 200,
   kernel = 'gaussian',
   sigma = 200)
   kdepredict = raster(kdepredict)
@@ -43,8 +43,11 @@ ptDensity = function(a, sarea) {
 
 
 densBreaks = function(kdepredict,n,style) {
-  vals = values(kdepredict)
+  if(!(is.numeric(kdepredict)=="numeric")) {
+    vals = values(kdepredict)
   vals = vals[!is.na(vals)]
+  }
+  else{vals=kdepredict}
   cint = classIntervals(vals, n = n, style = style)
   return(cint)
 }
@@ -190,10 +193,6 @@ p.plot(kde.training.no,cint3,outercore,"C")
 dev.off()
 ```
 
-
-
-
-
 Get oldest date for GSV imagery, youngest date and span
 ```{python py, eval=FALSE}
 import glob
@@ -256,6 +255,46 @@ hist(gsvdates$OLDEST,xlab="Date",ylab="Number of GSV locations",main="")
 Both Figure \ref{fig:histdates} and \ref{fig:gsvdates} provide evidence of an approximate 2-3 year update frequency of GSV imagery. Both distributions also indicate that over the 10-year period there has been a decreasing overall investement in the total number of images captured at each location. That decreasing trend is suggestive of perhaps an evolving collection strategy that is informed by satellite imagery, different goals for the product or less investment in the resources Google assigns to established collections of GSV imagery.  Moreover, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdates} shows that only the region of our current study area contains GSV imagery in 2007.
 
 #Results
+##Model Training curves
+```{python valcurves, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:valcurves}Training and validation of SCNN-FC-8."}
+import numpy as np
+import os
+os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = 'c:/programdata/Anaconda3/Library/plugins/platforms'
+def plot_loss(history_saved):
+    import matplotlib.pyplot as plt
+    mdict = np.load(history_saved)
+    mdict = mdict.tolist()
+    plt.figure(41, figsize=(12, 8), dpi=150)
+    loss = mdict['loss']
+    val_loss = mdict['val_loss']
+    epochs = range(1, len(loss) + 1)
+    plt.subplot(211)
+    plt.plot(epochs, loss, 'b', label='Training loss', color='r')
+    plt.plot(epochs, val_loss, 'b', label='Validation loss')
+    plt.title('Training and validation loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.subplot(212)
+    acc = mdict['binary_accuracy']
+    val_acc = mdict['val_binary_accuracy']
+    plt.plot(epochs, acc, 'b', label='Training acc', color='r')
+    plt.plot(epochs, val_acc, 'b', label='Validation acc')
+    plt.title('Training and validation accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.show()
+    
+mdict = np.load("f:/deepmappingdata/mdict14try_vgg_norm.npy")
+history_continue_training="f:/deepmappingdata/mdict14try_vgg_norm.npy"
+mdict = mdict.tolist()
+max(mdict['val_binary_accuracy'])
+plot_loss(history_continue_training)
+```
+
+
+
 ##Comparison between SCNN-FC-8 predictions and building permits
 ```{r aname}
 # Get predictions after 2011
@@ -328,7 +367,84 @@ plot.comparemodel(kdepredict,kdepermits,my.palette)
 dev.off()
 ```
 
+#SCNN-FC-8 predictions over time
+```{r timeseries, eval=TRUE, fig.width=6,fig.height=9,fig.cap="\\label{fig:timeseries}Comparison of SCNN-FC-8 predictions over time (a) 2009 (b) 2012 (c) 2013-2016."}
+  set.panel()
+plot.time=function(){
+  tokmsq=1000000
+  plot.t=function(predpts,year){
+    # Get predictions
+    predpts.gt2009=subset(predpts,YEAR2==year)
+    predpts.gt2009@bbox=studyarea@bbox
+    # Calculate KDE on training locations & convert to raster obj
+    kde=ptDensity(predpts.gt2009,studyarea)
+    return(kde*tokmsq)
+  }
+  
+  par(mfrow=c(3,1),mai=c(0,0,0,.2),oma=c(0,0,0,4),bty="n")
+  # Create class breaks
+  blist=list()
+  valvec=vector("numeric")
+  
+  for(i in c(2009,2012,2016)){
+    blist[[as.character(i)]]=plot.t(predpts,i)
+    #blist[[i]]
+    # tvals=values(blist[[i]])
+    # valvec=c(valvec,tvals)
+  }
 
+  # Make color palette
+  my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(10)
+  lablist=list()
+  lablist[['2009']]="A"
+  lablist[['2012']]="B"
+  lablist[['2016']]="C"
+  
+  for(i in c('2009','2012','2016')){
+    #valvec=valvec[!is.na(valvec)]*tokmsq
+    #par(oma=c(0,0,0,4))
+    cintx=densBreaks(blist[[i]],9,'equal')
+    plot(blist[[i]], breaks=cintx$brks,col = my.palette,axes=FALSE,legend=FALSE)
+    plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+    if(i==2009) scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+    par(usr=c(0,1,0,1))
+    text(0.05,0.9,lablist[[i]],cex=2)
+    #set.panel(1,1)
+  #par(oma=c(0,0,0,1))
+  plot(
+    blist[[i]],
+    legend.only = TRUE,
+    add=TRUE,
+    breaks = round(cintx$brks,digits=0),
+    col = my.palette,
+    axes = FALSE,
+    legend.width = 1,
+    legend.shrink = 0.45,
+    horizontal = FALSE,
+    axis.args = list(cex.axis = 0.5),
+    legend.args = list(
+      text = expression(lambda*phantom(" ")(s[italic('x,y')] %.% km^-2)),
+      side = 4,
+      font = 2,
+      line = 2,
+      cex = 0.6
+      )
+    )
+  }
+  # Add legend
+ 
+}
+
+plot.time()
+
+```
+
+```{r, savetimeplot, eval=TRUE, echo=FALSE,message=FALSE}
+# makeplot
+png("./figures/predovertime.png",units="in",width=6,height=9,res=300)
+plot.time()
+dev.off()
+```
 ```{r thinset, echo=FALSE,eval=FALSE}
 # Calculate KDE on training locations & convert to raster obj
 kde = ptDensity(spd,studyarea)
@@ -449,4 +565,21 @@ r3 <- mask(r2, m4)
 plot(r3)
 plot(m3, add=TRUE, lwd=2)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
