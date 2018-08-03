@@ -159,7 +159,6 @@ cint2=densBreaks(kde.training.yes,9,'kmeans')
 cint3=densBreaks(kde.training.no,9,'kmeans')
 # Make color palette
 my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
-
 ```
 
 ```{r kdetrain, fig.width=8,fig.height=4,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; b) only training pairs that are positive for change; c) only pairs that are negative for change."}
