@@ -32,7 +32,7 @@ library(fields)
 ptDensity = function(a, sarea) {
   # Calculate KDE
   kdepredict = density.ppp(as.ppp(a),
-  eps = 200,
+  eps = 10,
   kernel = 'gaussian',
   sigma = 200)
   kdepredict = raster(kdepredict)
@@ -450,10 +450,20 @@ dev.off()
 
 
 
-```{r}
+```{r excludetrain, eval=TRUE, fig.width=6,fig.height=9,fig.cap="\\label{fig:excludetrain}Comparison of SCNN-FC-8 predictions (a) using all training data (b) using only training data outside of 5 neighbourhoods"}
 predex=read.csv("F:/models/fullres_replicate_onesonly_6f.csv")
+predexspd = SpatialPointsDataFrame(cbind(x = as.numeric(predex$LONG), y = as.numeric(predex$LAT)), predex)
 
+# Assign NAD83
+cr = CRS("+init=epsg:4269")
+proj4string(predexspd) = cr
 
+# Reproject to MTM9 NAD83
+cr = CRS("+init=epsg:32189")
+predexspd = spTransform(predexspd, cr)
+predexkde=ptDensity(predexspd,studyarea)
+cint=densBreaks(predexkde,9,'equal')
+plot.comparemodel(kdepredict,predexkde,my.palette)
 ```
 
 
