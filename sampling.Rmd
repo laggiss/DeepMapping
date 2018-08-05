@@ -523,12 +523,20 @@ dev.off()
 spd2o=spdo
 spd2o$X=coordinates(spd2o)[,1]
 spd2o$Y=coordinates(spd2o)[,2]
+spd2o=spd2o@data
 ```
 
-```{python}
-import pandas as pd
-p=r.spd2o@Data
-
+```{python engine.path="C:/programdata/anaconda3/python.exe"}
+import os
+import matplotlib.pyplot as plt
+import pandas
+import seaborn as sns
+p=r.spd2o
+p.to_pickle("./rproject/dummy.pkl")
+#print(p.head)
+print(p.X)
+sns.kdeplot(p.X, p.Y, cmap="Blues", shade=True, shade_lowest=True, )
+plt.show()
 ```
 
 
