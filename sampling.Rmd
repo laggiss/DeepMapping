@@ -12,6 +12,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(reticulate)
+knitr::knit_engines$set(python = reticulate::eng_python)
 use_python("c:/programdata/anaconda3/python.exe")
 ```
 
@@ -32,7 +33,7 @@ library(fields)
 ptDensity = function(a, sarea) {
   # Calculate KDE
   kdepredict = density.ppp(as.ppp(a),
-  eps = 10,
+  eps = 200,
   kernel = 'gaussian',
   sigma = 200)
   kdepredict = raster(kdepredict)
@@ -124,6 +125,37 @@ proj4string(spd) = srNAD83
 # Reproject to MTM9 NAD83
 srMTM9 = CRS("+init=epsg:32189")
 spd = spTransform(spd, srMTM9)
+
+# Read in the replicated model run
+x1=read.csv("./rproject/fullres_replicate.csv")
+x1=x1[x1$PRED==1,]
+
+spdrep = SpatialPointsDataFrame(cbind(x = as.numeric(x1$LONG), y = as.numeric(x1$LAT)), x1)
+
+# Assign NAD83
+srNAD83= CRS("+init=epsg:4269")
+proj4string(spdrep) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+spdrep = spTransform(spdrep, srMTM9)
+
+# Read in the original model run
+
+xo=read.csv("./rproject/fullres.csv")
+xo=xo[xo$PRED==1,]
+
+spdo = SpatialPointsDataFrame(cbind(x = as.numeric(xo$LONG), y = as.numeric(xo$LAT)), xo)
+
+# Assign NAD83
+srNAD83= CRS("+init=epsg:4269")
+proj4string(spdo) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+spdo = spTransform(spdo, srMTM9)
+
+
 
 # Make unique point file for probabilities
 #spdU=remove.duplicates(spd)
@@ -316,30 +348,31 @@ my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255
 Plot comparison between permits and model results.
 
 ```{r comparemodelpermit, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:comparemodelpermit}Comparison of SCNN-FC-8 predictions (a) with building permits (b)."}
-plot.comparemodel=function(kdepredict,kdepermits,my.palette){
+plot.comparemodel=function(kde1,kde2,plotintervals,colorpal,nbrpoly){
   set.panel()
   par(mfrow=c(1,2),mai=c(0,0,0,0),oma=c(0,0,0,4),bty="n")
-  plot(kdepredict, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-  plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-  scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  plot(kde1, breaks=plotintervals$brks,col = colorpal,axes=FALSE,legend=FALSE)
+  plot(nbrpoly,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+  scalebar(d = 5000, 
+           xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
   par(usr=c(0,1,0,1))
   text(0.05,0.9,"A",cex=2)
-  plot(kdepermits, breaks=cint$brks,col = my.palette,axes=FALSE,legend=FALSE)
-  plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-
+  plot(kde2, breaks=plotintervals$brks,col = colorpal,axes=FALSE,legend=FALSE)
+  plot(nbrpoly,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+  
   par(usr=c(0,1,0,1))
   text(0.05,0.9,"B",cex=2)
-
+  
   # Add legend
   set.panel(1,1)
   par(oma=c(0,0,0,1))
   tokmsq=1000^2
-  r.range <- c(minValue(kdepredict), maxValue(kdepredict))*tokmsq
+  r.range <- c(minValue(kde1), maxValue(kde1))*tokmsq
   plot(
-    kdepredict,
+    kde1,
     legend.only = TRUE,
-    breaks = round(cint$brks*tokmsq,digits=0),
-    col = my.palette,
+    breaks = round(plotintervals$brks*tokmsq,digits=0),
+    col = colorpal,
     axes = FALSE,
     legend.width = 1,
     legend.shrink = 0.45,
@@ -351,11 +384,11 @@ plot.comparemodel=function(kdepredict,kdepermits,my.palette){
       font = 2,
       line = 2,
       cex = 0.6
-      )
     )
+  )
 }
 
-plot.comparemodel(kdepredict,kdepermits,my.palette)
+plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 ```
 
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:comparemodelpermit}.
@@ -363,7 +396,7 @@ The pattern of building permits and SCNN-FC-8 predictions are very similar in Fi
 ```{r, savedensfplot, eval=FALSE, echo=FALSE,message=FALSE}
 # makeplot
 png("./figures/figure_pred_vs_permit.png",units="in",width=11,height=4,res=300)
-plot.comparemodel(kdepredict,kdepermits,my.palette)
+plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 dev.off()
 ```
 
@@ -450,8 +483,8 @@ dev.off()
 
 
 
-```{r excludetrain, eval=TRUE, fig.width=6,fig.height=9,fig.cap="\\label{fig:excludetrain}Comparison of SCNN-FC-8 predictions (a) using all training data (b) using only training data outside of 5 neighbourhoods"}
-predex=read.csv("F:/models/fullres_replicate_onesonly_6f.csv")
+```{r excludetrain, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:excludetrain}Comparison of SCNN-FC-8 predictions (a) using all training data (b) using only training data outside of 5 neighbourhoods"}
+predex=read.csv("./rproject/fullres_replicate_onesonly_6f.csv")
 predexspd = SpatialPointsDataFrame(cbind(x = as.numeric(predex$LONG), y = as.numeric(predex$LAT)), predex)
 
 # Assign NAD83
@@ -461,15 +494,42 @@ proj4string(predexspd) = cr
 # Reproject to MTM9 NAD83
 cr = CRS("+init=epsg:32189")
 predexspd = spTransform(predexspd, cr)
+predexspd@bbox=studyarea@bbox
 predexkde=ptDensity(predexspd,studyarea)
 cint=densBreaks(predexkde,9,'equal')
-plot.comparemodel(kdepredict,predexkde,my.palette)
+plot.comparemodel(kdepredict,predexkde,cint,my.palette,nbrhoods)
+
 ```
 
 
+```{r run2, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:run2}Comparison of SCNN-FC-8 predictions (a) using first run (b) using second run"}
+spdrep@bbox=studyarea@bbox
+spdo@bbox=studyarea@bbox
+kderun1=ptDensity(spdo,studyarea)
+kderun2=ptDensity(spdrep,studyarea)
+cintn=densBreaks(kderun2,9,'equal')
+plot.comparemodel(kderun1,kderun2,cintn,my.palette,nbrhoods)
+
+```
+
+```{r}
+png("./figures/figure_run1_vs_run2.png",units="in",width=11,height=4,res=300)
+plot.comparemodel(kderun1,kderun2,cintn,my.palette,nbrhoods)
+dev.off()
 
 
+```
+```{r}
+spd2o=spdo
+spd2o$X=coordinates(spd2o)[,1]
+spd2o$Y=coordinates(spd2o)[,2]
+```
 
+```{python}
+import pandas as pd
+p=r.spd2o@Data
+
+```
 
 
 #Other stuff
