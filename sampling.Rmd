@@ -27,6 +27,7 @@ library(classInt)
 library(rgdal)
 library(fields)
 library(Hmisc)
+library(RColorBrewer)
 ```
 
 ###Functions
@@ -188,40 +189,70 @@ spd.no=subset(spd,V3==0)
 kde.training.yes = ptDensity(spd.yes,outercore)
 kde.training.no = ptDensity(spd.no,outercore)
 
-# Create class breaks
-cint=densBreaks(kde.training,9,'kmeans')
-cint2=densBreaks(kde.training.yes,9,'kmeans')
-cint3=densBreaks(kde.training.no,9,'kmeans')
-# Make color palette
-my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
+
 ```
 
-```{r kdetrain, fig.width=4,fig.height=7,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; b) only training pairs that are positive for change; c) only pairs that are negative for change."}
+```{r kdetrain, fig.width=4,fig.height=7,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; a) all 16224 training pairs b) only training pairs that are positive for change; c) only pairs that are negative for change."}
 # makeplot
 #windows(width=8,height=11,xpinch=300,ypinch=300)
+# Create class breaks
+clstype="equal"
+cint=densBreaks(kde.training,9,clstype)
+cint2=densBreaks(kde.training.yes,9,clstype)
+cint3=densBreaks(kde.training.no,9,clstype)
+# Make color palette
+my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
 
 p.plot=function(tras,cbreaks,outercore,letter,pk){
+    tokmsq=1000^2
+  my.palette=brewer.pal(9,'Reds')#colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(10)
   #par(mfg=c(1,1))
+  #par(oma=c(0,0,0,4))
   plot(tras, breaks=cbreaks$brks,col = my.palette,axes=FALSE,legend=FALSE)
   plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-  par(usr=c(0,1,0,1))
+  if(pk==1) scalebar(d = 5000, xy = c(357258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  #set.panel(1,1)
+    par(usr=c(0,1,0,1))
+    #par(mfg=c(1,1))
+  #par(oma=c(0,0,0,1))
+
+  plot(
+    tras,
+    add=TRUE,
+    legend.only = TRUE,
+    breaks = round(cbreaks$brks*tokmsq,digits=0),
+    col = my.palette,
+    axes = FALSE,
+    legend.width = 1,
+    legend.shrink = 0.45,
+    horizontal = FALSE,
+    axis.args = list(cex.axis = 0.5),
+    legend.args = list(
+      text = expression(lambda*phantom(" ")(s[italic('x,y')] %.% km^-2)),
+      side = 4,
+      font = 2,
+      line = 2,
+      cex = 0.6
+    )
+  )
+  #par(usr=c(0,1,0,1))
   text(0.1,0.9,letter,cex=2)
-  #par(fig=c(0,0.25,0.75,1),new=T)
-  #par(mfg=c(1,1),new=TRUE)
-  #plot(ons,col='grey',border='grey')
-  #par(mfrow=c(3,1),mai=c(0,0,0,0),bty="n")
-  #plot(nbrhoods,col=1,border=1,add=T)
+    
+
 }
+
 par(mfrow=c(3,1),mai=c(0,0,0,0),bty="n")
 par(mfg=c(1,1))
 p.plot(kde.training,cint,outercore,"A",pk=1)
-par(bg=NA)
-subplot(function(){
-  plot(ons,col='grey',border='grey')
-  plot(outercore,col=1,border=1,add=T)
-},0.2,0.80,c(0.5,0.5))#353091.8,5027886)
+# par(bg=NA)
+# subplot(function(){
+#   plot(ons,col='grey',border='grey')
+#   plot(outercore,col=1,border=1,add=T)
+# },0.5,0.3,c(0.7,0.7))#353091.8,5027886)
+#par(mfrow=c(3,1))#,mai=c(0,0,0,0),bty="n")
 par(mfg=c(2,1))
 p.plot(kde.training.yes,cint2,outercore,"B",pk=2)
+#par(mfrow=c(3,1))#,mai=c(0,0,0,0),bty="n")
 par(mfg=c(3,1))
 p.plot(kde.training.no,cint3,outercore,"C",pk=3)
 
@@ -235,9 +266,9 @@ The pattern of building permits and SCNN-FC-8 predictions are very similar in Fi
 png("./figures/KDE_TRAINING_DISTRIB.png",units="in",width=7,height=12,res=300)
 par(mfrow=c(3,1),mai=c(0.1,0,0.1,0),bty="n")
 
-p.plot(kde.training,cint,outercore,"A")
-p.plot(kde.training.yes,cint2,outercore,"B")
-p.plot(kde.training.no,cint3,outercore,"C")
+p.plot(kde.training,cint,outercore,"A",pk=1)
+p.plot(kde.training.yes,cint2,outercore,"B",pk=2)
+p.plot(kde.training.no,cint3,outercore,"C",pk=3)
 
 dev.off()
 ```
@@ -266,7 +297,7 @@ with open(r"F:\OneDrive\DeepMapping\rproject\gsvdatesspan.csv", "w") as f:
 
 #GSV panorama locations
 Load GSV dates, create SPDF, assign and project.
-```{r gsvdates, fig.width=7,fig.height=9.5,fig.cap="\\label{fig:gsvdates}Spatial distribution of the oldest date found at each location where GSV images were accessed."}
+```{r gsvdatesplot, fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed."}
 # Get GSV date list
 x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = FALSE)
 names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
@@ -283,11 +314,11 @@ srMTM9 = CRS("+init=epsg:32189")
 gsvdates = spTransform(gsvdates, srMTM9)
 
 #win.graph(8.5,11)
-par(mfrow=c(5,2),mai=c(0,0,0,0),bty="n")
+par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
 for(i in seq(2007,2016,1)){
   y2007=subset(gsvdates,OLDEST==i)
   plot(studyarea)
-  plot(y2007,pch=16,cex=0.5,add=TRUE)
+  plot(y2007,pch=16,cex=0.25,add=TRUE)
   #plot(studyarea,add=TRUE)
   par(usr=c(0,1,0,1))
   text(0.1,0.9,i,cex=2)
@@ -296,12 +327,13 @@ for(i in seq(2007,2016,1)){
 
 
 ```
+
 Examine date distribution
 ```{r histdates, fig.width=7,fig.height=6,fig.cap="\\label{fig:histdates}Distribution of the oldest GSV date accessed at a location"}
 hist(gsvdates$OLDEST,xlab="Date",ylab="Number of GSV locations",main="")
 ```
 
-Both Figure \ref{fig:histdates} and \ref{fig:gsvdates} provide evidence of an approximate 2-3 year update frequency of GSV imagery. Both distributions also indicate that over the 10-year period there has been a decreasing overall investement in the total number of images captured at each location. That decreasing trend is suggestive of perhaps an evolving collection strategy that is informed by satellite imagery, different goals for the product or less investment in the resources Google assigns to established collections of GSV imagery.  Moreover, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdates} shows that only the region of our current study area contains GSV imagery in 2007.
+Both Figure \ref{fig:histdates} and \ref{fig:gsvdatesplot} provide evidence of an approximate 2-3 year update frequency of GSV imagery. Both distributions also indicate that over the 10-year period there has been a decreasing overall investement in the total number of images captured at each location. That decreasing trend is suggestive of perhaps an evolving collection strategy that is informed by satellite imagery, different goals for the product or less investment in the resources Google assigns to established collections of GSV imagery.  Moreover, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdates} shows that only the region of our current study area contains GSV imagery in 2007.
 
 #Results
 ##Model Training curves
