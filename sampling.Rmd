@@ -26,6 +26,7 @@ library(dplyr)
 library(classInt)
 library(rgdal)
 library(fields)
+library(Hmisc)
 ```
 
 ###Functions
@@ -38,7 +39,7 @@ ptDensity = function(a, sarea) {
   sigma = 200)
   kdepredict = raster(kdepredict)
   kdepredict <- crop(kdepredict, extent(sarea))
-  kdepredict <- mask(kdepredict, sarea)
+  kdepredict <- raster::mask(kdepredict, sarea)
   return(kdepredict)
 }
 
@@ -56,9 +57,6 @@ densBreaks = function(kdepredict,n,style) {
 openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
   permitpts.b=readOGR(shapefilepath)#,stringsAsFactors = FALSE)
   # arc.check_product()
-  # permitpts = arc.open(shapefilepath)
-  # permitpts.a = arc.select(permitpts)
-  # permitpts.b = arc.data2sp(permitpts.a)
   permits = spTransform(permitpts.b, outCS)
   return(permits)
 }
@@ -176,6 +174,8 @@ studyarea=openSPDF(shapefilepath = './shapefiles/core_multi.shp')
 
 nbrhoods=openSPDF(shapefilepath = './shapefiles/core.shp')
 
+ons=openSPDF(shapefilepath='./shapefiles/ONSNeighbourhoods2012_SmallFile.shp')
+
 outercore=openSPDF(shapefilepath = './shapefiles/outercore.shp')
 
 ```
@@ -196,19 +196,36 @@ cint3=densBreaks(kde.training.no,9,'kmeans')
 my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(9)
 ```
 
-```{r kdetrain, fig.width=8,fig.height=4,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; b) only training pairs that are positive for change; c) only pairs that are negative for change."}
+```{r kdetrain, fig.width=4,fig.height=7,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; b) only training pairs that are positive for change; c) only pairs that are negative for change."}
 # makeplot
 #windows(width=8,height=11,xpinch=300,ypinch=300)
-par(mfrow=c(3,1),mai=c(0,0,0,0),bty="n")
-p.plot=function(tras,cbreaks,outercore,letter){
+
+p.plot=function(tras,cbreaks,outercore,letter,pk){
+  #par(mfg=c(1,1))
   plot(tras, breaks=cbreaks$brks,col = my.palette,axes=FALSE,legend=FALSE)
   plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   par(usr=c(0,1,0,1))
   text(0.1,0.9,letter,cex=2)
+  #par(fig=c(0,0.25,0.75,1),new=T)
+  #par(mfg=c(1,1),new=TRUE)
+  #plot(ons,col='grey',border='grey')
+  #par(mfrow=c(3,1),mai=c(0,0,0,0),bty="n")
+  #plot(nbrhoods,col=1,border=1,add=T)
 }
-p.plot(kde.training,cint,outercore,"A")
-p.plot(kde.training.yes,cint2,outercore,"B")
-p.plot(kde.training.no,cint3,outercore,"C")
+par(mfrow=c(3,1),mai=c(0,0,0,0),bty="n")
+par(mfg=c(1,1))
+p.plot(kde.training,cint,outercore,"A",pk=1)
+par(bg=NA)
+subplot(function(){
+  plot(ons,col='grey',border='grey')
+  plot(outercore,col=1,border=1,add=T)
+},0.2,0.80,c(0.5,0.5))#353091.8,5027886)
+par(mfg=c(2,1))
+p.plot(kde.training.yes,cint2,outercore,"B",pk=2)
+par(mfg=c(3,1))
+p.plot(kde.training.no,cint3,outercore,"C",pk=3)
+
+
 ```
 
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:kdetrain}.
@@ -289,9 +306,9 @@ Both Figure \ref{fig:histdates} and \ref{fig:gsvdates} provide evidence of an ap
 #Results
 ##Model Training curves
 ```{python valcurves, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:valcurves}Training and validation of SCNN-FC-8."}
-import numpy as np
 import os
 os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = 'c:/programdata/Anaconda3/Library/plugins/platforms'
+import numpy as np
 def plot_loss(history_saved):
     import matplotlib.pyplot as plt
     mdict = np.load(history_saved)
@@ -318,10 +335,10 @@ def plot_loss(history_saved):
     plt.legend()
     plt.show()
     
-mdict = np.load("f:/deepmappingdata/mdict14try_vgg_norm.npy")
-history_continue_training="f:/deepmappingdata/mdict14try_vgg_norm.npy"
+mdict = np.load("./rproject/mdict14try_vgg_norm.npy")
+history_continue_training="./rproject/mdict14try_vgg_norm.npy"
 mdict = mdict.tolist()
-max(mdict['val_binary_accuracy'])
+print(max(mdict['val_binary_accuracy']))
 plot_loss(history_continue_training)
 ```
 
