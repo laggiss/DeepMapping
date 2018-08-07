@@ -568,6 +568,56 @@ dev.off()
 
 
 ```
+
+
+#Example images
+```{r examples, fig.width=8.5,fig.height=11}
+library(imager)
+
+dlist=c("F:/ottawa_image_db/45.364727,-75.770308","F:/ottawa_image_db/45.405719,-75.726039","F:/ottawa_image_db/45.369725,-75.628113","F:/ottawa_image_db/45.362226,-75.784759","F:/ottawa_image_db/45.378154,-75.737751","F:/ottawa_image_db/45.385800,-75.746943","F:/ottawa_image_db/45.348997,-75.712858","F:/ottawa_image_db/45.399765,-75.756267","F:/ottawa_image_db/45.401323,-75.677571")
+# dlist=c("F:/ottawa_image_db/45.405719,-75.726039")
+# dlist=c("F:/ottawa_image_db/45.369725,-75.628113")
+# dlist=c("F:/ottawa_image_db/45.362226,-75.784759")
+#F:\ottawa_image_db\45.368548,-75.779295,F:\ottawa_image_db\45.367637,-75.778784,F:\ottawa_image_db\45.397599,-75.754770,F:\ottawa_image_db\45.397651,-75.754588
+par(mfrow = c(9, 7), mai = c(.1, .1, .1, .1))
+crow=1
+for(k in dlist) {
+  curd = strsplit(dlist[crow], "/")[[1]][3]
+  ss = subset(predpts, DIRNAME == curd)
+  
+  
+  lf = list.files(dlist[crow],
+  full.names = F,
+  pattern = "\\.jpg$")
+  
+  tst = vector("character")
+  for (i in lf) {
+    tst = c(tst, strsplit(i, "_")[[1]][1])
+  }
+  
+  tst = data.frame(allyears = tst)
+  ssdf = data.frame(allyears = c(ss@data$YEAR1[1], ss@data$YEAR2))
+  allyears = as.character(ss@data$YEAR2)
+  par(mfg=c(crow,1))
+  for (i in lf) {
+    j1 = load.image(paste(dlist[crow], "/", i, sep = ""))
+    plot(j1, axes = F)
+    tt = strsplit(i, "_")[[1]][1]
+    mtext(tt, 3)
+    if (tt %in% allyears) {
+      mtext(expression(delta), 2)
+    }
+  
+  }
+  crow=crow+1
+}
+```
+
+
+
+
+
+
 ```{r}
 spd2o=spdo
 spd2o$X=coordinates(spd2o)[,1]
