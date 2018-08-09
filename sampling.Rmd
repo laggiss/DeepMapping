@@ -571,7 +571,7 @@ dev.off()
 
 
 #Example images
-```{r examples, fig.width=8,fig.height=11}
+```{r examples, fig.width=8,fig.height=11,fig.cap="\\label{fig:examples}Illustrative examples of SCNN-FC-8 predictions.  Each row represents the time series of GSV images for the unique location specified in the map plot at the end of each row. The delta symbol between any two years indicates where the SCNN-FC-8 predicted a visual change; (a to d) Normal cases of a single predicted change across the series of images at a given unique location. (e to k) represent cases where the model predicted more than one change or a false positive change wihtin the sequence.  See text for further details."}
 library(imager)
 #subtlechanges
   #F:\ottawa_image_db\45.395218,-75.751936
@@ -617,21 +617,22 @@ library(imager)
 plotexamples=function(){
 dlist=c("F:/ottawa_image_db/45.395289,-75.734107",
         "F:/ottawa_image_db/45.353038,-75.743813",
-        "F:/ottawa_image_db/45.348013,-75.743336",
+        "F:/ottawa_image_db/45.430856,-75.634009",
+        "F:/ottawa_image_db/45.387784,-75.759421",
+        "F:/ottawa_image_db/45.331311,-75.790179",
         "F:/ottawa_image_db/45.368548,-75.779295",
-        "F:/ottawa_image_db/45.364727,-75.770308",
+        "F:/ottawa_image_db/45.391854,-75.759665",
+        "F:/ottawa_image_db/45.440927,-75.671258",
         "F:/ottawa_image_db/45.405719,-75.726039",
-        "F:/ottawa_image_db/45.362226,-75.784759",
-        "F:/ottawa_image_db/45.391192,-75.745004",
-        "F:/ottawa_image_db/45.348997,-75.712858",
-        "F:/ottawa_image_db/45.331311,-75.790179")#,
-        #"F:/ottawa_image_db/45.399765,-75.756267",
+        "F:/ottawa_image_db/45.381848,-75.760526",
+        "F:/ottawa_image_db/45.412198,-75.674896")#,
+        #         "F:/ottawa_image_db/45.362226,-75.784759"       "F:/ottawa_image_db/45.391192,-75.745004","F:/ottawa_image_db/45.348997,-75.712858","F:/ottawa_image_db/45.348013,-75.743336","F:/ottawa_image_db/45.399765,-75.756267",
         #"F:/ottawa_image_db/45.398931,-75.756158")
 # dlist=c("F:/ottawa_image_db/45.405719,-75.726039")
 # dlist=c("F:/ottawa_image_db/45.369725,-75.628113")
 # dlist=c("F:/ottawa_image_db/45.362226,-75.784759")
 #F:\ottawa_image_db\45.368548,-75.779295,F:\ottawa_image_db\45.367637,-75.778784,F:\ottawa_image_db\45.397599,-75.754770,F:\ottawa_image_db\45.397651,-75.754588 F:/ottawa_image_db/45.385800,-75.746943
-par(mfrow = c(10, 6), mai = c(0, .2, .2, 0))
+par(mfrow = c(11, 6), mai = c(0, .2, .2, 0))
 crow=1
 
 for(k in dlist) {
@@ -652,15 +653,23 @@ for(k in dlist) {
   # ssdf = data.frame(allyears = c(ss@data$YEAR1[1], ss@data$YEAR2))
   allyears = as.character(ss@data$YEAR2)
   par(mfg=c(crow,1))
+  pcount=1
   for (i in lf) {
     j1 = load.image(paste(dlist[crow], "/", i, sep = ""))
     plot(j1, axes = F)
+    if (pcount == 1){
+      par(las=1)
+      mtext(paste("(", letters[crow], ")"), 2, crt = 90)#mtext("(a)",3)
+      par(las=0)
+    }
     tt = strsplit(i, "_")[[1]][1]
     mtext(tt, 3)
     if (tt %in% allyears) {
-      mtext(expression(delta), 2)
+      par(las=1)
+      mtext("\u275A", 2,cex=2)#expression(bold(Delta))"\u26AB"
+      par(las=0)
     }
-  
+    pcount = pcount + 1
   }
   plot(studyarea)
   xy=strsplit(strsplit(k,'/')[[1]][3],",")
@@ -676,7 +685,7 @@ for(k in dlist) {
 
 
 ```{r}
-png("./figures/examples.png",units="in",width=7,height=10,res=300)
+png("./figures/examples.png",units="in",width=6.5,height=10,res=300)
 plotexamples()
 dev.off()
 
