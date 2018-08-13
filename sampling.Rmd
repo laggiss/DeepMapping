@@ -2,6 +2,7 @@
 output:
   pdf_document:
     fig_caption: yes
+    latex_engine: xelatex
   html_document:
     df_print: paged
     fig_caption: yes
@@ -170,6 +171,8 @@ predpts@data$YEAR1=as.numeric(predpts@data$YEAR1)
 predpts@data$YEAR2=as.numeric(predpts@data$YEAR2)
 predpts@data$PRED=as.numeric(predpts@data$PRED)
 options(stringsAsFactors = TRUE)
+
+predptso=predpts
 
 studyarea=openSPDF(shapefilepath = './shapefiles/core_multi.shp')
 
@@ -374,11 +377,11 @@ print(max(mdict['val_binary_accuracy']))
 plot_loss(history_continue_training)
 ```
 
-
-
 ##Comparison between SCNN-FC-8 predictions and building permits
 ```{r aname}
 # Get predictions after 2011
+predpts=remove.duplicates(predpts,remove.second = F)
+
 predpts.gt2011=subset(predpts,YEAR2>=2011)
 
 permits@bbox=studyarea@bbox
@@ -442,7 +445,7 @@ plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:comparemodelpermit}.
 
-```{r, savedensfplot, eval=FALSE, echo=FALSE,message=FALSE}
+```{r, savedensfplot, eval=TRUE, echo=FALSE,message=FALSE}
 # makeplot
 png("./figures/figure_pred_vs_permit.png",units="in",width=11,height=4,res=300)
 plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
@@ -637,7 +640,7 @@ crow=1
 
 for(k in dlist) {
   curd = strsplit(dlist[crow], "/")[[1]][3]
-  ss = subset(predpts, DIRNAME == curd)
+  ss = subset(predptso, DIRNAME == curd)
   
   
   lf = list.files(dlist[crow],
@@ -679,7 +682,7 @@ for(k in dlist) {
   crow=crow+1
 }
 }
-#plotexamples()
+plotexamples()
 ```
 
 
