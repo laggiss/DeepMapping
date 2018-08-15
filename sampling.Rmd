@@ -36,7 +36,7 @@ library(RColorBrewer)
 ptDensity = function(a, sarea) {
   # Calculate KDE
   kdepredict = density.ppp(as.ppp(a),
-  eps = 200,
+  eps = 10,
   kernel = 'gaussian',
   sigma = 200)
   kdepredict = raster(kdepredict)
@@ -184,6 +184,10 @@ outercore=openSPDF(shapefilepath = './shapefiles/outercore.shp')
 
 ```
 
+
+
+
+
 Create KDE estimates of training data distrbution
 ```{r traindistribution}
 kde.training = ptDensity(spd,outercore)
@@ -194,6 +198,8 @@ kde.training.no = ptDensity(spd.no,outercore)
 
 
 ```
+
+
 
 ```{r kdetrain, fig.width=4,fig.height=7,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; a) all 16224 training pairs b) only training pairs that are positive for change; c) only pairs that are negative for change."}
 # makeplot
@@ -214,10 +220,12 @@ p.plot=function(tras,cbreaks,outercore,letter,pk){
   plot(tras, breaks=cbreaks$brks,col = my.palette,axes=FALSE,legend=FALSE)
   plot(outercore,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   if(pk==1) scalebar(d = 5000, xy = c(357258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+
   #set.panel(1,1)
     par(usr=c(0,1,0,1))
     #par(mfg=c(1,1))
   #par(oma=c(0,0,0,1))
+
 
   plot(
     tras,
@@ -397,6 +405,7 @@ cint=densBreaks(kdepredict,9,'equal')
 # Make color palette
 my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(10)
 ```
+
 Plot comparison between permits and model results.
 
 ```{r comparemodelpermit, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:comparemodelpermit}Comparison of SCNN-FC-8 predictions (a) with building permits (b)."}
@@ -407,13 +416,23 @@ plot.comparemodel=function(kde1,kde2,plotintervals,colorpal,nbrpoly){
   plot(nbrpoly,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   scalebar(d = 5000, 
            xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
-  par(usr=c(0,1,0,1))
-  text(0.05,0.9,"A",cex=2)
-  plot(kde2, breaks=plotintervals$brks,col = colorpal,axes=FALSE,legend=FALSE)
-  plot(nbrpoly,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+  
+  lines(c(370385.946, 375749.061),c(5033595.408,   5032711.698),lwd=1)  
+  points(370385.946,  5033595.408,pch=16,col=1,cex=0.25)
+  text(375749.061,5032711.698,"x",adj=c(-.5,.5))
   
   par(usr=c(0,1,0,1))
-  text(0.05,0.9,"B",cex=2)
+  text(0.05,0.8,"a)",cex=1)
+  plot(kde2, breaks=plotintervals$brks,col = colorpal,axes=FALSE,legend=FALSE)
+  plot(nbrpoly,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+
+
+  lines(c(366410.724  , 368770.442 ),c(5035138.202 ,5029125.892),lwd=1)  
+  points(368770.442,  5029125.892,pch=16,col=1,cex=0.25)
+  text(366410.724,5035138.202,"x\'",adj=c(1,-0.5))
+
+  par(usr=c(0,1,0,1))
+  text(0.05,0.8,"b)",cex=1)
   
   # Add legend
   set.panel(1,1)
@@ -481,9 +500,9 @@ plot.time=function(){
   # Make color palette
   my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(10)
   lablist=list()
-  lablist[['2009']]="A"
-  lablist[['2012']]="B"
-  lablist[['2016']]="C"
+  lablist[['2009']]="a)"
+  lablist[['2012']]="b)"
+  lablist[['2016']]="c)"
   
   for(i in c('2009','2012','2016')){
     #valvec=valvec[!is.na(valvec)]*tokmsq
@@ -493,7 +512,7 @@ plot.time=function(){
     plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
     if(i==2009) scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
     par(usr=c(0,1,0,1))
-    text(0.05,0.9,lablist[[i]],cex=2)
+    text(0.05,0.9,lablist[[i]],cex=1)
     #set.panel(1,1)
   #par(oma=c(0,0,0,1))
   plot(
@@ -627,8 +646,8 @@ dlist=c("F:/ottawa_image_db/45.395289,-75.734107",
         "F:/ottawa_image_db/45.391854,-75.759665",
         "F:/ottawa_image_db/45.440927,-75.671258",
         "F:/ottawa_image_db/45.405719,-75.726039",
-        "F:/ottawa_image_db/45.381848,-75.760526",
-        "F:/ottawa_image_db/45.412198,-75.674896")#,
+        "F:/ottawa_image_db/45.439506,-75.661335",
+        "F:/ottawa_image_db/45.381848,-75.760526")#,
         #         "F:/ottawa_image_db/45.362226,-75.784759"       "F:/ottawa_image_db/45.391192,-75.745004","F:/ottawa_image_db/45.348997,-75.712858","F:/ottawa_image_db/45.348013,-75.743336","F:/ottawa_image_db/45.399765,-75.756267",
         #"F:/ottawa_image_db/45.398931,-75.756158")
 # dlist=c("F:/ottawa_image_db/45.405719,-75.726039")
@@ -662,7 +681,7 @@ for(k in dlist) {
     plot(j1, axes = F)
     if (pcount == 1){
       par(las=1)
-      mtext(paste("(", letters[crow], ")"), 2, crt = 90)#mtext("(a)",3)
+      mtext(paste(letters[crow], ")"), 2, crt = 90)#mtext("(a)",3)
       par(las=0)
     }
     tt = strsplit(i, "_")[[1]][1]
@@ -708,8 +727,8 @@ dlist=c("F:/ottawa_image_db/45.395289,-75.734107",
         "F:/ottawa_image_db/45.391854,-75.759665",
         "F:/ottawa_image_db/45.440927,-75.671258",
         "F:/ottawa_image_db/45.405719,-75.726039",
-        "F:/ottawa_image_db/45.381848,-75.760526",
-        "F:/ottawa_image_db/45.412198,-75.674896")
+        "F:/ottawa_image_db/45.439506,-75.661335",
+        "F:/ottawa_image_db/45.381848,-75.760526")#,
 
 par(mfrow = c(11, 6), mai = c(0, .2, .2, 0))
 crow=1
@@ -738,7 +757,7 @@ for(k in dlist) {
     plot(j1, axes = F)
     if (pcount == 1){
       par(las=1)
-      mtext(paste("(", letters[crow], ")"), 2, crt = 90)#mtext("(a)",3)
+      mtext(paste(letters[crow], ")"), 2, crt = 90)#mtext("(a)",3)
       par(las=0)
     }
     tt = strsplit(i, "_")[[1]][1]
@@ -916,7 +935,21 @@ plot(m3, add=TRUE, lwd=2)
 ```
 
 
+```{r, echo=FALSE,eval=FALSE}
+seanpts=openSPDF(shapefilepath = 'F:/seantoIpad2018/newpoints/sample_pointsnw/sample_points.shp')
 
+lvl=levels(seanpts@data$Label)
+j=vector("numeric")
+for(i in lvl){
+  w=which(seanpts@data$Label==i)
+  j=c(j,sample(w,2))
+}
+k=rep(1,length(seanpts@data$Label))
+k[j]=0
+seanpts$CHOICE=k
+writeOGR(obj=seanpts, dsn='F:/seantoIpad2018/newpoints/sample_pointsnw', layer="newsampleptsc", driver="ESRI Shapefile")
+
+```
 
 
 
