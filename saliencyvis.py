@@ -36,7 +36,7 @@ IMG_SIZE = 224
 
 INPUT_DIM = (IMG_SIZE, IMG_SIZE, 3)
 
-IMG_DIR = "f:/test"
+IMG_DIR = "f:/fakedir"
 #Define the img size
 
 IMG_SIZE  = 224
@@ -65,7 +65,7 @@ check_dir = os.path.join(ranking_dir, "checkdata")
 
 models_dir = os.path.join(baseDir, "models")
 
-fake_dir = r'F:\test'#os.path.join(baseDir,"fake_dataset")
+fake_dir = r'F:\fakedir'#os.path.join(baseDir,"fake_dataset")
 #destdir=fake_dir
 vision_model=load_model("f:/models/finetunded_gt_956_percent_fc_and_block5_and_block4.h5")#load_model(os.path.join(models_dir, "scoreNetworkNoSigmoid.h5"))
 model=vision_model.get_layer("vgg19")
@@ -81,7 +81,7 @@ dlist=["F:/ottawa_image_db/45.395289,-75.734107",
         "F:/ottawa_image_db/45.440927,-75.671258",
         "F:/ottawa_image_db/45.405719,-75.726039",
         "F:/ottawa_image_db/45.381848,-75.760526",
-        "F:/ottawa_image_db/45.412198,-75.674896"]
+        "F:/ottawa_image_db/45.439506,-75.661335"]
 
 
 def copyFiles(pathlist,dest_dir=fake_dir):
