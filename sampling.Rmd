@@ -173,6 +173,8 @@ predpts@data$PRED=as.numeric(predpts@data$PRED)
 options(stringsAsFactors = TRUE)
 
 predptso=predpts
+# Get predictions after 2011
+predpts=remove.duplicates(predpts,remove.second = F)
 
 studyarea=openSPDF(shapefilepath = './shapefiles/core_multi.shp')
 
@@ -181,6 +183,13 @@ nbrhoods=openSPDF(shapefilepath = './shapefiles/core.shp')
 ons=openSPDF(shapefilepath='./shapefiles/ONSNeighbourhoods2012_SmallFile.shp')
 
 outercore=openSPDF(shapefilepath = './shapefiles/outercore.shp')
+
+labelhoods=openSPDF(shapefilepath = './shapefiles/labelhoods.shp')
+labelhoods@data$names=as.character(labelhoods@data$names)
+labelhoods@data$names[3]="Crestview\nMeadowlands"
+labelhoods@data$names[4]="Hintonburg\nMechanicsville"
+labelhoods@data$names[5]="Island\nPark"
+
 
 ```
 
@@ -387,8 +396,7 @@ plot_loss(history_continue_training)
 
 ##Comparison between SCNN-FC-8 predictions and building permits
 ```{r aname}
-# Get predictions after 2011
-predpts=remove.duplicates(predpts,remove.second = F)
+
 
 predpts.gt2011=subset(predpts,YEAR2>=2011)
 
@@ -510,7 +518,11 @@ plot.time=function(){
     cintx=densBreaks(blist[[i]],9,'equal')
     plot(blist[[i]], breaks=cintx$brks,col = my.palette,axes=FALSE,legend=FALSE)
     plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
-    if(i==2009) scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+    if(i==2009) {
+      pl=polygonsLabel(labelhoods,labelhoods@data$names,method='inpolygon',cex=0.5,polypart = 'largest')
+      print(pl)
+      scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+    }
     par(usr=c(0,1,0,1))
     text(0.05,0.9,lablist[[i]],cex=1)
     #set.panel(1,1)
@@ -798,7 +810,7 @@ spd2o$Y=coordinates(spd2o)[,2]
 spd2o=spd2o@data
 ```
 
-```{python pp, echo=False,eval=FALSE}
+```{python pp, echo=FALSE, eval=FALSE}
 import os
 import matplotlib.pyplot as plt
 import pandas
