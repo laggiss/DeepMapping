@@ -29,6 +29,7 @@ library(rgdal)
 library(fields)
 library(Hmisc)
 library(RColorBrewer)
+library(rgeos)
 ```
 
 ###Functions
@@ -36,7 +37,7 @@ library(RColorBrewer)
 ptDensity = function(a, sarea) {
   # Calculate KDE
   kdepredict = density.ppp(as.ppp(a),
-  eps = 10,
+  eps = 200,
   kernel = 'gaussian',
   sigma = 200)
   kdepredict = raster(kdepredict)
@@ -478,6 +479,48 @@ png("./figures/figure_pred_vs_permit.png",units="in",width=11,height=4,res=300)
 plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 dev.off()
 ```
+
+```{r differencemap, eval=TRUE, fig.width=8,fig.height=8,fig.cap="\\label{fig:differencemap}Proportional difference betweeen predicted KDE and permit KDE."}
+
+par(bty="n")
+kdepredict.n=(kdepredict-0)/(cellStats(kdepredict,stat='max')-0)
+kdepermits.n=(kdepermits-0)/(cellStats(kdepermits,stat='max')-0)
+kde.df=kdepredict.n-kdepermits.n
+
+# Create class breaks
+cint.d=densBreaks(kde.df,9,'equal')
+
+# Make color palette
+mypal=brewer.pal(10,"Spectral") #colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(10)
+
+plot(kde.df, breaks=cint.d$brks,col = mypal,axes=FALSE,legend=FALSE)
+plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+  scalebar(d = 5000, 
+           xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+ # Add legend
+  set.panel(1,1)
+  par(oma=c(0,0,0,1))
+  plot(
+    kde.df,
+    legend.only = TRUE,
+    breaks = round(cint.d$brks,digits=3),
+    col = mypal,
+    axes = FALSE,
+    legend.width = 1,
+    legend.shrink = 0.45,
+    horizontal = FALSE,
+    axis.args = list(cex.axis = 0.5),
+    legend.args = list(
+      text = expression(lambda*phantom(" ")(s[italic('x,y')] %.% km^-2)),
+      side = 4,
+      font = 2,
+      line = 2,
+      cex = 0.6
+    )
+  )
+```
+
+
 
 #SCNN-FC-8 predictions over time
 ```{r timeseries, eval=TRUE, fig.width=6,fig.height=9,fig.cap="\\label{fig:timeseries}Comparison of SCNN-FC-8 predictions over time (a) 2009 (b) 2012 (c) 2013-2016."}
