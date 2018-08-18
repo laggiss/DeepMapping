@@ -301,7 +301,8 @@ import os
 basedir='f:/ottawa_image_db/'
 dirlist = os.listdir(basedir)
 
-with open(r"F:\OneDrive\DeepMapping\rproject\gsvdatesspan.csv", "w") as f:
+with open("f:/models/ffxx.csv", "w") as f:
+    f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
     for d in dirlist:
         images = glob.glob(basedir+d+ '/*.jpg')
         if len(images)!=0:
@@ -312,19 +313,33 @@ with open(r"F:\OneDrive\DeepMapping\rproject\gsvdatesspan.csv", "w") as f:
             mx=max(dlist)
             mn=min(dlist)
             diff=int(mx)-int(mn)
-            f.write("{},{},{},{}\n".format(d, mn,mx,diff))
-            print(dlist,min(dlist))
+            ld=len(dlist)
+            lds=len(set(dlist))
+            f.write("{},{},{},{},{},{}\n".format(d, mn,mx,diff,ld,lds))
+            #print(dlist,min(dlist))
+
+# All years for all images
+with open("f:/models/allyearvector.csv", "w") as f:
+    #f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
+    for d in dirlist:
+        images = glob.glob(basedir+d+ '/*.jpg')
+        if len(images)!=0:
+            dlist=[]
+            for image in images:
+                fn=os.path.basename(image)
+                dlist.append(fn[0:4])
+                f.write("{}\n".format(fn[0:4]))
 ```
 
-#GSV panorama locations
+#GSV panorama location analysis
 Load GSV dates, create SPDF, assign and project.
 ```{r gsvdatesplot, fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed."}
 # Get GSV date list
-x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = FALSE)
-names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
+x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
+#names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
 # Make spdf of training data duels file
 
-gsvdates = SpatialPointsDataFrame(cbind(x = x$LONG, y = x$LAT), x)
+gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
 
 # Assign NAD83
 srNAD83 = CRS("+init=epsg:4269")
@@ -337,7 +352,7 @@ gsvdates = spTransform(gsvdates, srMTM9)
 #win.graph(8.5,11)
 par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
 for(i in seq(2007,2016,1)){
-  y2007=subset(gsvdates,OLDEST==i)
+  y2007=subset(gsvdates,MINY==i)
   plot(studyarea)
   plot(y2007,pch=16,cex=0.25,add=TRUE)
   #plot(studyarea,add=TRUE)
@@ -352,6 +367,17 @@ for(i in seq(2007,2016,1)){
 Examine date distribution
 ```{r histdates, fig.width=7,fig.height=6,fig.cap="\\label{fig:histdates}Distribution of the oldest GSV date accessed at a location"}
 hist(gsvdates$OLDEST,xlab="Date",ylab="Number of GSV locations",main="")
+```
+
+```{r histall, fig.width=7,fig.height=6,fig.cap="\\label{fig:histall}Distribution of all GSV image dates accessed at a location"}
+
+av=read.delim("f:/models/allyearvector.csv",sep=",",header=F)
+hist(av$V1,xlab="Date",ylab="Number of GSV locations",main="")
+```
+
+
+```{r histnyears, fig.width=7,fig.height=6,fig.cap="\\label{fig:histnyears}Distribution of the number of years of GSV imagery at each queried location."}
+hist(gsvdates$NYEARS,xlab="Number of years of imagery",ylab="Number of GSV locations",main="")
 ```
 
 Both Figure \ref{fig:histdates} and \ref{fig:gsvdatesplot} provide evidence of an approximate 2-3 year update frequency of GSV imagery. Both distributions also indicate that over the 10-year period there has been a decreasing overall investement in the total number of images captured at each location. That decreasing trend is suggestive of perhaps an evolving collection strategy that is informed by satellite imagery, different goals for the product or less investment in the resources Google assigns to established collections of GSV imagery.  Moreover, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdates} shows that only the region of our current study area contains GSV imagery in 2007.
@@ -520,6 +546,23 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   )
 ```
 
+```{r}
+#TODO make number of years by site map. and this correlation map.
+
+temp_chl_s_nb <- raster(temp_chl_s, 1)
+values(temp_chl_s_nb) <- 1:ncell(temp_chl_s)
+
+focal_cor <- focal(
+  x = temp_chl_s_nb,
+  w = matrix(1, 5, 5),
+  fun = function(x, y = temp_chl_s){
+    cor(values(y)[x, 1], values(y)[x, 2],
+        use = "na.or.complete")
+  },
+  filename = file.path(extraWD, "focal_cor.tif"),
+  overwrite = TRUE
+)
+```
 
 
 #SCNN-FC-8 predictions over time
