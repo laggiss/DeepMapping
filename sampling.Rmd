@@ -366,7 +366,7 @@ for(i in seq(2007,2016,1)){
 
 Examine date distribution
 ```{r histdates, fig.width=7,fig.height=6,fig.cap="\\label{fig:histdates}Distribution of the oldest GSV date accessed at a location"}
-hist(gsvdates$OLDEST,xlab="Date",ylab="Number of GSV locations",main="")
+hist(gsvdates$MINY,xlab="Date",ylab="Number of GSV locations",main="")
 ```
 
 ```{r histall, fig.width=7,fig.height=6,fig.cap="\\label{fig:histall}Distribution of all GSV image dates accessed at a location"}
@@ -521,6 +521,13 @@ mypal=brewer.pal(10,"Spectral") #colorRampPalette(c(rgb(211/255,229/255,232/255,
 
 plot(kde.df, breaks=cint.d$brks,col = mypal,axes=FALSE,legend=FALSE)
 plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+
+  lines(c(366410.724  , 368770.442 ),c(5035138.202 ,5029125.892),lwd=1)  
+  points(368770.442,  5029125.892,pch=16,col=1,cex=0.25)
+  text(366410.724,5035138.202,"x\'",adj=c(1,-0.5))
+  lines(c(370385.946, 375749.061),c(5033595.408,   5032711.698),lwd=1)  
+  points(370385.946,  5033595.408,pch=16,col=1,cex=0.25)
+  text(375749.061,5032711.698,"x",adj=c(-.5,.5))
   scalebar(d = 5000, 
            xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
  # Add legend
@@ -537,7 +544,7 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
     horizontal = FALSE,
     axis.args = list(cex.axis = 0.5),
     legend.args = list(
-      text = expression(lambda*phantom(" ")(s[italic('x,y')] %.% km^-2)),
+      text = expression(lambda*phantom(" ")[model-permit]),
       side = 4,
       font = 2,
       line = 2,
@@ -546,8 +553,11 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   )
 ```
 
-```{r}
-#TODO make number of years by site map. and this correlation map.
+Figure \ref{fig:differencemap} illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 predictions and building permits. The two isolagted regions of intensity in \ref{fig:comparemodelpermit}, x and x', cleary stand out as the two largest diffrences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdwon Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detections of gentrification-like visual change because of offset/FOV issues.  IN particular, in the region denoted by x', there were a number of new homes constructed which normally would have been picked up by the model within the image sequence.  However, the sequences of GSV images in this region of x', show that the common sequence of visual changes were as such: A park, followed by construction of a large wall, removal of the large wall and construction of new housing.  The change from wall to new construction was not something that our model encountered in our training dataset and so would not see the change from a park to a wall as a gentrification like change, nor the change from a wall to a residential structure.
+
+```{r eval=FALSE}
+
+#make number of years by site map. and this correlation map.
 
 temp_chl_s_nb <- raster(temp_chl_s, 1)
 values(temp_chl_s_nb) <- 1:ncell(temp_chl_s)
