@@ -17,8 +17,10 @@ knitr::knit_engines$set(python = reticulate::eng_python)
 use_python("c:/programdata/anaconda3/python.exe")
 ```
 
-#Import required libraries
+NOTE: this docuemnt was created in RMarkdown and contains all of the R-code used to create maps and graphs although the R code is suppressed in this document. You can find the RMarkdown document with R-code at (https://github.com/laggiss/DeepMapping/blob/master/sampling.Rmd).
+
 ```{r message=FALSE, echo=FALSE}
+#Import required libraries
 library(spatstat)
 library(maptools)
 library(stringr)
@@ -32,8 +34,9 @@ library(RColorBrewer)
 library(rgeos)
 ```
 
-###Functions
+
 ```{r functions, echo=FALSE}
+###Functions
 ptDensity = function(a, sarea) {
   # Calculate KDE
   kdepredict = density.ppp(as.ppp(a),
@@ -58,7 +61,7 @@ densBreaks = function(kdepredict,n,style) {
 }
 
 openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
-  permitpts.b=readOGR(shapefilepath)#,stringsAsFactors = FALSE)
+  permitpts.b=readOGR(shapefilepath,verbose=FALSE)#,stringsAsFactors = FALSE)
   # arc.check_product()
   permits = spTransform(permitpts.b, outCS)
   return(permits)
@@ -66,8 +69,9 @@ openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
 ```
 
 #Training data distribution
-Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9.  Also open studyarea polygons.
+
 ```{r trainingdata, echo=FALSE,message=FALSE}
+#Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9.  Also open studyarea polygons.
 # Get training data list
 x = read.delim("./rproject/retrain.txt",sep = " ",header = FALSE)
 
@@ -195,11 +199,8 @@ labelhoods@data$names[5]="Island\nPark"
 ```
 
 
-
-
-
 Create KDE estimates of training data distrbution
-```{r traindistribution}
+```{r traindistribution, echo=FALSE}
 kde.training = ptDensity(spd,outercore)
 spd.yes=subset(spd,V3==1)
 spd.no=subset(spd,V3==0)
@@ -210,8 +211,7 @@ kde.training.no = ptDensity(spd.no,outercore)
 ```
 
 
-
-```{r kdetrain, fig.width=4,fig.height=7,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; a) all 16224 training pairs b) only training pairs that are positive for change; c) only pairs that are negative for change."}
+```{r kdetrain, echo=FALSE,fig.width=4,fig.height=7,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; a) all 16224 training pairs b) only training pairs that are positive for change; c) only pairs that are negative for change."}
 # makeplot
 #windows(width=8,height=11,xpinch=300,ypinch=300)
 # Create class breaks
@@ -295,7 +295,8 @@ dev.off()
 ```
 
 Get oldest date for GSV imagery, youngest date and span
-```{python py, eval=FALSE}
+
+```{python py, echo=FALSE, eval=FALSE}
 import glob
 import os
 basedir='f:/ottawa_image_db/'
@@ -354,7 +355,8 @@ with open("f:/models/ff_old_young2.csv", "w") as f:
 
 #GSV panorama location analysis
 Load GSV dates, create SPDF, assign and project.
-```{r gsvdatesplot, fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed. The grey polygon represents the study area where model predictions are made and the outer polygon represetns the extent of the full GSV dataset."}
+
+```{r gsvdatesplot, echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed. The grey polygon represents the study area where model predictions are made and the outer polygon represetns the extent of the full GSV dataset."}
 # Get GSV date list
 x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
 #names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
@@ -390,7 +392,7 @@ for(i in seq(2007,2016,1)){
 
 ```
 
-```{r gsvdatesplot2, fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot2}Spatial distribution of the youngest date found at each location where GSV images were accessed."}
+```{r gsvdatesplot2, echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot2}Spatial distribution of the youngest date found at each location where GSV images were accessed."}
 # Get GSV date list
 x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
 
@@ -421,7 +423,7 @@ for(i in seq(2007,2016,1)){
 
 ```
 
-```{r gsvdatesplot3, fig.width=6,fig.height=6,fig.cap="\\label{fig:gsvdatesplot3}Spatial distribution of properties that have a panorama in 2007 and also in 2014-2016."}
+```{r gsvdatesplot3, echo=FALSE,fig.width=6,fig.height=6,fig.cap="\\label{fig:gsvdatesplot3}Spatial distribution of properties that have a panorama in 2007 and also in 2014-2016."}
 # Get GSV date list
 x = read.delim("./rproject/ff_old_young2.csv",sep = ",",header = TRUE)
 
@@ -451,10 +453,9 @@ par(mai=c(.2,0,0,0),bty="n")
 
 ```
 
-
-
 Examine date distribution
-```{r histdates, fig.width=7,fig.height=3,fig.cap="\\label{fig:histdates}a) Distribution of the oldest GSV date accessed at a location; b) Distribution of all GSV image dates accessed at a location; c) Distribution of the number of years of GSV imagery at each queried location."}
+
+```{r histdates, echo=FALSE, fig.width=7,fig.height=3,fig.cap="\\label{fig:histdates}a) Distribution of the oldest GSV date accessed at a location; b) Distribution of all GSV image dates accessed at a location; c) Distribution of the number of years of GSV imagery at each queried location."}
 par(mfrow=c(1,3),mai=c(.4,.5,.4,.1),bty="n")
 hist(gsvdates$MINY,xlab="Date",ylab="Number of GSV locations",main="")
 par(usr=c(0,1,0,1),xpd=NA)
@@ -472,7 +473,7 @@ Both Figure \ref{fig:histdates} and \ref{fig:gsvdatesplot} provide evidence of a
 
 #Results
 ##Model Training curves
-```{python valcurves, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:valcurves}Training and validation of SCNN-FC-8."}
+```{python valcurves, echo=FALSE,eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:valcurves}Training and validation of SCNN-FC-8."}
 import os
 os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = 'c:/programdata/Anaconda3/Library/plugins/platforms'
 import numpy as np
@@ -510,7 +511,7 @@ plot_loss(history_continue_training)
 ```
 
 ##Comparison between SCNN-FC-8 predictions and building permits
-```{r aname}
+```{r aname, echo=FALSE,message=FALSE}
 
 
 predpts.gt2011=subset(predpts,YEAR2>=2011)
@@ -531,7 +532,7 @@ my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255
 
 Plot comparison between permits and model results.
 
-```{r comparemodelpermit, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:comparemodelpermit}Comparison of SCNN-FC-8 predictions (a) with building permits (b)."}
+```{r comparemodelpermit, echo=FALSE,eval=TRUE, message=FALSE, fig.width=8,fig.height=4,fig.cap="\\label{fig:comparemodelpermit}Comparison of SCNN-FC-8 predictions (a) with building permits (b)."}
 plot.comparemodel=function(kde1,kde2,plotintervals,colorpal,nbrpoly){
   set.panel()
   par(mfrow=c(1,2),mai=c(0,0,0,0),oma=c(0,0,0,4),bty="n")
@@ -587,14 +588,14 @@ plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:comparemodelpermit}.
 
-```{r, savedensfplot, eval=TRUE, echo=FALSE,message=FALSE}
+```{r, savedensfplot, echo=FALSE, eval=TRUE, echo=FALSE,message=FALSE}
 # makeplot
 png("./figures/figure_pred_vs_permit.png",units="in",width=11,height=4,res=300)
 plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 dev.off()
 ```
 
-```{r differencemap, eval=TRUE, fig.width=8,fig.height=8,fig.cap="\\label{fig:differencemap}Proportional difference betweeen predicted KDE and permit KDE."}
+```{r differencemap, echo=FALSE,eval=TRUE, fig.width=8,fig.height=8,fig.cap="\\label{fig:differencemap}Proportional difference betweeen predicted KDE and permit KDE."}
 
 par(bty="n")
 kdepredict.n=(kdepredict-0)/(cellStats(kdepredict,stat='max')-0)
@@ -643,7 +644,7 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
 
 Figure \ref{fig:differencemap} illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 predictions and building permits. The two isolagted regions of intensity in Figure \ref{fig:comparemodelpermit}, x and x', cleary stand out as the two largest diffrences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdwon Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detections of gentrification-like visual change because of offset/FOV issues.  IN particular, in the region denoted by x', there were a number of new homes constructed which normally would have been picked up by the model within the image sequence.  However, the sequences of GSV images in this region of x', show that the common sequence of visual changes were as such: A park, followed by construction of a large wall, removal of the large wall and construction of new housing.  The change from wall to new construction was not something that our model encountered in our training dataset and so would not see the change from a park to a wall as a gentrification like change, nor the change from a wall to a residential structure.
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo=FALSE}
 
 #make number of years by site map. and this correlation map.
 
@@ -664,7 +665,7 @@ focal_cor <- focal(
 
 
 #SCNN-FC-8 predictions over time
-```{r timeseries, eval=TRUE, fig.width=6,fig.height=9,fig.cap="\\label{fig:timeseries}Comparison of SCNN-FC-8 predictions over time (a) 2009 (b) 2012 (c) 2013-2016."}
+```{r timeseries, echo=FALSE,eval=TRUE, message=FALSE,fig.width=6,fig.height=9,fig.cap="\\label{fig:timeseries}Comparison of SCNN-FC-8 predictions over time (a) 2009 (b) 2012 (c) 2013-2016."}
   set.panel()
 plot.time=function(){
   tokmsq=1000000
@@ -750,7 +751,7 @@ dev.off()
 
 
 
-```{r excludetrain, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:excludetrain}Comparison of SCNN-FC-8 predictions (a) using all training data (b) using only training data outside of 5 neighbourhoods"}
+```{r excludetrain, echo=FALSE,eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:excludetrain}Comparison of SCNN-FC-8 predictions (a) using all training data (b) using only training data outside of 5 neighbourhoods"}
 predex=read.csv("./rproject/fullres_replicate_onesonly_6f.csv")
 predexspd = SpatialPointsDataFrame(cbind(x = as.numeric(predex$LONG), y = as.numeric(predex$LAT)), predex)
 
@@ -769,7 +770,7 @@ plot.comparemodel(kdepredict,predexkde,cint,my.palette,nbrhoods)
 ```
 
 
-```{r run2, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:run2}Comparison of SCNN-FC-8 predictions (a) using first run (b) using second run"}
+```{r run2, echo=FALSE, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:run2}Comparison of SCNN-FC-8 predictions (a) using first run (b) using second run"}
 spdrep@bbox=studyarea@bbox
 spdo@bbox=studyarea@bbox
 kderun1=ptDensity(spdo,studyarea)
@@ -779,7 +780,7 @@ plot.comparemodel(kderun1,kderun2,cintn,my.palette,nbrhoods)
 
 ```
 
-```{r}
+```{r echo=FALSE}
 png("./figures/figure_run1_vs_run2.png",units="in",width=11,height=4,res=300)
 plot.comparemodel(kderun1,kderun2,cintn,my.palette,nbrhoods)
 dev.off()
@@ -789,7 +790,7 @@ dev.off()
 
 
 #Example images
-```{r examples, fig.width=8,fig.height=11,fig.cap="\\label{fig:examples}Illustrative examples of SCNN-FC-8 predictions.  Each row represents the time series of GSV images for the unique location specified in the map plot at the end of each row. The delta symbol between any two years indicates where the SCNN-FC-8 predicted a visual change; (a to d) Normal cases of a single predicted change across the series of images at a given unique location. (e to k) represent cases where the model predicted more than one change or a false positive change wihtin the sequence.  See text for further details."}
+```{r examples, echo=FALSE,message=FALSE, fig.width=8,fig.height=11,fig.cap="\\label{fig:examples}Illustrative examples of SCNN-FC-8 predictions.  Each row represents the time series of GSV images for the unique location specified in the map plot at the end of each row. The delta symbol between any two years indicates where the SCNN-FC-8 predicted a visual change; (a to d) Normal cases of a single predicted change across the series of images at a given unique location. (e to k) represent cases where the model predicted more than one change or a false positive change wihtin the sequence.  See text for further details."}
 library(imager)
 #subtlechanges
   #F:\ottawa_image_db\45.395218,-75.751936
@@ -902,7 +903,7 @@ plotexamples()
 
 
 
-```{r}
+```{r echo=FALSE}
 png("./figures/examples.png",units="in",width=6.5,height=10,res=300)
 plotexamples()
 dev.off()
@@ -910,7 +911,7 @@ dev.off()
 
 ```
 
-```{r saliency, fig.width=8,fig.height=11,fig.cap="\\label{fig:saliency}Class activation heat maps of \\label{fig:examples} based on the last convolutional layer in SCNN-FC-8."}
+```{r saliency, echo=FALSE, message=FALSE, fig.width=8,fig.height=11,fig.cap="\\label{fig:saliency}Class activation heat maps of \\label{fig:examples} based on the last convolutional layer in SCNN-FC-8."}
 library(imager)
 
 plotexamples2=function(){
@@ -977,7 +978,7 @@ plotexamples2()
 ```
 
 
-```{r}
+```{r echo=FALSE}
 png("./figures/examples_sal.png",units="in",width=6.5,height=10,res=300)
 plotexamples2()
 dev.off()
