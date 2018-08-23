@@ -4,8 +4,6 @@
     <list default="true" id="7912cac4-f054-46f0-9690-f2f0973b80bb" name="Default" comment="testcommit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/oldestdate.py" beforeDir="false" afterPath="$PROJECT_DIR$/oldestdate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rproject/GSVDATESSPAN.csv" beforeDir="false" afterPath="$PROJECT_DIR$/rproject/GSVDATESSPAN.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sampling.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/sampling.Rmd" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,13 +25,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="2351" />
-          <entry key="py" value="1512" />
+          <entry key="Python Console" value="2387" />
+          <entry key="py" value="1653" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="3863" />
+          <entry key="Python" value="4040" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -85,8 +83,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="15" column="30" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
+            <state relative-caret-position="-462">
+              <caret line="42" column="18" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="18" />
               <folding>
                 <element signature="e#0#54#0" expanded="true" />
               </folding>
@@ -115,8 +113,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/oldestdate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="38" selection-end-column="41" />
+            <state relative-caret-position="210">
+              <caret line="31" column="37" lean-forward="true" selection-start-line="31" selection-start-column="37" selection-end-line="31" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -179,10 +177,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="2576" />
-    <option name="height" value="1576" />
+    <option name="x" value="-4" />
+    <option name="y" value="-4" />
+    <option name="width" value="1288" />
+    <option name="height" value="788" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -428,14 +426,20 @@
       <option name="project" value="LOCAL" />
       <updated>1534453369274</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="testcommit">
+      <created>1534559932914</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1534559932914</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-6" y="-6" width="1633" height="1053" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="2576" height="1576" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19492063" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.122019075" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -450,7 +454,7 @@
       <window_info anchor="bottom" id="Terminal" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50039744" side_tool="true" weight="0.45006934" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.329718" />
-      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49960256" visible="true" weight="0.40130153" />
+      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49960256" visible="true" weight="0.25658807" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -458,7 +462,7 @@
       <window_info anchor="right" id="R Graphics" order="4" />
       <window_info anchor="right" id="Database" order="5" />
       <window_info anchor="right" id="SciView" order="6" sideWeight="0.49919224" weight="0.31478536" />
-      <window_info active="true" anchor="right" x="0" y="0" width="358" height="853" id="Documentation" order="7" sideWeight="0.50080776" side_tool="true" visible="true" weight="0.31619048" />
+      <window_info anchor="right" x="0" y="0" width="358" height="853" id="Documentation" order="7" sideWeight="0.50080776" side_tool="true" visible="true" weight="0.19793323" />
     </layout>
     <layout-to-restore>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19174603" />
@@ -641,16 +645,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="15" column="30" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#54#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../a11PyCharmCNN/deleteme.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -696,10 +690,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-462">
+          <caret line="42" column="18" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/oldestdate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="38" selection-end-column="41" />
+        <state relative-caret-position="210">
+          <caret line="31" column="37" lean-forward="true" selection-start-line="31" selection-start-column="37" selection-end-line="31" selection-end-column="37" />
         </state>
       </provider>
     </entry>
