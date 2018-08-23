@@ -18,7 +18,7 @@ use_python("c:/programdata/anaconda3/python.exe")
 ```
 
 #Import required libraries
-```{r message=FALSE}
+```{r message=FALSE, echo=FALSE}
 library(spatstat)
 library(maptools)
 library(stringr)
@@ -33,7 +33,7 @@ library(rgeos)
 ```
 
 ###Functions
-```{r functions}
+```{r functions, echo=FALSE}
 ptDensity = function(a, sarea) {
   # Calculate KDE
   kdepredict = density.ppp(as.ppp(a),
@@ -67,7 +67,7 @@ openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
 
 #Training data distribution
 Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9.  Also open studyarea polygons.
-```{r trainingdata, message=FALSE}
+```{r trainingdata, echo=FALSE,message=FALSE}
 # Get training data list
 x = read.delim("./rproject/retrain.txt",sep = " ",header = FALSE)
 
@@ -329,15 +329,38 @@ with open("f:/models/allyearvector.csv", "w") as f:
                 fn=os.path.basename(image)
                 dlist.append(fn[0:4])
                 f.write("{}\n".format(fn[0:4]))
+                
+# locations ith a date in 2007 and a date in 2014-2016.                
+with open("f:/models/ff_old_young2.csv", "w") as f:
+    f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
+    for d in dirlist:
+        images = glob.glob(basedir+d+ '/*.jpg')
+        if len(images)!=0:
+            dlist=[]
+            fnamelist=[]
+            for image in images:
+                fn=os.path.basename(image)
+                fnamelist.append(fn)
+                dlist.append(fn[0:4])
+            mx=max(dlist)
+            mn=min(dlist)
+            diff=int(mx)-int(mn)
+            ld=len(dlist)
+            lds=len(set(dlist))
+            if (((mx=='2016') | (mx=='2015') | (mx=='2014')) & (mn=='2007')):
+                f.write("{},{},{},{},{},{}\n".format(d, mn,mx,diff,ld,lds))
+            #print(dlist,min(dlist))
 ```
 
 #GSV panorama location analysis
 Load GSV dates, create SPDF, assign and project.
-```{r gsvdatesplot, fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed."}
+```{r gsvdatesplot, fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed. The grey polygon represents the study area where model predictions are made and the outer polygon represetns the extent of the full GSV dataset."}
 # Get GSV date list
 x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
 #names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
-# Make spdf of training data duels file
+# Make spdf of training data duels fi
+outercore$DID=rep(1,length(outercore$OBJECTID))
+region <- gUnaryUnion(outercore, id = outercore@data$DID)
 
 gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
 
@@ -349,12 +372,15 @@ proj4string(gsvdates) = srNAD83
 srMTM9 = CRS("+init=epsg:32189")
 gsvdates = spTransform(gsvdates, srMTM9)
 
+
 #win.graph(8.5,11)
 par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
 for(i in seq(2007,2016,1)){
   y2007=subset(gsvdates,MINY==i)
-  plot(studyarea)
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
   plot(y2007,pch=16,cex=0.25,add=TRUE)
+  if (i==2007){  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')}
   #plot(studyarea,add=TRUE)
   par(usr=c(0,1,0,1))
   text(0.1,0.9,i,cex=2)
@@ -364,23 +390,85 @@ for(i in seq(2007,2016,1)){
 
 ```
 
+```{r gsvdatesplot2, fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot2}Spatial distribution of the youngest date found at each location where GSV images were accessed."}
+# Get GSV date list
+x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
+
+gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
+
+# Assign NAD83
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates = spTransform(gsvdates, srMTM9)
+
+
+#win.graph(8.5,11)
+par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
+for(i in seq(2007,2016,1)){
+  y2007=subset(gsvdates,MAXY==i)
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
+  plot(y2007,pch=16,cex=0.25,add=TRUE)
+  if (i==2007){  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')}
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  text(0.1,0.9,i,cex=2)
+}
+
+
+```
+
+```{r gsvdatesplot3, fig.width=6,fig.height=6,fig.cap="\\label{fig:gsvdatesplot3}Spatial distribution of properties that have a panorama in 2007 and also in 2014-2016."}
+# Get GSV date list
+x = read.delim("./rproject/ff_old_young2.csv",sep = ",",header = TRUE)
+
+gsvdates_oldyoung = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
+
+# Assign NAD83
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates_oldyoung) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates_oldyoung = spTransform(gsvdates_oldyoung, srMTM9)
+
+
+#win.graph(8.5,11)
+par(mai=c(.2,0,0,0),bty="n")
+
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
+  plot(gsvdates_oldyoung,pch=16,cex=0.25,add=TRUE)
+  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  #text(0.1,0.9,i,cex=2)
+
+
+
+```
+
+
+
 Examine date distribution
-```{r histdates, fig.width=7,fig.height=6,fig.cap="\\label{fig:histdates}Distribution of the oldest GSV date accessed at a location"}
+```{r histdates, fig.width=7,fig.height=3,fig.cap="\\label{fig:histdates}a) Distribution of the oldest GSV date accessed at a location; b) Distribution of all GSV image dates accessed at a location; c) Distribution of the number of years of GSV imagery at each queried location."}
+par(mfrow=c(1,3),mai=c(.4,.5,.4,.1),bty="n")
 hist(gsvdates$MINY,xlab="Date",ylab="Number of GSV locations",main="")
-```
-
-```{r histall, fig.width=7,fig.height=6,fig.cap="\\label{fig:histall}Distribution of all GSV image dates accessed at a location"}
-
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"a)",cex=1)
 av=read.delim("f:/models/allyearvector.csv",sep=",",header=F)
-hist(av$V1,xlab="Date",ylab="Number of GSV locations",main="")
+hist(av$V1,xlab="Date",ylab="",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"b)",cex=1)
+hist(gsvdates$NYEARS,xlab="Number of years of imagery",ylab="",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"c)",cex=1)
 ```
 
-
-```{r histnyears, fig.width=7,fig.height=6,fig.cap="\\label{fig:histnyears}Distribution of the number of years of GSV imagery at each queried location."}
-hist(gsvdates$NYEARS,xlab="Number of years of imagery",ylab="Number of GSV locations",main="")
-```
-
-Both Figure \ref{fig:histdates} and \ref{fig:gsvdatesplot} provide evidence of an approximate 2-3 year update frequency of GSV imagery. Both distributions also indicate that over the 10-year period there has been a decreasing overall investement in the total number of images captured at each location. That decreasing trend is suggestive of perhaps an evolving collection strategy that is informed by satellite imagery, different goals for the product or less investment in the resources Google assigns to established collections of GSV imagery.  Moreover, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdates} shows that only the region of our current study area contains GSV imagery in 2007.
+Both Figure \ref{fig:histdates} and \ref{fig:gsvdatesplot} provide evidence of an approximate 2-3 year update frequency of GSV imagery. The average number of years that GSV panoramas are available is `r round(mean(gsvdates$NYEARS),digits=2)` (Figure \ref{fig:histnyears}). Both distributions also indicate that over the 10-year period there has been a decreasing overall investement in the total number of images captured at each location. That decreasing trend is suggestive of perhaps an evolving collection strategy that is informed by satellite imagery, different goals for the product or less investment in the resources Google assigns to established collections of GSV imagery.  Moreover, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdates} shows that only the region of our current study area contains GSV imagery in 2007.
 
 #Results
 ##Model Training curves
@@ -553,7 +641,7 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   )
 ```
 
-Figure \ref{fig:differencemap} illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 predictions and building permits. The two isolagted regions of intensity in \ref{fig:comparemodelpermit}, x and x', cleary stand out as the two largest diffrences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdwon Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detections of gentrification-like visual change because of offset/FOV issues.  IN particular, in the region denoted by x', there were a number of new homes constructed which normally would have been picked up by the model within the image sequence.  However, the sequences of GSV images in this region of x', show that the common sequence of visual changes were as such: A park, followed by construction of a large wall, removal of the large wall and construction of new housing.  The change from wall to new construction was not something that our model encountered in our training dataset and so would not see the change from a park to a wall as a gentrification like change, nor the change from a wall to a residential structure.
+Figure \ref{fig:differencemap} illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 predictions and building permits. The two isolagted regions of intensity in Figure \ref{fig:comparemodelpermit}, x and x', cleary stand out as the two largest diffrences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdwon Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detections of gentrification-like visual change because of offset/FOV issues.  IN particular, in the region denoted by x', there were a number of new homes constructed which normally would have been picked up by the model within the image sequence.  However, the sequences of GSV images in this region of x', show that the common sequence of visual changes were as such: A park, followed by construction of a large wall, removal of the large wall and construction of new housing.  The change from wall to new construction was not something that our model encountered in our training dataset and so would not see the change from a park to a wall as a gentrification like change, nor the change from a wall to a residential structure.
 
 ```{r eval=FALSE}
 
