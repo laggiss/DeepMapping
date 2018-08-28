@@ -1,13 +1,19 @@
 ---
+title: "Supplementary Information for Deep Mapping Gentrification: Using a deep convolutional neural network and Google Street View to map the spatial and temporal evolution of gentrification-like visual changes in a large Canadian City."
+author: "Lazar Ilic, M. Sawada, Amaury Zarzelli"
 output:
   pdf_document:
+    citation_package: natbib
     fig_caption: yes
-    latex_engine: xelatex
+    latex_engine: lualatex
+    number_sections: yes
+    toc: yes
   html_document:
     df_print: paged
     fig_caption: yes
   word_document: 
     fig_caption: yes
+bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -15,6 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(reticulate)
 knitr::knit_engines$set(python = reticulate::eng_python)
 use_python("c:/programdata/anaconda3/python.exe")
+pdf.options(encoding = 'CP1250')
 ```
 
 NOTE: this docuemnt was created in RMarkdown and contains all of the R-code used to create maps and graphs although the R code is suppressed in this document. You can find the RMarkdown document with R-code at (https://github.com/laggiss/DeepMapping/blob/master/sampling.Rmd).
@@ -33,7 +40,6 @@ library(Hmisc)
 library(RColorBrewer)
 library(rgeos)
 ```
-
 
 ```{r functions, echo=FALSE}
 ###Functions
@@ -67,8 +73,6 @@ openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
   return(permits)
 }
 ```
-
-#Training data distribution
 
 ```{r trainingdata, echo=FALSE,message=FALSE}
 #Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9.  Also open studyarea polygons.
@@ -105,7 +109,7 @@ xx = unlist(lapply(str_split(xx, "new-"), function(x) {
 }))
 
 # Check for NA
-xx[is.na(as.numeric(xx))]
+#xx[is.na(as.numeric(xx))]
 
 
 # put x,y into x dataframe for coordinates of each pair
@@ -198,20 +202,219 @@ labelhoods@data$names[5]="Island\nPark"
 
 ```
 
+```{python py, echo=FALSE, eval=FALSE}
+import glob
+import os
+basedir='f:/ottawa_image_db/'
+dirlist = os.listdir(basedir)
 
-Create KDE estimates of training data distrbution
+with open("f:/models/ffxx.csv", "w") as f:
+    f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
+    for d in dirlist:
+        images = glob.glob(basedir+d+ '/*.jpg')
+        if len(images)!=0:
+            dlist=[]
+            for image in images:
+                fn=os.path.basename(image)
+                dlist.append(fn[0:4])
+            mx=max(dlist)
+            mn=min(dlist)
+            diff=int(mx)-int(mn)
+            ld=len(dlist)
+            lds=len(set(dlist))
+            f.write("{},{},{},{},{},{}\n".format(d, mn,mx,diff,ld,lds))
+            #print(dlist,min(dlist))
+
+# All years for all images
+with open("f:/models/allyearvector.csv", "w") as f:
+    #f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
+    for d in dirlist:
+        images = glob.glob(basedir+d+ '/*.jpg')
+        if len(images)!=0:
+            dlist=[]
+            for image in images:
+                fn=os.path.basename(image)
+                dlist.append(fn[0:4])
+                f.write("{}\n".format(fn[0:4]))
+                
+# locations ith a date in 2007 and a date in 2014-2016.                
+with open("f:/models/ff_old_young2.csv", "w") as f:
+    f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
+    for d in dirlist:
+        images = glob.glob(basedir+d+ '/*.jpg')
+        if len(images)!=0:
+            dlist=[]
+            fnamelist=[]
+            for image in images:
+                fn=os.path.basename(image)
+                fnamelist.append(fn)
+                dlist.append(fn[0:4])
+            mx=max(dlist)
+            mn=min(dlist)
+            diff=int(mx)-int(mn)
+            ld=len(dlist)
+            lds=len(set(dlist))
+            if (((mx=='2016') | (mx=='2015') | (mx=='2014')) & (mn=='2007')):
+                f.write("{},{},{},{},{},{}\n".format(d, mn,mx,diff,ld,lds))
+            #print(dlist,min(dlist))
+```
+
+#GSV Image data
+##GSV panorama location analysis
+The first GSV images in Ottawa were taken in 2007.  In that year, only the portion of Ottawa coinciding with our study region contained panoramas.  GSV panoramas are not available everywhere for all time periods from 2007-2016. Because we ultimately will detect change within the sequence  of images for a property, we wanted to explore the spatial pattern of gentrificatrion in Ottawa as far back as possible.  Therefore, from the full set of GSV images, we decided to use the SCNN FC-8 model to detect changes within sequences of imagery within our study region.
+
+```{r gsvdatesplot, message=FALSE,echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed. The grey polygon represents the study area where model predictions are made and the outer polygon represetns the extent of the full GSV dataset."}
+#Load GSV dates, create SPDF, assign and project.
+
+# Get GSV date list
+x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
+#names(x)=c("LAT","LONOG","OLDEST","YOUNGEST","SPAN")
+# Make spdf of training data duels fi
+outercore$DID=rep(1,length(outercore$OBJECTID))
+region <- gUnaryUnion(outercore, id = outercore@data$DID)
+
+gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
+
+# Assign NAD83
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates = spTransform(gsvdates, srMTM9)
+
+
+#win.graph(8.5,11)
+par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
+for(i in seq(2007,2016,1)){
+  y2007=subset(gsvdates,MINY==i)
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
+  plot(y2007,pch=16,cex=0.25,add=TRUE)
+  if (i==2007){  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')}
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  text(0.1,0.9,i,cex=2)
+}
+
+
+
+```
+
+```{r gsvdatesplot2, message=FALSE, echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot2}Spatial distribution of the youngest date found at each location where GSV images were accessed."}
+# Get GSV date list
+x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
+
+gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
+
+# Assign NAD83
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates = spTransform(gsvdates, srMTM9)
+
+
+#win.graph(8.5,11)
+par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
+for(i in seq(2007,2016,1)){
+  y2007=subset(gsvdates,MAXY==i)
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
+  plot(y2007,pch=16,cex=0.25,add=TRUE)
+  if (i==2007){  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')}
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  text(0.1,0.9,i,cex=2)
+}
+
+
+```
+
+```{r gsvdatesplot3, message=F,echo=FALSE,fig.width=6,fig.height=6,fig.cap="\\label{fig:gsvdatesplot3}Spatial distribution of properties that have a panorama in 2007 and also in 2014-2016."}
+# Get GSV date list
+x = read.delim("./rproject/ff_old_young2.csv",sep = ",",header = TRUE)
+
+gsvdates_oldyoung = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
+
+# Assign NAD83
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates_oldyoung) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates_oldyoung = spTransform(gsvdates_oldyoung, srMTM9)
+
+
+#win.graph(8.5,11)
+par(mai=c(.2,0,0,0),bty="n")
+
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
+  plot(gsvdates_oldyoung,pch=16,cex=0.25,add=TRUE)
+  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  #text(0.1,0.9,i,cex=2)
+
+
+
+```
+
+Examine date distribution
+
+```{r histdates, message=F, echo=FALSE, fig.width=7,fig.height=7,fig.cap="\\label{fig:histdates}a) Distribution of the oldest GSV date accessed at a location; b) Distribution of the Youngest GSV date accessed at a location; c) Distribution of all GSV image dates accessed at a location; d) Distribution of the number of years of GSV imagery at each queried location."}
+par(mfrow=c(2,2),mai=c(.4,.65,.4,.1),bty="n")
+hist(gsvdates$MINY,xlab="Date",ylab="Number of GSV locations",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"a)",cex=1)
+hist(gsvdates$MAXY,xlab="Date",ylab="",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"b)",cex=1)
+av=read.delim("f:/models/allyearvector.csv",sep=",",header=F)
+hist(av$V1,xlab="Date",ylab="Number of GSV locations",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"c)",cex=1)
+hist(gsvdates$NYEARS,xlab="Number of years of imagery",ylab="",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"d)",cex=1)
+```
+
+By examining the spatial distribution of the oldest and youngest dates of GSV panoramas at each location that contained GSV images (Figures \ref{fig:gsvdatesplot} and \ref{fig:gsvdatesplot2}), it becomes clear that the years for which predictions can be made are 2007,2009,2012,and a combined 20014-2016.  We cannot, for example, make inferences regarding changes in the spatial distirubtion of gentrifcation-like visual changes between the years 2009-2010, since in 2010 there are almost no images.  Examining all properties (locations) that contained an image in 2007 and one in the years >2012 (\ref{fig:gsvdatesplot3}) clearly illustrates the region in which we can make inferences back to 2007. Therefore, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdatesplot3} shows that only the region of our current study area contains GSV imagery in 2007. With regard to the full GSV image dataset, 2012 is the year with the most panoramas Figure \ref{fig:histdates}c provide evidence of an approximate 2-3 year update frequency of GSV imagery. The year with the most GSV panoramas in the The average number of years that GSV panoramas are available at a property is `r round(mean(gsvdates$NYEARS),digits=2)` \ref{fig:histdates}d.   
+
+##Subset of GSV images used in training SCNN-FC-8
+
 ```{r traindistribution, echo=FALSE}
+#Create KDE estimates of training data distrbution
 kde.training = ptDensity(spd,outercore)
 spd.yes=subset(spd,V3==1)
 spd.no=subset(spd,V3==0)
 kde.training.yes = ptDensity(spd.yes,outercore)
 kde.training.no = ptDensity(spd.no,outercore)
+```
+
+
+
+```{r traininglocationplot, echo=FALSE,fig.width=6,fig.height=6,fig.cap="\\label{fig:traininglocationplot}Location of GSV images used in training,validation and testing of SCNN-FC-8."}
+# Get GSV date list
+#win.graph(8.5,11)
+par(mai=c(.2,0,0,0),bty="n")
+
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
+  plot(spd,pch=16,cex=0.25,add=TRUE)
+  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  #text(0.1,0.9,i,cex=2)
+
 
 
 ```
 
 
-```{r kdetrain, echo=FALSE,fig.width=4,fig.height=7,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training images; a) all 16224 training pairs b) only training pairs that are positive for change; c) only pairs that are negative for change."}
+```{r kdetrain, echo=FALSE,fig.width=4,fig.height=7,fig.cap="\\label{fig:kdetrain}a)Distribution of all GSV training, validation and test images; a) all 16224 training pairs b) only training pairs that are positive for gentrification-like visual change; c) only pairs that are negative."}
 # makeplot
 #windows(width=8,height=11,xpinch=300,ypinch=300)
 # Create class breaks
@@ -280,9 +483,9 @@ p.plot(kde.training.no,cint3,outercore,"C",pk=3)
 
 ```
 
-The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:kdetrain}.
+Because we assessed gentrivication-like visual changes, the set of training, validation and test GSV image pairs came from anywhere within the spatial extent of all the GSV images (\ref{fig:kdetrain}) we accessed Figures \ref{fig:traininglocationplot} and \ref{fig:kdetrain}.
 
-```{r kdetrain_fig, eval=TRUE,echo=FALSE,message=FALSE}
+```{r kdetrain_fig, eval=TRUE,echo=FALSE,message=FALSE,results='hide'}
 # makeplot
 png("./figures/KDE_TRAINING_DISTRIB.png",units="in",width=7,height=12,res=300)
 par(mfrow=c(3,1),mai=c(0.1,0,0.1,0),bty="n")
@@ -294,182 +497,11 @@ p.plot(kde.training.no,cint3,outercore,"C",pk=3)
 dev.off()
 ```
 
-Get oldest date for GSV imagery, youngest date and span
-
-```{python py, echo=FALSE, eval=FALSE}
-import glob
-import os
-basedir='f:/ottawa_image_db/'
-dirlist = os.listdir(basedir)
-
-with open("f:/models/ffxx.csv", "w") as f:
-    f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
-    for d in dirlist:
-        images = glob.glob(basedir+d+ '/*.jpg')
-        if len(images)!=0:
-            dlist=[]
-            for image in images:
-                fn=os.path.basename(image)
-                dlist.append(fn[0:4])
-            mx=max(dlist)
-            mn=min(dlist)
-            diff=int(mx)-int(mn)
-            ld=len(dlist)
-            lds=len(set(dlist))
-            f.write("{},{},{},{},{},{}\n".format(d, mn,mx,diff,ld,lds))
-            #print(dlist,min(dlist))
-
-# All years for all images
-with open("f:/models/allyearvector.csv", "w") as f:
-    #f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
-    for d in dirlist:
-        images = glob.glob(basedir+d+ '/*.jpg')
-        if len(images)!=0:
-            dlist=[]
-            for image in images:
-                fn=os.path.basename(image)
-                dlist.append(fn[0:4])
-                f.write("{}\n".format(fn[0:4]))
-                
-# locations ith a date in 2007 and a date in 2014-2016.                
-with open("f:/models/ff_old_young2.csv", "w") as f:
-    f.write("LAT,LON,MINY,MAXY,DRANGE,NPHOTO,NYEARS\n")
-    for d in dirlist:
-        images = glob.glob(basedir+d+ '/*.jpg')
-        if len(images)!=0:
-            dlist=[]
-            fnamelist=[]
-            for image in images:
-                fn=os.path.basename(image)
-                fnamelist.append(fn)
-                dlist.append(fn[0:4])
-            mx=max(dlist)
-            mn=min(dlist)
-            diff=int(mx)-int(mn)
-            ld=len(dlist)
-            lds=len(set(dlist))
-            if (((mx=='2016') | (mx=='2015') | (mx=='2014')) & (mn=='2007')):
-                f.write("{},{},{},{},{},{}\n".format(d, mn,mx,diff,ld,lds))
-            #print(dlist,min(dlist))
-```
-
-#GSV panorama location analysis
-Load GSV dates, create SPDF, assign and project.
-
-```{r gsvdatesplot, echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed. The grey polygon represents the study area where model predictions are made and the outer polygon represetns the extent of the full GSV dataset."}
-# Get GSV date list
-x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
-#names(x)=c("LAT","LONG","OLDEST","YOUNGEST","SPAN")
-# Make spdf of training data duels fi
-outercore$DID=rep(1,length(outercore$OBJECTID))
-region <- gUnaryUnion(outercore, id = outercore@data$DID)
-
-gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
-
-# Assign NAD83
-srNAD83 = CRS("+init=epsg:4269")
-proj4string(gsvdates) = srNAD83
-
-# Reproject to MTM9 NAD83
-srMTM9 = CRS("+init=epsg:32189")
-gsvdates = spTransform(gsvdates, srMTM9)
-
-
-#win.graph(8.5,11)
-par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
-for(i in seq(2007,2016,1)){
-  y2007=subset(gsvdates,MINY==i)
-  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
-  plot(studyarea,col='gray',add=TRUE)
-  plot(y2007,pch=16,cex=0.25,add=TRUE)
-  if (i==2007){  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')}
-  #plot(studyarea,add=TRUE)
-  par(usr=c(0,1,0,1))
-  text(0.1,0.9,i,cex=2)
-}
+Get oldest date for GSV imagery, youngest date and span [@sharif_razavian_cnn_2014].
 
 
 
-```
 
-```{r gsvdatesplot2, echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot2}Spatial distribution of the youngest date found at each location where GSV images were accessed."}
-# Get GSV date list
-x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
-
-gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
-
-# Assign NAD83
-srNAD83 = CRS("+init=epsg:4269")
-proj4string(gsvdates) = srNAD83
-
-# Reproject to MTM9 NAD83
-srMTM9 = CRS("+init=epsg:32189")
-gsvdates = spTransform(gsvdates, srMTM9)
-
-
-#win.graph(8.5,11)
-par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
-for(i in seq(2007,2016,1)){
-  y2007=subset(gsvdates,MAXY==i)
-  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
-  plot(studyarea,col='gray',add=TRUE)
-  plot(y2007,pch=16,cex=0.25,add=TRUE)
-  if (i==2007){  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')}
-  #plot(studyarea,add=TRUE)
-  par(usr=c(0,1,0,1))
-  text(0.1,0.9,i,cex=2)
-}
-
-
-```
-
-```{r gsvdatesplot3, echo=FALSE,fig.width=6,fig.height=6,fig.cap="\\label{fig:gsvdatesplot3}Spatial distribution of properties that have a panorama in 2007 and also in 2014-2016."}
-# Get GSV date list
-x = read.delim("./rproject/ff_old_young2.csv",sep = ",",header = TRUE)
-
-gsvdates_oldyoung = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
-
-# Assign NAD83
-srNAD83 = CRS("+init=epsg:4269")
-proj4string(gsvdates_oldyoung) = srNAD83
-
-# Reproject to MTM9 NAD83
-srMTM9 = CRS("+init=epsg:32189")
-gsvdates_oldyoung = spTransform(gsvdates_oldyoung, srMTM9)
-
-
-#win.graph(8.5,11)
-par(mai=c(.2,0,0,0),bty="n")
-
-  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
-  plot(studyarea,col='gray',add=TRUE)
-  plot(gsvdates_oldyoung,pch=16,cex=0.25,add=TRUE)
-  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
-  #plot(studyarea,add=TRUE)
-  par(usr=c(0,1,0,1))
-  #text(0.1,0.9,i,cex=2)
-
-
-
-```
-
-Examine date distribution
-
-```{r histdates, echo=FALSE, fig.width=7,fig.height=3,fig.cap="\\label{fig:histdates}a) Distribution of the oldest GSV date accessed at a location; b) Distribution of all GSV image dates accessed at a location; c) Distribution of the number of years of GSV imagery at each queried location."}
-par(mfrow=c(1,3),mai=c(.4,.5,.4,.1),bty="n")
-hist(gsvdates$MINY,xlab="Date",ylab="Number of GSV locations",main="")
-par(usr=c(0,1,0,1),xpd=NA)
-text(-.15,1.1,"a)",cex=1)
-av=read.delim("f:/models/allyearvector.csv",sep=",",header=F)
-hist(av$V1,xlab="Date",ylab="",main="")
-par(usr=c(0,1,0,1),xpd=NA)
-text(-.15,1.1,"b)",cex=1)
-hist(gsvdates$NYEARS,xlab="Number of years of imagery",ylab="",main="")
-par(usr=c(0,1,0,1),xpd=NA)
-text(-.15,1.1,"c)",cex=1)
-```
-
-Both Figure \ref{fig:histdates} and \ref{fig:gsvdatesplot} provide evidence of an approximate 2-3 year update frequency of GSV imagery. The average number of years that GSV panoramas are available is `r round(mean(gsvdates$NYEARS),digits=2)` (Figure \ref{fig:histnyears}). Both distributions also indicate that over the 10-year period there has been a decreasing overall investement in the total number of images captured at each location. That decreasing trend is suggestive of perhaps an evolving collection strategy that is informed by satellite imagery, different goals for the product or less investment in the resources Google assigns to established collections of GSV imagery.  Moreover, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdates} shows that only the region of our current study area contains GSV imagery in 2007.
 
 #Results
 ##Model Training curves
@@ -532,7 +564,7 @@ my.palette=colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255
 
 Plot comparison between permits and model results.
 
-```{r comparemodelpermit, echo=FALSE,eval=TRUE, message=FALSE, fig.width=8,fig.height=4,fig.cap="\\label{fig:comparemodelpermit}Comparison of SCNN-FC-8 predictions (a) with building permits (b)."}
+```{r comparemodelpermit, message=FALSE,echo=FALSE,eval=TRUE, results='hide', fig.width=8,fig.height=4,fig.cap="\\label{fig:comparemodelpermit}Comparison of SCNN-FC-8 predictions (a) with building permits (b)."}
 plot.comparemodel=function(kde1,kde2,plotintervals,colorpal,nbrpoly){
   set.panel()
   par(mfrow=c(1,2),mai=c(0,0,0,0),oma=c(0,0,0,4),bty="n")
@@ -588,14 +620,14 @@ plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:comparemodelpermit}.
 
-```{r, savedensfplot, echo=FALSE, eval=TRUE, echo=FALSE,message=FALSE}
+```{r, savedensfplot, echo=FALSE, eval=TRUE, message=FALSE,results='hide'}
 # makeplot
 png("./figures/figure_pred_vs_permit.png",units="in",width=11,height=4,res=300)
 plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 dev.off()
 ```
 
-```{r differencemap, echo=FALSE,eval=TRUE, fig.width=8,fig.height=8,fig.cap="\\label{fig:differencemap}Proportional difference betweeen predicted KDE and permit KDE."}
+```{r differencemap, echo=FALSE, message=FALSE, eval=TRUE, fig.width=8,fig.height=8,fig.cap="\\label{fig:differencemap}Proportional difference betweeen predicted KDE and permit KDE."}
 
 par(bty="n")
 kdepredict.n=(kdepredict-0)/(cellStats(kdepredict,stat='max')-0)
@@ -644,29 +676,30 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
 
 Figure \ref{fig:differencemap} illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 predictions and building permits. The two isolagted regions of intensity in Figure \ref{fig:comparemodelpermit}, x and x', cleary stand out as the two largest diffrences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdwon Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detections of gentrification-like visual change because of offset/FOV issues.  IN particular, in the region denoted by x', there were a number of new homes constructed which normally would have been picked up by the model within the image sequence.  However, the sequences of GSV images in this region of x', show that the common sequence of visual changes were as such: A park, followed by construction of a large wall, removal of the large wall and construction of new housing.  The change from wall to new construction was not something that our model encountered in our training dataset and so would not see the change from a park to a wall as a gentrification like change, nor the change from a wall to a residential structure.
 
+
 ```{r eval=FALSE, echo=FALSE}
 
 #make number of years by site map. and this correlation map.
-
+temp_chl_s=stack(kdepermits.n,kdepredict.n)#crop(kdepredict.n,studyarea),crop(kdepermits.n,studyarea))
 temp_chl_s_nb <- raster(temp_chl_s, 1)
 values(temp_chl_s_nb) <- 1:ncell(temp_chl_s)
 
 focal_cor <- focal(
   x = temp_chl_s_nb,
-  w = matrix(1, 5, 5),
+  w = matrix(1, 3, 3),
   fun = function(x, y = temp_chl_s){
     cor(values(y)[x, 1], values(y)[x, 2],
         use = "na.or.complete")
   },
-  filename = file.path(extraWD, "focal_cor.tif"),
-  overwrite = TRUE
+  #filename = file.path(extraWD, "focal_cor.tif"),
+  #overwrite = TRUE
 )
 ```
 
 
 #SCNN-FC-8 predictions over time
-```{r timeseries, echo=FALSE,eval=TRUE, message=FALSE,fig.width=6,fig.height=9,fig.cap="\\label{fig:timeseries}Comparison of SCNN-FC-8 predictions over time (a) 2009 (b) 2012 (c) 2013-2016."}
-  set.panel()
+```{r timeseries, echo=FALSE,eval=TRUE, message=FALSE,warning=FALSE, results='hide',fig.width=6,fig.height=9,fig.cap="\\label{fig:timeseries}Comparison of SCNN-FC-8 predictions over time (a) 2009 (b) 2012 (c) 2013-2016."}
+set.panel()
 plot.time=function(){
   tokmsq=1000000
   plot.t=function(predpts,year){
@@ -705,7 +738,7 @@ plot.time=function(){
     plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
     if(i==2009) {
       pl=polygonsLabel(labelhoods,labelhoods@data$names,method='inpolygon',cex=0.5,polypart = 'largest')
-      print(pl)
+      #print(pl)
       scalebar(d = 5000, xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
     }
     par(usr=c(0,1,0,1))
@@ -741,7 +774,7 @@ plot.time()
 ```
 
 
-```{r, savetimeplot, eval=TRUE, echo=FALSE,message=FALSE}
+```{r, savetimeplot, eval=TRUE, echo=FALSE,message=FALSE,results='hide'}
 # makeplot
 png("./figures/predovertime.png",units="in",width=6,height=9,res=300)
 plot.time()
@@ -751,7 +784,7 @@ dev.off()
 
 
 
-```{r excludetrain, echo=FALSE,eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:excludetrain}Comparison of SCNN-FC-8 predictions (a) using all training data (b) using only training data outside of 5 neighbourhoods"}
+```{r excludetrain, echo=FALSE,eval=TRUE, message=FALSE,warning=FALSE,results='hide',fig.width=8,fig.height=4,fig.cap="\\label{fig:excludetrain}Comparison of SCNN-FC-8 predictions (a) using all training data (b) using only training data outside of 5 neighbourhoods"}
 predex=read.csv("./rproject/fullres_replicate_onesonly_6f.csv")
 predexspd = SpatialPointsDataFrame(cbind(x = as.numeric(predex$LONG), y = as.numeric(predex$LAT)), predex)
 
@@ -780,7 +813,7 @@ plot.comparemodel(kderun1,kderun2,cintn,my.palette,nbrhoods)
 
 ```
 
-```{r echo=FALSE}
+```{r  echo=FALSE,message=FALSE,results='hide'}
 png("./figures/figure_run1_vs_run2.png",units="in",width=11,height=4,res=300)
 plot.comparemodel(kderun1,kderun2,cintn,my.palette,nbrhoods)
 dev.off()
@@ -790,7 +823,7 @@ dev.off()
 
 
 #Example images
-```{r examples, echo=FALSE,message=FALSE, fig.width=8,fig.height=11,fig.cap="\\label{fig:examples}Illustrative examples of SCNN-FC-8 predictions.  Each row represents the time series of GSV images for the unique location specified in the map plot at the end of each row. The delta symbol between any two years indicates where the SCNN-FC-8 predicted a visual change; (a to d) Normal cases of a single predicted change across the series of images at a given unique location. (e to k) represent cases where the model predicted more than one change or a false positive change wihtin the sequence.  See text for further details."}
+```{r examples, message=FALSE,  echo=FALSE,message=FALSE,results='hide',fig.width=8,fig.height=11,fig.cap="\\label{fig:examples}Illustrative examples of SCNN-FC-8 predictions.  Each row represents the time series of GSV images for the unique location specified in the map plot at the end of each row. The delta symbol between any two years indicates where the SCNN-FC-8 predicted a visual change; (a to d) Normal cases of a single predicted change across the series of images at a given unique location. (e to k) represent cases where the model predicted more than one change or a false positive change wihtin the sequence.  See text for further details."}
 library(imager)
 #subtlechanges
   #F:\ottawa_image_db\45.395218,-75.751936
@@ -885,7 +918,7 @@ for(k in dlist) {
     mtext(tt, 3)
     if (tt %in% allyears) {
       par(las=1)
-      mtext("\u275A", 2,cex=2)#expression(bold(Delta))"\u26AB"
+      mtext("<|>", 2,cex=2)#expression(bold(Delta))"\u26AB"
       par(las=0)
     }
     pcount = pcount + 1
@@ -903,7 +936,7 @@ plotexamples()
 
 
 
-```{r echo=FALSE}
+```{r  echo=FALSE,message=FALSE,results='hide'}
 png("./figures/examples.png",units="in",width=6.5,height=10,res=300)
 plotexamples()
 dev.off()
@@ -911,7 +944,7 @@ dev.off()
 
 ```
 
-```{r saliency, echo=FALSE, message=FALSE, fig.width=8,fig.height=11,fig.cap="\\label{fig:saliency}Class activation heat maps of \\label{fig:examples} based on the last convolutional layer in SCNN-FC-8."}
+```{r saliency, echo=FALSE,message=FALSE,results='hide',  fig.width=8,fig.height=11,fig.cap="\\label{fig:saliency}Class activation heat maps of \\label{fig:examples} based on the last convolutional layer in SCNN-FC-8."}
 library(imager)
 
 plotexamples2=function(){
@@ -961,7 +994,7 @@ for(k in dlist) {
     mtext(tt, 3)
     if (tt %in% allyears) {
       par(las=1)
-      mtext("\u275A", 2,cex=2)#expression(bold(Delta))"\u26AB"
+      mtext("<|>", 2,cex=2)#expression(bold(Delta))"\u26AB"
       par(las=0)
     }
     pcount = pcount + 1
@@ -978,177 +1011,14 @@ plotexamples2()
 ```
 
 
-```{r echo=FALSE}
+```{r  echo=FALSE,message=FALSE,results='hide'}
 png("./figures/examples_sal.png",units="in",width=6.5,height=10,res=300)
 plotexamples2()
 dev.off()
 
 
 ```
-
-
-#Other stuff
-```{r n, echo=FALSE,eval=FALSE}
-spd2o=spdo
-spd2o$X=coordinates(spd2o)[,1]
-spd2o$Y=coordinates(spd2o)[,2]
-spd2o=spd2o@data
-```
-
-```{python pp, echo=FALSE, eval=FALSE}
-import os
-import matplotlib.pyplot as plt
-import pandas
-import seaborn as sns
-p=r.spd2o
-p.to_pickle("./rproject/dummy.pkl")
-#print(p.head)
-print(p.X)
-sns.kdeplot(p.X, p.Y, cmap="Blues", shade=True, shade_lowest=True, )
-plt.show()
-```
-
-
-
-```{r thinset, echo=FALSE,eval=FALSE}
-# Calculate KDE on training locations & convert to raster obj
-kde = ptDensity(spd,studyarea)
-
-kde = raster(kde)
-
-# Extract probabilities from KDE surface
-probs = extract(kde, spd)
-
-# Add the raster probabilities to spdf after standardizing and inverting
-probs[is.na(probs)]=0
-maxv = max(probs, na.rm = TRUE)
-minv = min(probs, na.rm = TRUE)
-probs=1 - (probs - minv) / (maxv - minv)
-spd@data$RASTERVALU=probs
-
-
-#
-# Crop and mask raster to study area
-r2 <- crop(kde, extent(m4))
-r3 <- mask(r2, m4)
-
-# Plot raster
-plot(r3)
-plot(m3, add = TRUE, lwd = 2)
-
-# Create a thinned dataset
-idx=1:length(spd@data$RASTERVALU)
-ytest=sample(idx,600, replace = FALSE, prob = spd@data$RASTERVALU/sum(spd@data$RASTERVALU))
-plot(spd@data$Long,spd@data$Lat,pch=16)
-x=spd@data$Long[ytest]
-y=spd@data$Lat[ytest]
-points(x,y,col=2)
-
-pts=spd[ytest,]
-kde=density.ppp(as.ppp(pts),eps = 50,
-                  kernel = 'quartic',
-                  sigma = 750)
-kde=raster(kde)
-r2 <- crop(kde, extent(m4))
-r3 <- mask(r2, m4)
-plot(r3)
-plot(spd[ytest,],add=TRUE,col=2,pch=16)
-
-
-library(classInt)
-vals=values(r3)
-vals=vals[!is.na(vals)]
-cint = classIntervals(vals,n=9,style='equal')
-
-library(RColorBrewer)
-my.palette <- brewer.pal(n = 9, name = "OrRd")
-plot(r3, breaks=cint$brks,col = my.palette)
-
-
-```
-```{r data, echo=FALSE,eval=FALSE}
-library(arcgisbinding)
-arc.check_product()
-da=arc.open('C:/Users/laggi/Documents/ArcGIS/Default.gdb/Extract_trainin1')
-
-da2=arc.select(da)
-da3=arc.data2sp(da2)
-
-vals=da3@data$RASTERVALU
-maxv=max(vals)
-minv=min(vals)
-
-da3@data$RASTERVALU=1-(da3@data$RASTERVALU-minv)/(maxv-minv)
-library(dplyr)
-
-stest=sample_n(da3@data, 100, replace = FALSE, weight = da3@data$RASTERVALU)
-plot(da3@data$Long,da3@data$Lat,pch=16)
-points(stest$Long,stest$Lat,col=2)
-
-idx=1:length(da3@data$RASTERVALU)
-ytest=sample(idx,600, replace = FALSE, prob = da3@data$RASTERVALU/sum(da3@data$RASTERVALU))
-plot(da3@data$Long,da3@data$Lat,pch=16)
-x=da3@data$Long[ytest]
-y=da3@data$Lat[ytest]
-points(x,y,col=2)
-
-pts=da3[ytest,]
-plot(density.ppp(as.ppp(pts),kernel='quartic',sigma=750))
-
-# No density
-idx=1:length(da3@data$RASTERVALU)
-ytest=sample(idx,500, replace = FALSE)#, prob = da3@data$RASTERVALU)
-plot(da3@data$Long,da3@data$Lat,pch=16)
-x=da3@data$Long[ytest]
-y=da3@data$Lat[ytest]
-points(x,y,col=2)
-
-#### Density
-library(raster)
-
-tloc=arc.open('C:/Users/laggi/Documents/ArcGIS/Default.gdb/Extract_trainin2')
-
-tloc2=arc.select(tloc)
-tloc3=arc.data2sp(tloc2)
-vals=tloc3@data$RASTERVALU
-maxv=max(vals,na.rm=TRUE)
-minv=min(vals,na.rm=TRUE)
-
-tloc3@data$RASTERVALU=1-(tloc3@data$RASTERVALU-minv)/(maxv-minv)
-r=density.ppp(as.ppp(tloc3),eps=100,kernel='quartic',sigma=750)
-r=raster(r)
-#,weights=tloc3@data$RASTERVALU))
-m=arc.open('C:/GIST/core_multi.shp')
-
-m2=arc.select(m)
-m3=arc.data2sp(m2)
-m4=spTransform(m3, CRS(proj4string(tloc3)))
-
-r2 <- crop(r, extent(m4))
-r3 <- mask(r2, m4)
-
-plot(r3)
-plot(m3, add=TRUE, lwd=2)
-```
-
-
-```{r, echo=FALSE,eval=FALSE}
-seanpts=openSPDF(shapefilepath = 'F:/seantoIpad2018/newpoints/sample_pointsnw/sample_points.shp')
-
-lvl=levels(seanpts@data$Label)
-j=vector("numeric")
-for(i in lvl){
-  w=which(seanpts@data$Label==i)
-  j=c(j,sample(w,2))
-}
-k=rep(1,length(seanpts@data$Label))
-k[j]=0
-seanpts$CHOICE=k
-writeOGR(obj=seanpts, dsn='F:/seantoIpad2018/newpoints/sample_pointsnw', layer="newsampleptsc", driver="ESRI Shapefile")
-
-```
-
-
+# References
 
 
 
