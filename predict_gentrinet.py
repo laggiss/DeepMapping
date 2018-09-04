@@ -17,7 +17,7 @@ K.set_image_dim_ordering('tf')
 
 # Variable corresponding to the images size in pixels. 224 is the usual value
 IMG_SIZE = 224
-model_save = 'F:/DeepMappingData/new/vgg19_siamese_base_train.h5'
+model_save = 'F:/DeepMappingData/finetunded_gt_956_percent_fc_and_block5_and_block4.h5'
 
 with tf.device('/gpu:0'):
 
@@ -28,15 +28,16 @@ with tf.device('/gpu:0'):
     # We fetch all the folder paths in the folder containing the images in an array
 
     #locations = glob.glob('f:/ottawa_image_db/*')
-    locations=[]
+    # locations=[]
     cnt=0
 
-    with open("f:/models/fout.csv",'r') as f:
-        x=f.readlines()
+    # with open("f:/models/fout.csv",'r') as f:
+    #     x=f.readlines()
+    #
+    # for l in x:
+    #     locations.append('f:/ottawa_image_db\\'+l.rstrip("\n"))
 
-    for l in x:
-        locations.append('f:/ottawa_image_db\\'+l.rstrip("\n"))
-
+    locations = glob.glob('f:/ottawaimage2/*')
 
     num_locations = len(locations)
 
@@ -133,7 +134,7 @@ with tf.device('/gpu:0'):
 
         concatenation = np.concatenate((loc_year, pred), axis=1)
 
-        np.save('f:/preds/replicate/classification_results_all_images_%i.h5' % portion, concatenation)
+        np.save('f:/preds/intervals/classification_results_all_images_%i.h5' % portion, concatenation)
 
     # test_array_X = 'c:/gist/testarrayX.npy'
     # test_array_Y = 'c:/gist/testarrayY.npy'
@@ -142,8 +143,8 @@ with tf.device('/gpu:0'):
     # ev = classification_model.evaluate([X_test[:, 0], X_test[:, 1]], y_test, batch_size=24)
 
 ## reconsrruct
-results = glob.glob('f:/preds/replicate' + '/*.npy')
-with open("f:/models/fullres_replicate.csv", 'w') as f:
+results = glob.glob('f:/preds/intervals' + '/*.npy')
+with open("f:/models/fullres_07to012.csv", 'w') as f:
     f.write('LAT,LONG,YEAR1,YEAR2,PRED\n')
     for item in results:
         narray = np.load(item)
