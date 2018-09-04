@@ -17,14 +17,14 @@ bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,message=FALSE,warning=FALSE)
 library(reticulate)
 knitr::knit_engines$set(python = reticulate::eng_python)
 use_python("c:/programdata/anaconda3/python.exe")
 pdf.options(encoding = 'CP1250')
 ```
 
-NOTE: this docuemnt was created in RMarkdown and contains all of the R-code used to create maps and graphs although the R code is suppressed in this document. You can find the RMarkdown document with R-code at (https://github.com/laggiss/DeepMapping/blob/master/sampling.Rmd).
+
 
 ```{r message=FALSE, echo=FALSE}
 #Import required libraries
@@ -96,7 +96,7 @@ yy = unlist(lapply(str_split(yy, "new-"), function(x) {
 }))
 
 # Check for NA
-yy[is.na(as.numeric(yy))]
+#yy[is.na(as.numeric(yy))]
 
 
 xx = unlist(lapply(str_split(xx, "new-"), function(x) {
@@ -259,11 +259,17 @@ with open("f:/models/ff_old_young2.csv", "w") as f:
             #print(dlist,min(dlist))
 ```
 
+#Introduction
+>**NOTE**: *This document was created from an RMarkdown file.  The RMarkdown version of this doucument contains all of the R-language code used to access datasets as well as create the maps (except Figure 1 in the manuscript which was created elsewhere) and graphs in this supplementary document and manuscript. However, the R code is suppressed in the version you are currently reading.  Should you wish to examine the raw data or code, you can find the RMarkdown document with R-language code containing all references at (https://github.com/laggiss/DeepMapping/blob/master/sampling.Rmd)*.
+
+We use SCNN-FC-8 to detect gentrification-like visual changes within the sequence of GSV images for a property.   Subsequently, we map the locations of GSV panoramas wihtin which a change was detected. 
+
 #GSV Image data
 ##GSV panorama location analysis
-The first GSV images in Ottawa were taken in 2007.  In that year, only the portion of Ottawa coinciding with our study region contained panoramas.  GSV panoramas are not available everywhere for all time periods from 2007-2016. Because we ultimately will detect change within the sequence  of images for a property, we wanted to explore the spatial pattern of gentrificatrion in Ottawa as far back as possible.  Therefore, from the full set of GSV images, we decided to use the SCNN FC-8 model to detect changes within sequences of imagery within our study region.
+The spatio-temporal coverage of GSV imagery varies across space and time. We were primarily concerned with detecting gentrification as far back as possible within the spatial domain defined by the region of the city containing the highest conscentration of older building stock that we call our 'study area' (see Figure 1 in manuscript).  To train SCNN-FC-8, we wanted a larger region in which to find examples of gentrification-like visual change.  Thus, we accessed GSV imagery within a broader region that includes our study area and a buffer region, comprised primarily of post 1980's suburban residential landuse, that we call the 'GSV access region' (Figure S\ref{fig:allgsvdata}).  
 
-```{r gsvdatesplot, message=FALSE,echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed. The grey polygon represents the study area where model predictions are made and the outer polygon represetns the extent of the full GSV dataset."}
+
+```{r message=FALSE,echo=FALSE,}
 #Load GSV dates, create SPDF, assign and project.
 
 # Get GSV date list
@@ -284,6 +290,95 @@ srMTM9 = CRS("+init=epsg:32189")
 gsvdates = spTransform(gsvdates, srMTM9)
 
 
+```
+
+```{r allgsvdata, message=F,echo=FALSE,fig.width=6,fig.height=6,fig.cap="\\label{fig:allgsvdata}Distribution of all GSV panormas accessed in this research."}
+
+
+par(mai=c(.2,0,0,0),bty="n")
+
+  plot(region,col='grey',xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+    plot(ons,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="",add=TRUE)
+  plot(studyarea,col='red',add=TRUE)
+  plot(gsvdates,pch=16,cex=0.15,add=TRUE)
+  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  #text(0.1,0.9,i,cex=2)
+
+legend("topleft",
+       legend = c("GSV pano.","Study area","GSV access region","Other neighbourhoods"),pch=c(18,NA,NA,NA),
+       fill = c(NA,'red','grey','white'),
+       border=c(NA,'black','black','black'),
+       col='black',
+       bty = "n", # turn off the legend border
+       cex = .8) # decrease the font / legend size
+
+```
+
+Next, we determine if the GSV data we were accessing within the GSV access region can support anlysis in the study area.  The first GSV panoramas in the city were taken in 2007 and, naturally, we would like to map changes as far back as possible when describing the spatial evolution of gentrification in the study area. Thus, the possible temporal domain is from 2007-2016 (we accessed imagery for this work in the spring of 2017).  However, because GSV images may not be avilable at all time periods at all locations, we need to determine whether or not, within our study area, there are sufficient numbers of properties with panoramas back to 2007.  In short, to map gentrification-like viusual changes, we needed to see if our study area contained sufficient spatial coverage from 2007 and 2016. We also need to know which years in the interval beetween 2007 and 2016 contained sufficient spatial coverage so that we could explore the temproal evolution of gentrification. 
+
+With regard to the panorama locations within the GSV access region (S\ref{fig:allgsvdata}), the majority of properties had GSV images by 2012 (S\ref{fig:histdates}a) and that the majority of these were fully re-imaged between 2014-2016 (S\ref{fig:histdates}b). 2012 is the year with the most panoramas Figure S\ref{fig:histdates}c provide evidence of an approximate 2-3 year update frequency of GSV imagery. The year with the most GSV panoramas in the The average number of years that GSV panoramas are available at a property is `r round(mean(gsvdates$NYEARS),digits=2)` Figure S\ref{fig:histdates}d.   
+
+```{r histdates, message=F, echo=FALSE, fig.width=7,fig.height=7,fig.cap="\\label{fig:histdates}a) Distribution of the oldest GSV date accessed at a location; b) Distribution of the Youngest GSV date accessed at a location; c) Distribution of all GSV image dates accessed at a location; d) Distribution of the number of years of GSV imagery at each queried location."}
+par(mfrow=c(2,2),mai=c(.4,.65,.4,.1),bty="n")
+hist(gsvdates$MINY,xlab="Date",ylim=c(0,80000),ylab="Number of GSV locations",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"a)",cex=1)
+hist(gsvdates$MAXY,xlab="Date",ylab="",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"b)",cex=1)
+av=read.delim("f:/models/allyearvector.csv",sep=",",header=F)
+hist(av$V1,xlab="Date",ylab="Number of GSV locations",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"c)",cex=1)
+hist(gsvdates$NYEARS,xlab="Number of years of imagery",ylab="",main="")
+par(usr=c(0,1,0,1),xpd=NA)
+text(-.15,1.1,"d)",cex=1)
+```
+
+Examining all properties (locations) that contained an image in 2007 and one in the years 2012-2014 (S\ref{fig:gsvdatesplot3}), clearly defines the region in which we can make inferences back to 2007.  We cannot, for example, make inferences regarding changes in the spatial distirubtion of gentrifcation-like visual changes between the years 2009-2010, since in 2010 there are almost no GSV panoramas.  Therefore, in order to detect gentrification-like visual changes in GSV sequences since 2007 using SCNN-FC-8, we can only do so within current study area since it contains GSV panoramas in 2007 (Figure S\ref{fig:gsvdatesplot3}).  Approprietly, the portion of Ottawa coinciding with our study area is the region that contains panoramas back to 2007.  Therefore, from the full set of GSV panoramas, we were confident in using SCNN-FC-8 to detect gentrificaiton-like visual changes  within our study region.  
+
+#need all loctiond by year plot
+
+```{r gsvdatesplot3, message=F,echo=FALSE,fig.width=6,fig.height=6,fig.cap="\\label{fig:gsvdatesplot3}Spatial distribution of properties that have a panorama in 2007 and also in 2014-2016."}
+# Get GSV date list
+x = read.delim("./rproject/ff_old_young2.csv",sep = ",",header = TRUE)
+
+gsvdates_oldyoung = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
+
+# Assign NAD83
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates_oldyoung) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates_oldyoung = spTransform(gsvdates_oldyoung, srMTM9)
+
+
+#win.graph(8.5,11)
+par(mai=c(.2,0,0,0),bty="n")
+
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
+  plot(gsvdates_oldyoung,pch=16,cex=0.25,add=TRUE)
+  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  #text(0.1,0.9,i,cex=2)
+
+legend("bottomright",
+       legend = c("GSV pano.","Study area","GSV access region"),pch=c(18,NA,NA),
+       fill = c(NA,'grey','white'),
+       border=c(NA,'black','black'),
+       col='black',
+       bty = "n", # turn off the legend border
+       cex = .8) # decrease the font / legend size
+
+```
+
+
+```{r gsvdatesplot, message=FALSE,echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot}Spatial distribution of the oldest date found at each location where GSV images were accessed. The grey polygon represents the study area where model predictions are made and the outer polygon represetns the extent of the full GSV dataset."}
 #win.graph(8.5,11)
 par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
 for(i in seq(2007,2016,1)){
@@ -291,8 +386,16 @@ for(i in seq(2007,2016,1)){
   plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
   plot(studyarea,col='gray',add=TRUE)
   plot(y2007,pch=16,cex=0.25,add=TRUE)
-  if (i==2007){  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')}
-  #plot(studyarea,add=TRUE)
+    if (i==2007){  
+    scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+    legend("bottomright",
+       legend = c("GSV pano.","Study area","GSV access region"),pch=c(18,NA,NA),
+       fill = c(NA,'grey','white'),
+       border=c(NA,'black','black'),
+       col='black',
+       bty = "n", # turn off the legend border
+       cex = .8) # decrease the font / legend size
+    }
   par(usr=c(0,1,0,1))
   text(0.1,0.9,i,cex=2)
 }
@@ -323,7 +426,16 @@ for(i in seq(2007,2016,1)){
   plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
   plot(studyarea,col='gray',add=TRUE)
   plot(y2007,pch=16,cex=0.25,add=TRUE)
-  if (i==2007){  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')}
+  if (i==2007){  
+    scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+    legend("bottomright",
+       legend = c("GSV pano.","Study area","GSV access region"),pch=c(18,NA,NA),
+       fill = c(NA,'grey','white'),
+       border=c(NA,'black','black'),
+       col='black',
+       bty = "n", # turn off the legend border
+       cex = .8) # decrease the font / legend size
+    }
   #plot(studyarea,add=TRUE)
   par(usr=c(0,1,0,1))
   text(0.1,0.9,i,cex=2)
@@ -332,56 +444,8 @@ for(i in seq(2007,2016,1)){
 
 ```
 
-```{r gsvdatesplot3, message=F,echo=FALSE,fig.width=6,fig.height=6,fig.cap="\\label{fig:gsvdatesplot3}Spatial distribution of properties that have a panorama in 2007 and also in 2014-2016."}
-# Get GSV date list
-x = read.delim("./rproject/ff_old_young2.csv",sep = ",",header = TRUE)
+Concerning the spatial distribution of GSV images over the study period and within the study area, we examined the spatial distribution of the oldest and youngest dates through time. The spatial distribution of the oldest and youngest dates of GSV panoramas across all properties/locations are illustrated in (Figures S\ref{fig:gsvdatesplot}  & S\ref{fig:gsvdatesplot2}).  In Figure S\ref{fig:gsvdatesplot}, it is apparent that only the study region contains sufficient spatial coverage in 2007. Google did not expand coverage until 2009 in Ottawa.  In Figure S\ref{fig:gsvdatesplot2} , the study region is completely covered with panoramas over the years  2014-2016. Regarding the examination of gentrification through time,  the years for which predictions can be made are between 2007-2009,2009-2012,and between 2012 and a combined 2014-2016.   
 
-gsvdates_oldyoung = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
-
-# Assign NAD83
-srNAD83 = CRS("+init=epsg:4269")
-proj4string(gsvdates_oldyoung) = srNAD83
-
-# Reproject to MTM9 NAD83
-srMTM9 = CRS("+init=epsg:32189")
-gsvdates_oldyoung = spTransform(gsvdates_oldyoung, srMTM9)
-
-
-#win.graph(8.5,11)
-par(mai=c(.2,0,0,0),bty="n")
-
-  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
-  plot(studyarea,col='gray',add=TRUE)
-  plot(gsvdates_oldyoung,pch=16,cex=0.25,add=TRUE)
-  scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
-  #plot(studyarea,add=TRUE)
-  par(usr=c(0,1,0,1))
-  #text(0.1,0.9,i,cex=2)
-
-
-
-```
-
-Examine date distribution
-
-```{r histdates, message=F, echo=FALSE, fig.width=7,fig.height=7,fig.cap="\\label{fig:histdates}a) Distribution of the oldest GSV date accessed at a location; b) Distribution of the Youngest GSV date accessed at a location; c) Distribution of all GSV image dates accessed at a location; d) Distribution of the number of years of GSV imagery at each queried location."}
-par(mfrow=c(2,2),mai=c(.4,.65,.4,.1),bty="n")
-hist(gsvdates$MINY,xlab="Date",ylab="Number of GSV locations",main="")
-par(usr=c(0,1,0,1),xpd=NA)
-text(-.15,1.1,"a)",cex=1)
-hist(gsvdates$MAXY,xlab="Date",ylab="",main="")
-par(usr=c(0,1,0,1),xpd=NA)
-text(-.15,1.1,"b)",cex=1)
-av=read.delim("f:/models/allyearvector.csv",sep=",",header=F)
-hist(av$V1,xlab="Date",ylab="Number of GSV locations",main="")
-par(usr=c(0,1,0,1),xpd=NA)
-text(-.15,1.1,"c)",cex=1)
-hist(gsvdates$NYEARS,xlab="Number of years of imagery",ylab="",main="")
-par(usr=c(0,1,0,1),xpd=NA)
-text(-.15,1.1,"d)",cex=1)
-```
-
-By examining the spatial distribution of the oldest and youngest dates of GSV panoramas at each location that contained GSV images (Figures \ref{fig:gsvdatesplot} and \ref{fig:gsvdatesplot2}), it becomes clear that the years for which predictions can be made are 2007,2009,2012,and a combined 20014-2016.  We cannot, for example, make inferences regarding changes in the spatial distirubtion of gentrifcation-like visual changes between the years 2009-2010, since in 2010 there are almost no images.  Examining all properties (locations) that contained an image in 2007 and one in the years >2012 (\ref{fig:gsvdatesplot3}) clearly illustrates the region in which we can make inferences back to 2007. Therefore, in order to predict back to 2007 using SCNN-FC-8, Figure \ref{fig:gsvdatesplot3} shows that only the region of our current study area contains GSV imagery in 2007. With regard to the full GSV image dataset, 2012 is the year with the most panoramas Figure \ref{fig:histdates}c provide evidence of an approximate 2-3 year update frequency of GSV imagery. The year with the most GSV panoramas in the The average number of years that GSV panoramas are available at a property is `r round(mean(gsvdates$NYEARS),digits=2)` \ref{fig:histdates}d.   
 
 ##Subset of GSV images used in training SCNN-FC-8
 
@@ -405,6 +469,13 @@ par(mai=c(.2,0,0,0),bty="n")
   plot(studyarea,col='gray',add=TRUE)
   plot(spd,pch=16,cex=0.25,add=TRUE)
   scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+  legend("bottomright",
+       legend = c("GSV pano.","Study area","GSV access region"),pch=c(18,NA,NA),
+       fill = c(NA,'grey','white'),
+       border=c(NA,'black','black'),
+       col='black',
+       bty = "n", # turn off the legend border
+       cex = .8) # decrease the font / legend size
   #plot(studyarea,add=TRUE)
   par(usr=c(0,1,0,1))
   #text(0.1,0.9,i,cex=2)
@@ -485,7 +556,7 @@ p.plot(kde.training.no,cint3,outercore,"C",pk=3)
 
 Because we assessed gentrivication-like visual changes, the set of training, validation and test GSV image pairs came from anywhere within the spatial extent of all the GSV images (\ref{fig:kdetrain}) we accessed Figures \ref{fig:traininglocationplot} and \ref{fig:kdetrain}.
 
-```{r kdetrain_fig, eval=TRUE,echo=FALSE,message=FALSE,results='hide'}
+```{r kdetrain_fig, eval=FALSE,echo=FALSE,message=FALSE,results='hide'}
 # makeplot
 png("./figures/KDE_TRAINING_DISTRIB.png",units="in",width=7,height=12,res=300)
 par(mfrow=c(3,1),mai=c(0.1,0,0.1,0),bty="n")
@@ -505,7 +576,7 @@ Get oldest date for GSV imagery, youngest date and span [@sharif_razavian_cnn_20
 
 #Results
 ##Model Training curves
-```{python valcurves, echo=FALSE,eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:valcurves}Training and validation of SCNN-FC-8."}
+```{python valcurves, echo=FALSE,eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:valcurves}Training and validation of SCNN-FC-8 (Epoch 1 to min(loss))."}
 import os
 os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = 'c:/programdata/Anaconda3/Library/plugins/platforms'
 import numpy as np
@@ -566,7 +637,7 @@ Plot comparison between permits and model results.
 
 ```{r comparemodelpermit, message=FALSE,echo=FALSE,eval=TRUE, results='hide', fig.width=8,fig.height=4,fig.cap="\\label{fig:comparemodelpermit}Comparison of SCNN-FC-8 predictions (a) with building permits (b)."}
 plot.comparemodel=function(kde1,kde2,plotintervals,colorpal,nbrpoly){
-  set.panel()
+  #set.panel()
   par(mfrow=c(1,2),mai=c(0,0,0,0),oma=c(0,0,0,4),bty="n")
   plot(kde1, breaks=plotintervals$brks,col = colorpal,axes=FALSE,legend=FALSE)
   plot(nbrpoly,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
@@ -591,7 +662,7 @@ plot.comparemodel=function(kde1,kde2,plotintervals,colorpal,nbrpoly){
   text(0.05,0.8,"b)",cex=1)
   
   # Add legend
-  set.panel(1,1)
+  #set.panel(1,1)
   par(oma=c(0,0,0,1))
   tokmsq=1000^2
   r.range <- c(minValue(kde1), maxValue(kde1))*tokmsq
@@ -620,16 +691,18 @@ plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 
 The pattern of building permits and SCNN-FC-8 predictions are very similar in Figure \ref{fig:comparemodelpermit}.
 
-```{r, savedensfplot, echo=FALSE, eval=TRUE, message=FALSE,results='hide'}
+```{r, savedensfplot, echo=FALSE, eval=FALSE, message=FALSE,results='hide'}
 # makeplot
 png("./figures/figure_pred_vs_permit.png",units="in",width=11,height=4,res=300)
 plot.comparemodel(kdepredict,kdepermits,cint,my.palette,nbrhoods)
 dev.off()
 ```
 
-```{r differencemap, echo=FALSE, message=FALSE, eval=TRUE, fig.width=8,fig.height=8,fig.cap="\\label{fig:differencemap}Proportional difference betweeen predicted KDE and permit KDE."}
+```{r differencemap, echo=FALSE, message=FALSE, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:differencemap}Proportional difference betweeen predicted KDE and permit KDE."}
 
 par(bty="n")
+par(mfrow=c(1,2),mai=c(0,.5,0,0),oma=c(0,0,0,4),bty="n")
+
 kdepredict.n=(kdepredict-0)/(cellStats(kdepredict,stat='max')-0)
 kdepermits.n=(kdepermits-0)/(cellStats(kdepermits,stat='max')-0)
 kde.df=kdepredict.n-kdepermits.n
@@ -652,8 +725,10 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   scalebar(d = 5000, 
            xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
  # Add legend
-  set.panel(1,1)
-  par(oma=c(0,0,0,1))
+  #set.panel(1,1)
+  #par(oma=c(0,0,0,1))
+  par(usr=c(0,1,0,1))
+  text(0.05,0.8,"a)",cex=1)
   plot(
     kde.df,
     legend.only = TRUE,
@@ -672,34 +747,92 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
       cex = 0.6
     )
   )
-```
-
-Figure \ref{fig:differencemap} illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 predictions and building permits. The two isolagted regions of intensity in Figure \ref{fig:comparemodelpermit}, x and x', cleary stand out as the two largest diffrences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdwon Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detections of gentrification-like visual change because of offset/FOV issues.  IN particular, in the region denoted by x', there were a number of new homes constructed which normally would have been picked up by the model within the image sequence.  However, the sequences of GSV images in this region of x', show that the common sequence of visual changes were as such: A park, followed by construction of a large wall, removal of the large wall and construction of new housing.  The change from wall to new construction was not something that our model encountered in our training dataset and so would not see the change from a park to a wall as a gentrification like change, nor the change from a wall to a residential structure.
-
-
-```{r eval=FALSE, echo=FALSE}
-
-#make number of years by site map. and this correlation map.
-temp_chl_s=stack(kdepermits.n,kdepredict.n)#crop(kdepredict.n,studyarea),crop(kdepermits.n,studyarea))
-temp_chl_s_nb <- raster(temp_chl_s, 1)
-values(temp_chl_s_nb) <- 1:ncell(temp_chl_s)
+  
+  # compute local correlation to examine.
+rasterStack=stack(kdepermits.n,kdepredict.n)#crop(kdepredict.n,studyarea),crop(kdepermits.n,studyarea))
+positionRaster <- raster(rasterStack, 1)
+values(positionRaster) <- 1:ncell(rasterStack)
 
 focal_cor <- focal(
-  x = temp_chl_s_nb,
-  w = matrix(1, 3, 3),
-  fun = function(x, y = temp_chl_s){
+  x = positionRaster,
+  w = matrix(1, 5, 5),
+  fun = function(x, y = rasterStack){
     cor(values(y)[x, 1], values(y)[x, 2],
         use = "na.or.complete")
-  },
-  #filename = file.path(extraWD, "focal_cor.tif"),
-  #overwrite = TRUE
+  }
 )
+
+# compute local correlation to examine.
+rasterStack=stack(kdepermits.n,kdepredict.n)#crop(kdepredict.n,studyarea),crop(kdepermits.n,studyarea))
+positionRaster <- raster(rasterStack, 1)
+values(positionRaster) <- 1:ncell(rasterStack)
+
+focal_cor <- focal(
+  x = positionRaster,
+  w = matrix(1, 5, 5),
+  fun = function(x, y = rasterStack){
+    cor(values(y)[x, 1], values(y)[x, 2],
+        use = "na.or.complete")
+  }
+)
+
+#par(bty="n")
+
+
+kde.df=focal_cor
+kde.df <- crop(kde.df, extent(studyarea))
+kde.df <- raster::mask(kde.df, studyarea)
+# Create class breaks
+cint.d=densBreaks(kde.df,9,'equal')
+
+# Make color palette
+mypal=brewer.pal(10,"PRGn") #colorRampPalette(c(rgb(211/255,229/255,232/255,1), rgb(46/255,100/255,140/255,1)), alpha = TRUE)(10)
+
+plot(kde.df, breaks=cint.d$brks,col = mypal,axes=FALSE,legend=FALSE)
+plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
+
+  lines(c(366410.724  , 368770.442 ),c(5035138.202 ,5029125.892),lwd=1)  
+  points(368770.442,  5029125.892,pch=16,col=1,cex=0.25)
+  text(366410.724,5035138.202,"x\'",adj=c(1,-0.5))
+  lines(c(370385.946, 375749.061),c(5033595.408,   5032711.698),lwd=1)  
+  points(370385.946,  5033595.408,pch=16,col=1,cex=0.25)
+  text(375749.061,5032711.698,"x",adj=c(-.5,.5))
+  scalebar(d = 5000, 
+           xy = c(358258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+ # Add legend
+  #set.panel(1,1)
+  #par(oma=c(0,0,0,1))
+  par(usr=c(0,1,0,1))
+  text(0.05,0.8,"b)",cex=1)
+  plot(
+    kde.df,
+    legend.only = TRUE,
+    breaks = round(cint.d$brks,digits=3),
+    col = mypal,
+    axes = FALSE,
+    legend.width = 1,
+    legend.shrink = 0.45,
+    horizontal = FALSE,
+    axis.args = list(cex.axis = 0.5),
+    legend.args = list(
+      text = "Pearson's r",
+      side = 4,
+      font = 2,
+      line = 2,
+      cex = 0.6
+    )
+  )
+  
 ```
+
+Figure S\ref{fig:differencemap}a illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 KDE prediction map and KDE of building permits. The two isolagted regions of intensity in Figure S\ref{fig:comparemodelpermit}, x and x', cleary stand out as the two largest diffrences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdwon Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detections of gentrification-like visual change because of offset/FOV issues.  In particular, in the region denoted by x', there were a number of new homes constructed which normally would have been detected by SCNN-FC-8 within the image sequence.  However, after examining the sequences of GSV images in the region of x', a common theme became apparent in the sequence of visual changes: Initially, a park was present and that was followed by construction of a large wall. The wall was eventual removed and a new house was constructed.  The change from a wall to a residential structure, or from a park to wall for that matter, was not something that SCNN-FC-8 encountered in our training dataset.  Thus such changes were not reinforced in training as being gentrification-like instances of visual change.
+
+Figure S\ref{fig:differencemap}b represents the local pearson's correlation coefficient between the standardized intensity {lambda} of the SCNN-FC-8 KDE prediction map and KDE of building permits. We use the correlation coefficient **r** as an exploratory tool to identify local regions of similarity/dissimilarity in intensity between the model predictions and the permits.  This map represents the correlation coefficient in a 5x5 moving window between the standardized values from Figure S\ref{fig:comparemodelpermit}a and b.  The large amount of green area in Figure S\ref{fig:comparemodelpermit}b, indicates that the majority of the values strongly covary which is evident in the visual inspection of Figures S\ref{fig:comparemodelpermit}ab and S\ref{fig:differencemap}a.  There are strong dissimilarites or negative correlations locally, but these are generally in areas of very low spatial intensity around the southern boundary of the study region. In other words, the majority of disagreemnts in the model/permits comparison are in regions where there are few gentrification-like visual changes.  This further reinforces the concordence seen between SCNN-FC-8 and the building permits upon visual comparison of Figure S\ref{fig:comparemodelpermit}ab.
 
 
 #SCNN-FC-8 predictions over time
 ```{r timeseries, echo=FALSE,eval=TRUE, message=FALSE,warning=FALSE, results='hide',fig.width=6,fig.height=9,fig.cap="\\label{fig:timeseries}Comparison of SCNN-FC-8 predictions over time (a) 2009 (b) 2012 (c) 2013-2016."}
-set.panel()
+#set.panel()
 plot.time=function(){
   tokmsq=1000000
   plot.t=function(predpts,year){
@@ -774,7 +907,7 @@ plot.time()
 ```
 
 
-```{r, savetimeplot, eval=TRUE, echo=FALSE,message=FALSE,results='hide'}
+```{r, savetimeplot, eval=FALSE, echo=FALSE,message=FALSE,results='hide'}
 # makeplot
 png("./figures/predovertime.png",units="in",width=6,height=9,res=300)
 plot.time()
@@ -813,7 +946,7 @@ plot.comparemodel(kderun1,kderun2,cintn,my.palette,nbrhoods)
 
 ```
 
-```{r  echo=FALSE,message=FALSE,results='hide'}
+```{r  echo=FALSE,eval=FALSE,message=FALSE,results='hide'}
 png("./figures/figure_run1_vs_run2.png",units="in",width=11,height=4,res=300)
 plot.comparemodel(kderun1,kderun2,cintn,my.palette,nbrhoods)
 dev.off()
@@ -823,7 +956,7 @@ dev.off()
 
 
 #Example images
-```{r examples, message=FALSE,  echo=FALSE,message=FALSE,results='hide',fig.width=8,fig.height=11,fig.cap="\\label{fig:examples}Illustrative examples of SCNN-FC-8 predictions.  Each row represents the time series of GSV images for the unique location specified in the map plot at the end of each row. The delta symbol between any two years indicates where the SCNN-FC-8 predicted a visual change; (a to d) Normal cases of a single predicted change across the series of images at a given unique location. (e to k) represent cases where the model predicted more than one change or a false positive change wihtin the sequence.  See text for further details."}
+```{r examples, eval=FALSE, message=FALSE,  echo=FALSE,message=FALSE,results='hide',fig.width=8,fig.height=11,fig.cap="\\label{fig:examples}Illustrative examples of SCNN-FC-8 predictions.  Each row represents the time series of GSV images for the unique location specified in the map plot at the end of each row. The delta symbol between any two years indicates where the SCNN-FC-8 predicted a visual change; (a to d) Normal cases of a single predicted change across the series of images at a given unique location. (e to k) represent cases where the model predicted more than one change or a false positive change wihtin the sequence.  See text for further details."}
 library(imager)
 #subtlechanges
   #F:\ottawa_image_db\45.395218,-75.751936
@@ -936,7 +1069,7 @@ plotexamples()
 
 
 
-```{r  echo=FALSE,message=FALSE,results='hide'}
+```{r  echo=FALSE,eval=FALSE,message=FALSE,results='hide'}
 png("./figures/examples.png",units="in",width=6.5,height=10,res=300)
 plotexamples()
 dev.off()
@@ -944,7 +1077,7 @@ dev.off()
 
 ```
 
-```{r saliency, echo=FALSE,message=FALSE,results='hide',  fig.width=8,fig.height=11,fig.cap="\\label{fig:saliency}Class activation heat maps of \\label{fig:examples} based on the last convolutional layer in SCNN-FC-8."}
+```{r saliency, eval=FALSE,echo=FALSE,message=FALSE,results='hide',  fig.width=8,fig.height=11,fig.cap="\\label{fig:saliency}Class activation heat maps of \\label{fig:examples} based on the last convolutional layer in SCNN-FC-8."}
 library(imager)
 
 plotexamples2=function(){
@@ -1011,7 +1144,7 @@ plotexamples2()
 ```
 
 
-```{r  echo=FALSE,message=FALSE,results='hide'}
+```{r  echo=FALSE,eval=FALSE,message=FALSE,results='hide'}
 png("./figures/examples_sal.png",units="in",width=6.5,height=10,res=300)
 plotexamples2()
 dev.off()
