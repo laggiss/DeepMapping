@@ -164,6 +164,24 @@ proj4string(spdo) = srNAD83
 srMTM9 = CRS("+init=epsg:32189")
 spdo = spTransform(spdo, srMTM9)
 
+#Load GSV dates, create SPDF, assign and project.
+
+# Get GSV date list
+x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
+#names(x)=c("LAT","LONOG","OLDEST","YOUNGEST","SPAN")
+# Make spdf of training data duels fi
+outercore$DID=rep(1,length(outercore$OBJECTID))
+region <- gUnaryUnion(outercore, id = outercore@data$DID)
+
+gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
+
+# Assign NAD83
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates = spTransform(gsvdates, srMTM9)
 
 
 # Make unique point file for probabilities
@@ -268,29 +286,6 @@ We use SCNN-FC-8 to detect gentrification-like visual changes within the sequenc
 ##GSV panorama location analysis
 The spatio-temporal coverage of GSV imagery varies across space and time. We were primarily concerned with detecting gentrification as far back as possible within the spatial domain defined by the region of the city containing the highest conscentration of older building stock that we call our 'study area' (see Figure 1 in manuscript).  To train SCNN-FC-8, we wanted a larger region in which to find examples of gentrification-like visual change.  Thus, we accessed GSV imagery within a broader region that includes our study area and a buffer region, comprised primarily of post 1980's suburban residential landuse, that we call the 'GSV access region' (Figure S\ref{fig:allgsvdata}).  
 
-
-```{r message=FALSE,echo=FALSE,}
-#Load GSV dates, create SPDF, assign and project.
-
-# Get GSV date list
-x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
-#names(x)=c("LAT","LONOG","OLDEST","YOUNGEST","SPAN")
-# Make spdf of training data duels fi
-outercore$DID=rep(1,length(outercore$OBJECTID))
-region <- gUnaryUnion(outercore, id = outercore@data$DID)
-
-gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
-
-# Assign NAD83
-srNAD83 = CRS("+init=epsg:4269")
-proj4string(gsvdates) = srNAD83
-
-# Reproject to MTM9 NAD83
-srMTM9 = CRS("+init=epsg:32189")
-gsvdates = spTransform(gsvdates, srMTM9)
-
-
-```
 
 ```{r allgsvdata, message=F,echo=FALSE,fig.width=6,fig.height=6,fig.cap="\\label{fig:allgsvdata}Distribution of all GSV panormas accessed in this research."}
 
@@ -405,21 +400,7 @@ for(i in seq(2007,2016,1)){
 ```
 
 ```{r gsvdatesplot2, message=FALSE, echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:gsvdatesplot2}Spatial distribution of the youngest date found at each location where GSV images were accessed."}
-# Get GSV date list
-x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
 
-gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
-
-# Assign NAD83
-srNAD83 = CRS("+init=epsg:4269")
-proj4string(gsvdates) = srNAD83
-
-# Reproject to MTM9 NAD83
-srMTM9 = CRS("+init=epsg:32189")
-gsvdates = spTransform(gsvdates, srMTM9)
-
-
-#win.graph(8.5,11)
 par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
 for(i in seq(2007,2016,1)){
   y2007=subset(gsvdates,MAXY==i)
@@ -445,6 +426,47 @@ for(i in seq(2007,2016,1)){
 ```
 
 Concerning the spatial distribution of GSV images over the study period and within the study area, we examined the spatial distribution of the oldest and youngest dates through time. The spatial distribution of the oldest and youngest dates of GSV panoramas across all properties/locations are illustrated in (Figures S\ref{fig:gsvdatesplot}  & S\ref{fig:gsvdatesplot2}).  In Figure S\ref{fig:gsvdatesplot}, it is apparent that only the study region contains sufficient spatial coverage in 2007. Google did not expand coverage until 2009 in Ottawa.  In Figure S\ref{fig:gsvdatesplot2} , the study region is completely covered with panoramas over the years  2014-2016. Regarding the examination of gentrification through time,  the years for which predictions can be made are between 2007-2009,2009-2012,and between 2012 and a combined 2014-2016.   
+
+
+```{r alldatesplotovertime, message=FALSE, echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:alldatesplotovertime}Spatial distribution of all accessed GSV images through time."}
+# Get GSV date list
+q = read.delim("./rproject/allyearvector_coords.csv",sep = ",",header = FALSE)
+
+gsvdates = SpatialPointsDataFrame(cbind(x = q[,2], y = q[,1]), q)
+
+# Assign NAD83
+srNAD83 = CRS("+init=epsg:4269")
+proj4string(gsvdates) = srNAD83
+
+# Reproject to MTM9 NAD83
+srMTM9 = CRS("+init=epsg:32189")
+gsvdates = spTransform(gsvdates, srMTM9)
+
+
+#win.graph(8.5,11)
+par(mfrow=c(5,2),mai=c(.2,0,0,0),bty="n")
+for(i in seq(2007,2016,1)){
+  y2007=subset(gsvdates,V3==i)
+  plot(region,xaxt="n",yaxt="n",bty="n",ylab="",xlab="", main="", sub="")
+  plot(studyarea,col='gray',add=TRUE)
+  plot(y2007,pch=16,cex=0.25,add=TRUE)
+  if (i==2007){  
+    scalebar(d = 5000, xy = c(355258.223,5033798.921), type = 'bar', divs = 2, below = 'm')
+    legend("bottomright",
+       legend = c("GSV pano.","Study area","GSV access region"),pch=c(18,NA,NA),
+       fill = c(NA,'grey','white'),
+       border=c(NA,'black','black'),
+       col='black',
+       bty = "n", # turn off the legend border
+       cex = .8) # decrease the font / legend size
+    }
+  #plot(studyarea,add=TRUE)
+  par(usr=c(0,1,0,1))
+  text(0.1,0.9,i,cex=2)
+}
+
+
+```
 
 
 ##Subset of GSV images used in training SCNN-FC-8
