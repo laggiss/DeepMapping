@@ -75,7 +75,7 @@ openSPDF = function(shapefilepath,outCS=CRS("+init=epsg:32189")) {
 ```
 
 ```{r trainingdata, echo=FALSE,message=FALSE}
-#Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9.  Also open studyarea polygons.
+#Open training data file "retrain.txt", get coordinates, create spdf, project to mtm9. Also open studyarea polygons.
 # Get training data list
 x = read.delim("./rproject/retrain.txt",sep = " ",header = FALSE)
 
@@ -170,8 +170,7 @@ spdo = spTransform(spdo, srMTM9)
 x = read.delim("./rproject/GSVDATESSPAN.csv",sep = ",",header = TRUE)
 #names(x)=c("LAT","LONOG","OLDEST","YOUNGEST","SPAN")
 # Make spdf of training data duels fi
-outercore$DID=rep(1,length(outercore$OBJECTID))
-region <- gUnaryUnion(outercore, id = outercore@data$DID)
+
 
 gsvdates = SpatialPointsDataFrame(cbind(x = x$LON, y = x$LAT), x)
 
@@ -210,6 +209,8 @@ nbrhoods=openSPDF(shapefilepath = './shapefiles/core.shp')
 ons=openSPDF(shapefilepath='./shapefiles/ONSNeighbourhoods2012_SmallFile.shp')
 
 outercore=openSPDF(shapefilepath = './shapefiles/outercore.shp')
+outercore$DID=rep(1,length(outercore$OBJECTID))
+region <- gUnaryUnion(outercore, id = outercore@data$DID)
 
 labelhoods=openSPDF(shapefilepath = './shapefiles/labelhoods.shp')
 labelhoods@data$names=as.character(labelhoods@data$names)
