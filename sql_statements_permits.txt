@@ -1,0 +1,361 @@
+22631 unique items in description...
+
+to identify things for truncating...  
+
+"Descriptio" LIKE '%Exterior%' or "Descriptio" LIKE '%exterior%'
+
+
+
+
+1) Pool 
+"Descriptio" LIKE '%Pool%' or "Descriptio" LIKE '%pool%'
+a)362 out of 22631 removed 
+b)3625 out of 56269 removed
+
+2) Plumbing Only
+"Descriptio" LIKE '%PLUMBING ONLY%' or "Descriptio" LIKE '%Plumbing Only%' or "Descriptio" LIKE '%Plumbing only%'
+a)543 out of 22269 removed
+b)1431 out of 52644 removed
+
+3) Temporary Tent
+"Descriptio" LIKE '%temporary tent%'
+a)210 out of 21726 removed
+b)287 out of 51213 removed
+
+4) Tenant Fit Up
+Note: After inspecting the data, many of these are commerical tenants. 
+We detect some commercial gentrification but I don't think that we would detect it via this, especially when tenants are in say the rideau centre. 
+"Descriptio" LIKE '%Tenant fit-up%' or "Descriptio" LIKE '%Tenant Fit-up%' or "Descriptio" LIKE '%Tenant Fit Up%' or "Descriptio" LIKE '%Tenant Fit up%' or "Descriptio" LIKE '%Tenant fit up%'
+"Description" LIKE '%Tenant fit-up%' or "Description" LIKE '%Tenant Fit-up%' or "Description" LIKE '%Tenant Fit Up%' or "Description" LIKE '%Tenant Fit up%' or "Description" LIKE '%Tenant fit up%'
+a)2653 out of 21516
+b)2554 out of 50926
+
+5) Demolish, Demolition
+"Descriptio" LIKE '%Demolish%' OR "Descriptio" LIKE '%Demolition%' 
+a)572 out of 19053
+b)1953 out of 48372
+
+6) Fireplace
+"Descriptio" LIKE '%fireplace%' 
+a)172 out of 18481
+b)261 out of 46419
+
+7) Washrooms
+"Descriptio" LIKE '%washroom%' 
+a)186 out of 18309
+b)190 out of 46158
+
+7)
+"Descriptio" LIKE '%kitchen%' AND NOT "Descriptio" LIKE '%storey addition%' AND NOT "Descriptio" LIKE '%Exterior%'
+a)339 out of 18123
+b)394 out of 45968
+
+8)
+"Descriptio" LIKE '%bathroom%' AND NOT "Descriptio" LIKE '%storey addition%' AND NOT "Descriptio" LIKE '%Exterior%' AND NOT "Descriptio" LIKE '%exterior%'
+"Description" LIKE '%bathroom%' AND NOT "Description" LIKE '%storey addition%' AND NOT "Description" LIKE '%Exterior%' AND NOT "Description" LIKE '%exterior%'
+a)355 out of 17784
+b)414 out of 45574
+
+9)
+("Descriptio" LIKE '%Elevator%' OR "Descriptio" LIKE '%elevator%') AND NOT "Descriptio" LIKE '%storey addition%'
+a)55 out of 17429
+b)55 out of 45160
+
+10)
+"Descriptio" LIKE '%rear%' AND NOT "Descriptio" LIKE '%front%'  AND NOT "Descriptio" LIKE '%exterior%' AND NOT "Descriptio" LIKE '%storey%'  AND NOT "Descriptio" LIKE '%story%'  
+"Description" LIKE '%rear%' AND NOT "Description" LIKE '%front%'  AND NOT "Description" LIKE '%exterior%' AND NOT "Description" LIKE '%storey%'  AND NOT "Description" LIKE '%story%'  
+a)530 out of 17374
+b)2578 out of 45105
+
+11)
+"Descriptio" LIKE '%Interior%' AND NOT "Descriptio" LIKE '%exterior%' AND NOT "Descriptio" LIKE '%Exterior%' AND NOT "Descriptio" LIKE '%Construct %'
+"Description" LIKE '%Interior%' AND NOT "Description" LIKE '%exterior%' AND NOT "Description" LIKE '%Exterior%' AND NOT "Description" LIKE '%Construct %'
+a)4547 out of 16844
+b)6586 out of 42527
+
+12)
+"Descriptio" LIKE '%PLUMBING PERMIT ONLY%' OR "Descriptio" LIKE '%Plumbing permit only%' OR "Descriptio" LIKE '%Plumbing Permit Only%' 
+"Description" LIKE '%PLUMBING PERMIT ONLY%' OR "Description" LIKE '%Plumbing permit only%' OR "Description" LIKE '%Plumbing Permit Only%' 
+a)128 out of 12297
+b)275 out of 35941
+
+13)
+"Descriptio" LIKE '%fire alarm%' OR "Descriptio" LIKE '%Fire Alarm%' OR "Descriptio" LIKE '%fire panel%' 
+"Description" LIKE '%fire alarm%' OR "Description" LIKE '%Fire Alarm%' OR "Description" LIKE '%fire panel%' 
+a)54 out of 12169
+b)61 out of 35666
+
+14)
+"Descriptio" LIKE '%Finish%' AND "Descriptio" LIKE '%basement%' 
+"Description" LIKE '%Finish%' AND "Description" LIKE '%basement%' 
+a)154 out of 12115
+b)1357 out of 35605
+
+15)
+"Descriptio" LIKE '%solar %'
+"Description" LIKE '%solar %'
+a)260 out of 11961
+b)431 out of 33557
+
+16)
+"Descriptio" LIKE '% wood %' AND NOT "Descriptio" LIKE '%storey addition%' AND NOT "Descriptio" LIKE '%Exterior%' AND NOT "Descriptio" LIKE '%Megadome%' 
+"Description" LIKE '% wood %' AND NOT "Description" LIKE '%storey addition%' AND NOT "Description" LIKE '%Exterior%' AND NOT "Description" LIKE '%Megadome%' 
+a)64 out of 11701
+b)87 out of 33126
+
+17)
+"Descriptio" LIKE '%drain%' OR "Descriptio" LIKE '%Drain%' 
+"Description" LIKE '%drain%' OR "Description" LIKE '%Drain%' 
+a)26 out of 11637
+b)51 out of 330339
+
+18)
+"Descriptio" LIKE '%PLUMBING%' OR "Descriptio" LIKE '%plumbing%'  OR "Descriptio" LIKE '%PLUMING%' 
+"Description" LIKE '%PLUMBING%' OR "Description" LIKE '%plumbing%'  OR "Description" LIKE '%PLUMING%' 
+a)36 out of 11611
+b)49 out of 32988
+
+19)
+("Descriptio" LIKE '%Plumbing%' OR "Descriptio" LIKE '%sprinkler%'  OR "Descriptio" LIKE '%Solar%') AND NOT "Descriptio" LIKE '%Exterior%'
+("Description" LIKE '%Plumbing%' OR "Description" LIKE '%sprinkler%'  OR "Description" LIKE '%Solar%') AND NOT "Description" LIKE '%Exterior%'
+a)37 out of 11575
+b)55 out of 32939
+
+20)
+("Descriptio" LIKE '%underground%' AND NOT "Descriptio" LIKE '%Construct%') AND NOT "Descriptio" LIKE '%construct%' AND NOT "Descriptio" LIKE '%Completion%' AND NOT "Descriptio" LIKE '%with one level%'
+("Description" LIKE '%underground%' AND NOT "Description" LIKE '%Construct%') AND NOT "Description" LIKE '%construct%' AND NOT "Description" LIKE '%Completion%' AND NOT "Description" LIKE '%with one level%'
+a)35 out of 11538
+b)28 out of 32884
+
+21)
+"Descriptio" LIKE '%tent%'
+"Description" LIKE '%tent%'
+a)30 out of 11503
+b)33 out of 32856
+
+22)
+"Descriptio" LIKE '%at the rear%' AND NOT "Descriptio" LIKE '%addition%' 
+"Description" LIKE '%at the rear%' AND NOT "Description" LIKE '%addition%' 
+a)316 out of 11473
+b)562 out of 32823
+
+23)
+"Descriptio" LIKE '%woodstove%' AND NOT "Descriptio" LIKE '%storey addition%'
+"Description" LIKE '%woodstove%' AND NOT "Description" LIKE '%storey addition%'
+a)83 out of 11157
+b)177 out of 32261
+
+24)
+"Descriptio" LIKE '%stove%'
+"Description" LIKE '%stove%'
+a)24 out of 11074
+b)31 out of 32084
+
+25)
+"Descriptio" LIKE '%ayshore%' OR "Descriptio" LIKE '%ideau Cent%'
+"Description" LIKE '%ayshore%' OR "Description" LIKE '%ideau Cent%'
+a)20 out of 11050
+b)18 out of 32053
+
+26)
+"Descriptio" LIKE '%demising wall%' or "Descriptio" LIKE '%board room%'  OR "Descriptio" LIKE '%within the%' 
+"Description" LIKE '%demising wall%' or "Description" LIKE '%board room%'  OR "Description" LIKE '%within the%' 
+a)47 out of 11030
+b)46 out of 32035
+
+27)
+"Descriptio" LIKE '%arijuana%' OR "Descriptio" LIKE '%arijiuana%' 
+"Description" LIKE '%arijuana%' OR "Description" LIKE '%arijiuana%' 
+a)25 out of 10983
+b)37 out of 31989
+
+
+28)
+"Descriptio" LIKE '%rear%' AND "Descriptio" LIKE '%eck%' AND NOT "Descriptio" LIKE '%storey addition%' AND NOT "Descriptio" LIKE '%ront%' AND NOT "Descriptio" LIKE '%side%'
+"Description" LIKE '%rear%' AND "Description" LIKE '%eck%' AND NOT "Description" LIKE '%storey addition%' AND NOT "Description" LIKE '%ront%' AND NOT "Description" LIKE '%side%'
+a)138 out of 10958
+b)344 out of 31952
+
+
+29)
+"Descriptio" LIKE '%portable%' OR "Descriptio" LIKE '%portable%' 
+"Description" LIKE '%portable%' OR "Description" LIKE '%portable%' 
+a)128 out of 10820
+b)120 out of 31608
+
+30)
+"Descriptio" LIKE '%EXCAVATION%' OR "Descriptio" LIKE '%Excavation for an%' 
+"Description" LIKE '%EXCAVATION%' OR "Description" LIKE '%Excavation for an%' 
+a)57 out of 10692
+b)71 out of 31488
+
+31)
+"Descriptio" LIKE '%onstruct a secondary dwelling unit in%' OR "Descriptio" LIKE '%onstruct a secondary dwelling unit on%'  OR "Descriptio" LIKE '%onstruct a secondary dwelling unit (basement)%' 
+"Description" LIKE '%onstruct a secondary dwelling unit in%' OR "Description" LIKE '%onstruct a secondary dwelling unit on%'  OR "Description" LIKE '%onstruct a secondary dwelling unit (basement)%' 
+a)93 out of 10635
+b)374 out of 31417
+
+32)
+"Descriptio" LIKE '%unroom%' AND "Descriptio" LIKE '%rear%'
+"Description" LIKE '%unroom%' AND "Description" LIKE '%rear%'
+a)78 out of 10542
+b)54 out of 31043
+
+33)
+"Descriptio" LIKE '%Construct an accessory apartment%'
+"Description" LIKE '%Construct an accessory apartment%'
+a)27 out of 10464
+b)66 out of 30989
+
+34)
+("Descriptio" LIKE '%shed%'  AND  "Descriptio" LIKE '%rear%' ) AND NOT  "Descriptio" LIKE '%addition%'
+("Description" LIKE '%shed%'  AND  "Description" LIKE '%rear%' ) AND NOT  "Description" LIKE '%addition%'
+a)26 out of 10437
+b)62 out of 30923
+
+35)
+("Descriptio" LIKE '%onvert attic%' AND NOT "Descriptio" LIKE '%addition%') OR "Descriptio" LIKE '%ashroom%' OR "Descriptio" LIKE 'Upgrade%'  
+("Description" LIKE '%onvert attic%' AND NOT "Description" LIKE '%addition%') OR "Description" LIKE '%ashroom%' OR "Description" LIKE 'Upgrade%'  
+a)11 out of 10411
+b)12 out of 30861
+
+36)
+"Descriptio" LIKE 'FOUNDATION%' OR "Descriptio" LIKE 'Foundation%' OR "Descriptio" LIKE 'Repair foundation%'
+"Description" LIKE 'FOUNDATION%' OR "Description" LIKE 'Foundation%' OR "Description" LIKE 'Repair foundation%'
+a)123 out of 10400
+b)242 out of 30849
+
+37)
+"Descriptio" LIKE 'Interior alterations in%' OR "Descriptio" LIKE 'Interior alterations on%' OR "Descriptio" LIKE 'Interior alterations to%'
+"Description" LIKE 'Interior alterations in%' OR "Description" LIKE 'Interior alterations on%' OR "Description" LIKE 'Interior alterations to%'
+a)29 out of 10277
+b)30 out of 30607
+
+38)
+("Descriptio" LIKE '%reate%' AND "Descriptio" LIKE '%asement%' ) AND NOT ( "Descriptio" LIKE '%torey addition%' OR  "Descriptio" LIKE '%addition at the side%' )
+("Description" LIKE '%reate%' AND "Description" LIKE '%asement%' ) AND NOT ( "Description" LIKE '%torey addition%' OR  "Description" LIKE '%addition at the side%' )
+a)16 out of 10248
+b)19 out of 30577
+
+39)
+"Descriptio" LIKE 'Kitchenette%' OR "Descriptio" LIKE 'Legalize%' 
+"Description" LIKE 'Kitchenette%' OR "Description" LIKE 'Legalize%' 
+a)5 out of 10232
+b)5 out of 30558
+
+40)
+"Descriptio" LIKE 'Underpin the foundation%' OR "Descriptio" LIKE 'Underpinning%'
+"Description" LIKE 'Underpin the foundation%' OR "Description" LIKE 'Underpinning%'
+a)13 out of 10227
+b)15 out of 30553
+
+41)
+"Descriptio" LIKE '%Construct a foundation%' OR "Descriptio" LIKE '%Construct a new foundation%'
+"Description" LIKE '%Construct a foundation%' OR "Description" LIKE '%Construct a new foundation%'
+a)25 out of 10214
+b)25 out of 30538
+
+42)
+"Descriptio" LIKE '%shade%'
+"Description" LIKE '%shade%'
+a)9 out of 10189
+b)9 out of 30513
+
+43)
+("Descriptio" LIKE '%basment%' or "Descriptio" LIKE '%basmenet%' or "Descriptio" LIKE '%basmement%' or "Descriptio" LIKE '%Inteior%' or "Descriptio" LIKE '%Inteiror%' ) AND NOT "Descriptio" LIKE 'Inteior/Exterior alterations to a 2 storey detached dwelling%'
+("Description" LIKE '%basment%' or "Description" LIKE '%basmenet%' or "Description" LIKE '%basmement%' or "Description" LIKE '%Inteior%' or "Description" LIKE '%Inteiror%' ) AND NOT "Description" LIKE 'Inteior/Exterior alterations to a 2 storey detached dwelling%'
+a)11 out of 10180
+b)13 out of 30504
+
+44)
+"Descriptio" LIKE '%gazebo%' and ("Descriptio" LIKE '%rear%' or "Descriptio" LIKE '%Park%'  or "Descriptio" LIKE '%park%' )
+"Description" LIKE '%gazebo%' and ("Description" LIKE '%rear%' or "Description" LIKE '%Park%'  or "Description" LIKE '%park%' )
+a)42 out of 10169
+b)46 out of 30491
+
+45)
+"Descriptio" LIKE '%Repair the foundation%' OR "Descriptio" LIKE '%Repair the parking%' OR "Descriptio" LIKE 'Door%' OR "Descriptio" LIKE 'Electrical%' OR "Descriptio" LIKE 'Fire alarm%' 
+"Description" LIKE '%Repair the foundation%' OR "Description" LIKE '%Repair the parking%' OR "Description" LIKE 'Door%' OR "Description" LIKE 'Electrical%' OR "Description" LIKE 'Fire alarm%' 
+a)30 out of 10127
+b)53 out of 30445
+
+46)
+"Descriptio" LIKE '%Parking Garage%' OR "Descriptio" LIKE '%Construct a secondary dwelling%' 
+"Description" LIKE '%Parking Garage%' OR "Description" LIKE '%Construct a secondary dwelling%' 
+a)16 out of 10097
+b)24 out of 30392
+
+47)
+("Descriptio" LIKE '%basement apart%' OR "Descriptio" LIKE '%in the basement%' OR "Descriptio" LIKE '%finished basement%' OR "Descriptio" LIKE '%basement entran%' OR "Descriptio" LIKE '%unit in basement%' ) AND NOT ("Descriptio" LIKE '%Construct a 1 storey%' OR "Descriptio" LIKE '%Construct a 2 storey%' OR "Descriptio" LIKE '%Construct a 3 storey%' OR "Descriptio" LIKE '%Construct an addition%' OR "Descriptio" LIKE '%Construct a 3rd%' OR "Descriptio" LIKE '%Construct a 2nd%' OR "Descriptio" LIKE '%Construct a block%' OR "Descriptio" LIKE '%Construct a detached%')
+("Description" LIKE '%basement apart%' OR "Description" LIKE '%in the basement%' OR "Description" LIKE '%finished basement%' OR "Description" LIKE '%basement entran%' OR "Description" LIKE '%unit in basement%' ) AND NOT ("Description" LIKE '%Construct a 1 storey%' OR "Description" LIKE '%Construct a 2 storey%' OR "Description" LIKE '%Construct a 3 storey%' OR "Description" LIKE '%Construct an addition%' OR "Description" LIKE '%Construct a 3rd%' OR "Description" LIKE '%Construct a 2nd%' OR "Description" LIKE '%Construct a block%' OR "Description" LIKE '%Construct a detached%')
+a)54 out of 10081
+b)53 out of 30368
+
+48)
+"Descriptio" LIKE 'Replace%'
+"Description" LIKE 'Replace%'
+a)89 out of 10027
+b)262 out of 30315
+
+49)
+"Descriptio" LIKE '%TEMPORARY%'  AND NOT "Descriptio" LIKE '%storey addition%' 
+"Description" LIKE '%TEMPORARY%'  AND NOT "Description" LIKE '%storey addition%' 
+a)71 out of 9938
+b)91 out of 30053
+
+50)
+"Descriptio" LIKE '%raer%'  OR "Descriptio" LIKE '%farm%' OR  "Descriptio" LIKE '%goat%'  OR "Descriptio" LIKE '%horse%' OR "Descriptio" LIKE 'barn%' 
+"Description" LIKE '%raer%'  OR "Description" LIKE '%farm%' OR  "Description" LIKE '%goat%'  OR "Description" LIKE '%horse%' OR "Description" LIKE 'barn%' 
+a)76 out of 9867
+b)111 out of 29962
+
+51)
+("Descriptio" LIKE '%Install%'  OR  "Descriptio" LIKE '%insulate%' ) AND NOT ( "Descriptio" LIKE '%Exterior alterations%' )
+("Description" LIKE '%Install%'  OR  "Description" LIKE '%insulate%' ) AND NOT ( "Description" LIKE '%Exterior alterations%' )
+a)156 out of 9791
+b)168 out of 29851
+
+52)
+
+
+
+
+
+
+
+Adding...
+"Descriptio" LIKE '%Exterior%' or "Descriptio" LIKE '%exterior%'
+a)1625 out of 9635 
+
+add
+"Descriptio" LIKE '%storey addition%' 
+a)2841 out of 9635
+
+add
+"Descriptio" LIKE '%Construct a 1 Storey%'  or "Descriptio" LIKE '%Construct a 1 storey%' 
+a)3426 out of 9635
+
+add
+"Descriptio" LIKE '%Construct a 1%'  or "Descriptio" LIKE '%Construct a 2%'  or "Descriptio" LIKE '%Construct a 3%' or "Descriptio" LIKE '%Construct a 4%' or "Descriptio" LIKE '%Construct a 5%' 
+a)7084 out of 9635
+
+add
+"Descriptio" LIKE '%Construct a 6%'  or "Descriptio" LIKE '%Construct a 7%'  or "Descriptio" LIKE '%Construct a 9%' or "Descriptio" LIKE '%Construct a block%' 
+a)7440 out of 9635
+
+add
+"Descriptio" LIKE '%Construct an addition%'  or "Descriptio" LIKE '%remove and replace%'  
+a)7726 out of 9635
+
+add
+"Descriptio" LIKE '%front porch%' OR "Descriptio" LIKE '%front entrance%' OR "Descriptio" LIKE '%Construct a 1 storey%' OR "Descriptio" LIKE 'Construct a 2 storey%' OR "Descriptio" LIKE 'Construct a 3 storey%'
+a)7827 out of 9635
+
+add
+a)
+"Descriptio" LIKE '%duplex%' 
+a)7864 out of 9635
+
+add
+"Descriptio" LIKE '%Construct%' and ("Descriptio" LIKE '%deck%' OR  "Descriptio" LIKE '%front%' OR "Descriptio" LIKE '%side%')
+a)8244 out of 9635

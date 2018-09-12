@@ -37,7 +37,7 @@ with tf.device('/gpu:0'):
     # for l in x:
     #     locations.append('f:/ottawa_image_db\\'+l.rstrip("\n"))
 
-    locations = glob.glob('f:/ottawaimage2/*')
+    locations = glob.glob('f:/ottawaimage4/*')
 
     num_locations = len(locations)
 
@@ -134,7 +134,7 @@ with tf.device('/gpu:0'):
 
         concatenation = np.concatenate((loc_year, pred), axis=1)
 
-        np.save('f:/preds/intervals/classification_results_all_images_%i.h5' % portion, concatenation)
+        np.save('f:/preds/intervals4/classification_results_all_images_%i.h5' % portion, concatenation)
 
     # test_array_X = 'c:/gist/testarrayX.npy'
     # test_array_Y = 'c:/gist/testarrayY.npy'
@@ -143,8 +143,8 @@ with tf.device('/gpu:0'):
     # ev = classification_model.evaluate([X_test[:, 0], X_test[:, 1]], y_test, batch_size=24)
 
 ## reconsrruct
-results = glob.glob('f:/preds/intervals' + '/*.npy')
-with open("f:/models/fullres_07to012.csv", 'w') as f:
+results = glob.glob('f:/preds/intervals4' + '/*.npy')
+with open("f:/models/fullres_7to9.csv", 'w') as f:
     f.write('LAT,LONG,YEAR1,YEAR2,PRED\n')
     for item in results:
         narray = np.load(item)

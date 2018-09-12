@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="7912cac4-f054-46f0-9690-f2f0973b80bb" name="Default" comment="testcommit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/oldestdate.py" beforeDir="false" afterPath="$PROJECT_DIR$/oldestdate.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/predict_gentrinet.py" beforeDir="false" afterPath="$PROJECT_DIR$/predict_gentrinet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sampling.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/sampling.Rmd" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -26,23 +28,23 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="2488" />
-          <entry key="py" value="1946" />
+          <entry key="py" value="2065" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="4434" />
+          <entry key="Python" value="4553" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="Rmd" value="1" />
-          <entry key="py" value="61" />
+          <entry key="py" value="64" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="60" />
+          <entry key="Python" value="63" />
           <entry key="R" value="1" />
           <entry key="Scratch" value="1" />
         </counts>
@@ -59,8 +61,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model_train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1562">
-              <caret line="71" column="24" selection-start-line="71" selection-start-column="24" selection-end-line="71" selection-end-column="24" />
+            <state relative-caret-position="179">
+              <caret line="28" column="30" lean-forward="true" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
               <folding>
                 <element signature="e#400#454#0" expanded="true" />
               </folding>
@@ -69,10 +71,25 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/datagen_class_aug_test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="242">
+              <caret line="41" column="47" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="47" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/oldestdate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="716">
-              <caret line="109" column="32" selection-start-line="109" selection-start-column="32" selection-end-line="109" selection-end-column="32" />
+            <state relative-caret-position="328">
+              <caret line="97" column="16" selection-start-line="97" selection-start-column="16" selection-end-line="97" selection-end-column="16" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -80,11 +97,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="892">
-              <caret line="152" column="45" lean-forward="true" selection-start-line="144" selection-end-line="152" selection-end-column="45" />
-              <folding>
-                <element signature="e#0#54#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="22">
+              <caret line="1" selection-start-line="1" selection-end-line="1" />
             </state>
           </provider>
         </entry>
@@ -108,6 +122,7 @@
       <find>model</find>
       <find>activation_dir</find>
       <find>normalize</find>
+      <find>generator</find>
     </findStrings>
     <dirStrings>
       <dir>F:\OneDrive\a11PyCharmCNN</dir>
@@ -127,7 +142,6 @@
       <list>
         <option value="$PROJECT_DIR$/../a11PyCharmCNN/tensorbuild2_mod.py" />
         <option value="$PROJECT_DIR$/dataStep.py" />
-        <option value="$PROJECT_DIR$/model_train.py" />
         <option value="$PROJECT_DIR$/delete.py" />
         <option value="$PROJECT_DIR$/../a11PyCharmCNN/gentrinetviz_activations.py" />
         <option value="$PROJECT_DIR$/../a11PyCharmCNN/gentrinetviz.py" />
@@ -136,6 +150,7 @@
         <option value="$PROJECT_DIR$/../a11PyCharmCNN/arnaudvis.py" />
         <option value="$PROJECT_DIR$/saliencyvis.py" />
         <option value="$PROJECT_DIR$/oldestdate.py" />
+        <option value="$PROJECT_DIR$/model_train.py" />
         <option value="$PROJECT_DIR$/predict_gentrinet.py" />
       </list>
     </option>
@@ -147,10 +162,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-4" />
-    <option name="y" value="-4" />
-    <option name="width" value="1288" />
-    <option name="height" value="788" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="2576" />
+    <option name="height" value="1576" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -410,14 +425,21 @@
       <option name="project" value="LOCAL" />
       <updated>1535053876907</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="testcommit">
+      <created>1536094901627</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1536094901627</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="2576" height="1576" extended-state="6" />
+    <frame x="-6" y="-6" width="1633" height="1053" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.122019075" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19492063" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -432,7 +454,7 @@
       <window_info anchor="bottom" id="Terminal" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50039744" side_tool="true" weight="0.45006934" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.329718" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="12" sideWeight="0.49960256" visible="true" weight="0.25658807" />
+      <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49960256" visible="true" weight="0.40130153" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -658,30 +680,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/oldestdate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="97" column="16" selection-start-line="97" selection-start-column="16" selection-end-line="97" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/model_train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1562">
-          <caret line="71" column="24" selection-start-line="71" selection-start-column="24" selection-end-line="71" selection-end-column="24" />
+        <state relative-caret-position="179">
+          <caret line="28" column="30" lean-forward="true" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
           <folding>
             <element signature="e#400#454#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/oldestdate.py">
+    <entry file="file://C:/ProgramData/Anaconda3/Lib/site-packages/keras/preprocessing/image.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="716">
-          <caret line="109" column="32" selection-start-line="109" selection-start-column="32" selection-end-line="109" selection-end-column="32" />
+        <state relative-caret-position="7942">
+          <caret line="373" column="6" selection-start-line="373" selection-start-column="6" selection-end-line="373" selection-end-column="6" />
+          <folding>
+            <element signature="e#169#207#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datagen_class_aug_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="41" column="47" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="47" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/predict_gentrinet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="892">
-          <caret line="152" column="45" lean-forward="true" selection-start-line="144" selection-end-line="152" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#54#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="22">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
         </state>
       </provider>
     </entry>
