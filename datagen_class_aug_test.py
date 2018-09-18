@@ -21,16 +21,16 @@ class myDataGeneratorAug(object):
         print("hello\n")
         while 1:
             print("hello\n")
-            # Generate order of exploration of dataset
+            # Generate shuffled order
             indexes = self.__get_exploration_order(list_IDs)
-            # print(indexes)
+
             # Generate batches
             imax = int(len(indexes) / self.batch_size)
 
             for i in range(imax):
                 # Find list of IDs
                 list_IDs_temp = [list_IDs[k] for k in indexes[i * self.batch_size:(i + 1) * self.batch_size]]
-                # print(list_IDs_temp)
+
                 # Generate data
                 X1, X2, y = self.__data_generation(labels, list_IDs_temp, seed, datagenargs)
                 #print(list_IDs_temp)

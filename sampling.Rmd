@@ -1,27 +1,21 @@
 ---
-title: "Supplementary Information for Deep Mapping Gentrification: Using a deep convolutional neural network and Google Street View to map the spatial and temporal evolution of gentrification-like visual changes in a large Canadian City."
+title: "Supplementary Information for 'Detecting gentrification through a deep mapping approach in a large Canadian city'"
 author: "Lazar Ilic, M. Sawada, Amaury Zarzelli"
+institute: "Laboratory for Appied Geomatics and GIS Science (LAGGISS), Department of Geography, Environment & Geomatics, University of Ottawa, Ottawa, Canada."
 output:
-  output:
-  bookdown::pdf_document2
-fontsize: 12pt
-header-includes: 
-     \newcommand{\beginsupplement}{
-    \setcounter{table}{0}  
-    \renewcommand{\thetable}{S\arabic{table}} 
-    \setcounter{figure}{0} 
-    \renewcommand{\thefigure}{S\arabic{figure}}}
-  pdf_document:
+  bookdown::pdf_document2:
     citation_package: natbib
     fig_caption: yes
     latex_engine: lualatex
     number_sections: yes
     toc: yes
-  html_document:
-    df_print: paged
-    fig_caption: yes
-  word_document: 
-    fig_caption: yes
+fontsize: 12pt
+header-includes: 
+    \newcommand{\beginsupplement}{
+    \setcounter{table}{0}  
+    \renewcommand{\thetable}{S\arabic{table}} 
+    \setcounter{figure}{0} 
+    \renewcommand{\thefigure}{S\arabic{figure}}}
 bibliography: bibliography.bib
 ---
 
@@ -33,7 +27,7 @@ use_python("c:/programdata/anaconda3/python.exe")
 pdf.options(encoding = 'CP1250')
 ```
 
-
+\beginsupplement
 
 ```{r message=FALSE, echo=FALSE}
 #Import required libraries
@@ -291,12 +285,14 @@ with open("f:/models/ff_old_young2.csv", "w") as f:
 We use SCNN-FC-8 to detect gentrification-like visual changes within the sequence of GSV images for a property.   Subsequently, we map the locations of GSV panoramas within which a change was detected. 
 
 #Github repository
-The python programmes used to create and train SCNN-FC-8 can be found at: https://github.com/laggiss/DeepMapping. 
+The python programmes used to create and train SCNN-FC-8 can be found at: 
 
->**NOTE**: *This document was created from an RMarkdown file.  The RMarkdown version of this doucument contains all of the R-language code used to access datasets as well as create the maps (except Figure 1 in the manuscript which was created elsewhere) and graphs in this supplementary document and manuscript. However, the R code is suppressed in the version you are currently reading.  Should you wish to examine the raw data or code, you can find the RMarkdown document with R-language code containing all references at (https://github.com/laggiss/DeepMapping/blob/master/sampling.Rmd)*.
+-https://github.com/laggiss/DeepMapping. 
+
+>**NOTE**: *This document was created from an RMarkdown file.  The RMarkdown version of this doucument contains all of the R-language code used to access datasets as well as create the maps (except Figure 1 in the manuscript which was created elsewhere) and graphs in this supplementary document and manuscript. However, the R code is suppressed in the version you are currently reading.  Should you wish to examine the raw data or code, you can find the RMarkdown document with R-language code containing all references at: https://github.com/laggiss/DeepMapping/blob/master/sampling.Rmd
 
 #Study area and GSV data
-The spatio-temporal coverage of GSV imagery varies across space and time. We were primarily concerned with detecting gentrification as far back as possible within our 'study area'.  The study area corresponds to the spatial domain defined by the highest concentration of older building stock in Ottawa (see Figure 1 in manuscript).  To train SCNN-FC-8, we wanted a larger region in which to find examples of gentrification-like visual change.  Thus, we accessed GSV imagery within a broader region that includes our study area and a buffer region that, itself, is comprised primarily of post 1980's suburban residential land use.  We call this broader region the 'GSV access region' within which panoramas were selected to train SCNN-FC-8 (Figure S\ref{fig:allgsvdata}a).  There were `r length(gsvdates)` properties containing panoramas within the GSV access region.  Because each property/location can have numerous panormamas over time, the total number of panormams across the properties was 593,723.  A subset of 16224 GSV panoramas used for training, validating and testing SCNN-FC-8 (Figure S\ref{fig:allgsvdata}b).
+The spatio-temporal coverage of GSV imagery varies across space and time. We were primarily concerned with detecting gentrification as far back as possible within our 'study area'.  The study area corresponds to the spatial domain defined by the highest concentration of older building stock in Ottawa (see Figure 1 in manuscript).  To train SCNN-FC-8, we wanted a larger region in which to find examples of gentrification-like visual change.  Thus, we accessed GSV imagery within a broader region that includes our study area and a buffer region that, itself, is comprised primarily of post 1980's suburban residential land use.  We call this broader region the 'GSV access region' within which panoramas were selected to train SCNN-FC-8 (Figure \ref{fig:allgsvdata}a).  There were `r length(gsvdates)` properties containing panoramas within the GSV access region.  Because each property/location can have numerous panoramas over time, the total number of panoramas across the properties was 593,723.  A subset of 16224 GSV panoramas used for training, validating and testing SCNN-FC-8 (Figure \ref{fig:allgsvdata}b).
 
 ```{r allgsvdata, message=F,echo=FALSE,fig.width=7,fig.height=3.5,fig.cap="\\label{fig:allgsvdata}a) Distribution of all GSV panormas accessed in this research; b) Subset of GSV panoramas within the GSV access area that were used in training,validation and testing of SCNN-FC-8."}
 
@@ -346,9 +342,9 @@ par(mfrow=c(1,2),mai=c(0,.2,0,.2),bty="n")
 
 ```
 
-Next, we determine if the panoramas within the GSV access region can support analysis in the study area back to 2007.  The first GSV panoramas in the city were taken in 2007 and, naturally, we would like to map changes as far back as possible when describing the spatial evolution of gentrification in the study area. Thus, the possible temporal domain for this study is from 2007-2016 (we accessed imagery for this work in the spring of 2017).  However, GSV images may not be available at all time periods at all locations. In addition, we also also determine which years in the interval between 2007 and 2016 contained sufficient spatial coverage. 
+Next, we determine if the panoramas within the GSV access region can support analysis in the study area back to 2007.  The first GSV panoramas in the city were taken in 2007 and we would like to map changes as far back as possible when describing the spatial evolution of gentrification in the study area. Thus, the possible temporal domain for this study is from 2007-2016 (we accessed imagery for this work in the spring of 2017).  However, GSV images may not be available at all time periods at all locations. In addition, we also also determine which years in the interval between 2007 and 2016 contained sufficient spatial coverage. 
 
-Within the GSV access region (Figure S\ref{fig:allgsvdata}), the majority of properties had GSV images by 2012 (Figure S\ref{fig:histdates}a) and the majority of these were fully re-imaged between 2014-2016 (Figure S\ref{fig:histdates}b). 2012 is the year with the most panoramas (Figure S\ref{fig:histdates}c).  Figure S\ref{fig:histdates}c provide evidence of an approximate 2-3 year update frequency of GSV imagery. The average number of years that GSV panoramas are available at a property is `r round(mean(gsvdates$NYEARS),digits=2)` Figure S\ref{fig:histdates}d.   
+Within the GSV access region (Figure \ref{fig:allgsvdata}), the majority of properties had GSV images by 2012 (Figure \ref{fig:histdates}a) and the majority of these were fully re-imaged between 2014-2016 (Figure \ref{fig:histdates}b). 2012 is the year with the most panoramas (Figure \ref{fig:histdates}c).  Figure \ref{fig:histdates}c provide evidence of an approximate 2-3 year update frequency of GSV imagery. The average number of years that GSV panoramas are available at a property is `r round(mean(gsvdates$NYEARS),digits=2)` Figure \ref{fig:histdates}d.   
 
 ```{r histdates, message=F, echo=FALSE, fig.width=5,fig.height=5,fig.cap="\\label{fig:histdates}a) Distribution of the oldest GSV date accessed at a location; b) Distribution of the Youngest GSV date accessed at a location; c) Distribution of all GSV image dates accessed at a location; d) Distribution of the number of years of GSV imagery at each queried location."}
 par(mfrow=c(2,2),mai=c(.4,.65,.4,.1),bty="n")
@@ -405,7 +401,7 @@ legend("bottomright",
 
 ```
 
-Examining all properties (locations) that contained an image in 2007 and one in the years 2015-2016 , most clearly defines the region in which we can make inferences back to 2007 (Figure S\ref{fig:gsvdatesplot3}).  We cannot, for example, make inferences regarding changes in the spatial distribution of gentrification-like visual changes between the years 2009-2010, since in 2010 there are almost no GSV panoramas.  
+Examining all properties (locations) that contained an image in 2007 and one in the years 2015-2016 , most clearly defines the region in which we can make inferences back to 2007 (Figure \ref{fig:gsvdatesplot3}).  We cannot, for example, make inferences regarding changes in the spatial distribution of gentrification-like visual changes between the years 2009-2010, since in 2010 there are almost no GSV panoramas.  
 
 
 ```{r alldatesplotovertime, message=FALSE, echo=FALSE,fig.width=6,fig.height=8.5,fig.cap="\\label{fig:alldatesplotovertime}Spatial distribution of all accessed GSV images through time."}
@@ -448,7 +444,7 @@ for(i in seq(2007,2016,1)){
 
 ```
 
-Concerning the spatial distribution of GSV images over the study period and within the study area, we examined the spatial distribution of the GSV panorama dates through time. In Figure S\ref{fig:gsvdatesplot3}, it is apparent that only the study region contains sufficient spatial coverage back to 2007 (Figure S\ref{fig:gsvdatesplot3}). Google did not expand coverage into the GSV access region until 2009 in Ottawa.  The study region is completely covered with panoramas in 2007,2009,2012,2014, and 2015 (Figure S\ref{fig:alldatesplotovertime}). Therefore, we were confident in using SCNN-FC-8 to detect gentrification-like visual changes within the study region.   Regarding the examination of gentrification through time, we can compare GSV panoramas within the study area between the years: 2007-2009,2009-2012,2012-2014 and between 2014 and a combined 2014-2016 (Figure S\ref{fig:gsvdatesplot3}).   
+Concerning the spatial distribution of GSV images over the study period and within the study area, we examined the spatial distribution of the GSV panorama dates through time. In Figure \ref{fig:gsvdatesplot3}, it is apparent that only the study region contains sufficient spatial coverage back to 2007 (Figure \ref{fig:gsvdatesplot3}). Google did not expand coverage into the GSV access region until 2009 in Ottawa.  The study region is completely covered with panoramas in 2007,2009,2012,2014, and 2015 (Figure \ref{fig:alldatesplotovertime}). Therefore, we were confident in using SCNN-FC-8 to detect gentrification-like visual changes within the study region.   Regarding the examination of gentrification through time, we can compare GSV panoramas within the study area between the years: 2007-2009,2009-2012,2012-2014 and between 2014 and a combined 2014-2016 (Figure \ref{fig:gsvdatesplot3}).   
 
 #Results
 ##SCNN-FC-8 model training and validation
@@ -498,7 +494,7 @@ After removing permits belonging to structures outside the study area, 6,342 per
 
 Street View lacks imagery on certain streets and segments of streets. This is most common with suburban subdivisions which are designated as privates. Some permits were deleted because their addresses were obfuscated on Street View. Other permits were deleted as the upgrades that they represented are not indicators of gentrification. This would include certain commercial infrastructure such as: industrial buildings, warehouses and storage structures. Institutional infrastructure was also removed, and included objects such as universities, schools, fire stations, churches, hospitals, community centers and transit infrastructure. 
 
-The SQL statemetns used to refine the permits can be found here: https://github.com/laggiss/DeepMapping/blob/master/sql_statements_permits.txt
+The SQL statements used to refine the permits can be found here: https://github.com/laggiss/DeepMapping/blob/master/sql_statements_permits.txt
 
 ##SCNN-FC-8 and building permits
 ```{r aname, echo=FALSE,message=FALSE}
@@ -510,8 +506,8 @@ permits@bbox=studyarea@bbox
 predpts.gt2011@bbox=studyarea@bbox
 
 # Calculate KDE on training locations & convert to raster obj
-kdepredict=ptDensity(predpts.gt2011,studyarea,res=200)
-kdepermits=ptDensity(permits,studyarea,res=200)
+kdepredict=ptDensity(predpts.gt2011,studyarea,res=10)
+kdepermits=ptDensity(permits,studyarea,res=10)
 
 # Create class breaks
 cint=densBreaks(kdepredict,9,'equal')
@@ -591,8 +587,8 @@ dev.off()
 par(bty="n")
 par(mfrow=c(1,2),mai=c(0,.5,0,0),oma=c(0,0,0,4),bty="n")
 
-kdepredict200=ptDensity(predpts.gt2011,studyarea,res=200)
-kdepermits200=ptDensity(permits,studyarea,res=200)
+kdepredict200=ptDensity(predpts.gt2011,studyarea,res=10)
+kdepermits200=ptDensity(permits,studyarea,res=10)
 
 kdepredict.n=(kdepredict200-0)/(cellStats(kdepredict200,stat='max')-0)
 kdepermits.n=(kdepermits200-0)/(cellStats(kdepermits200,stat='max')-0)
@@ -716,9 +712,9 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   
 ```
 
-Figure S\ref{fig:differencemap}a illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 KDE prediction map and KDE of building permits. The two isolated regions of intensity in Figure S\ref{fig:differencemap}a, x and x', clearly stand out as the two largest differences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdowne Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detection's of gentrification-like visual change because of offset/FOV issues.  In particular, in the region denoted by x', there were a number of new homes constructed which normally would have been detected by SCNN-FC-8 within the image sequence.  However, after examining the sequences of GSV images in the region of x', a common theme became apparent in the sequence of visual changes: Initially, a park was present and that was followed by construction of a large wall. The wall was eventual removed and a new house was constructed.  The change from a wall to a residential structure, or from a park to wall for that matter, was not something that SCNN-FC-8 encountered in our training data set.  Thus such changes were not reinforced in training as being gentrification-like instances of visual change.
+Figure \ref{fig:differencemap}a illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 KDE prediction map and KDE of building permits. The two isolated regions of intensity in Figure \ref{fig:differencemap}a, x and x', clearly stand out as the two largest differences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdowne Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detection's of gentrification-like visual change because of offset/FOV issues.  In particular, in the region denoted by x', there were a number of new homes constructed which normally would have been detected by SCNN-FC-8 within the image sequence.  However, after examining the sequences of GSV images in the region of x', a common theme became apparent in the sequence of visual changes: Initially, a park was present and that was followed by construction of a large wall. The wall was eventual removed and a new house was constructed.  The change from a wall to a residential structure, or from a park to wall for that matter, was not something that SCNN-FC-8 encountered in our training data set.  Thus such changes were not reinforced in training as being gentrification-like instances of visual change.
 
-Figure S\ref{fig:differencemap}b represents the local Pearson's correlation coefficient between the standardized intensity {lambda} of the SCNN-FC-8 KDE prediction map and KDE of building permits. We use the correlation coefficient **r** as an exploratory tool to identify local regions of similarity/dissimilarity in intensity between the model predictions and the permits.  This map represents the correlation coefficient in a 5x5 moving window between the standardized values from Figure S\ref{fig:comparemodelpermit}a and b.  The large amount of green area in Figure S\ref{fig:differencemap}b, indicates that the majority of the intensity values strongly covary, which is evident in the visual inspection of Figure 5ab (Manuscript).  There are strong dissimilarities or negative correlations locally, but these are generally in areas of very low spatial intensity around the southern boundary of the study region. In other words, the majority of disagreements in the model/permits comparison are in regions where there are few gentrification-like visual changes.  This further reinforces the concordance seen between SCNN-FC-8 and the building permits upon visual comparison of their mapped intensities.
+Figure \ref{fig:differencemap}b represents the local Pearson's correlation coefficient between the standardized intensity {lambda} of the SCNN-FC-8 KDE prediction map and KDE of building permits. We use the correlation coefficient **r** as an exploratory tool to identify local regions of similarity/dissimilarity in intensity between the model predictions and the permits.  This map represents the correlation coefficient in a 5x5 moving window between the standardized values from manuscript Figure 5a and b.  The large amount of green area in Figure \ref{fig:differencemap}b, indicates that the majority of the intensity values strongly covary, which is evident in the visual inspection of Figure 5ab (Manuscript).  There are strong dissimilarities or negative correlations locally, but these are generally in areas of very low spatial intensity around the southern boundary of the study region. In other words, the majority of disagreements in the model/permits comparison are in regions where there are few gentrification-like visual changes.  This further reinforces the concordance seen between SCNN-FC-8 and the building permits upon visual comparison of their mapped intensities.
 
 
 #SCNN-FC-8 sensitivity
@@ -738,7 +734,7 @@ plot.time=function(){
     predpts.gt2009=subset(predpts,YEAR2==year)
     predpts.gt2009@bbox=studyarea@bbox
     # Calculate KDE on training locations & convert to raster obj
-    kde=ptDensity(predpts.gt2009,studyarea,res=200)
+    kde=ptDensity(predpts.gt2009,studyarea,res=10)
     return(kde*tokmsq)
   }
   
@@ -852,11 +848,11 @@ dev.off()
 
 ```
 
-After training SCNN-FC-8 as described in the manuscript, we wanted a crude test of how different our results would be if we reshuffled all of the training data and re-trained the model from scratch (the model training procedure is described in the manuscript).  The training data set contained all 16224 GSV panoramas and we used 60% of these to train SCNN-FC-8, holding back 20% for model validation during training, and the last 20% were held back for testing the model once we achieved our desired model validation accuracy. All 16224 panorama pairs were shuffled/permuted prior to being split.  To retrain the model once again, we simply reshuffled all 16224 panorama pairs and reapplied the training procedure.   After training this second model instance, all GSV image sequences were fed through the model and the results were mapped (Figure S\ref{fig:run2}).  The spatial pattern of intensity between SCNN-FC-8 (Figure S\ref{fig:run2}a) and the second model (Figure S\ref{fig:run2}b) are nearly identical.  This suggests that the results obtained using SCNN-FC-8 are not significantly biased by the train/validation/test split.
+After training SCNN-FC-8 as described in the manuscript, we wanted a crude test of how different our results would be if we reshuffled all of the training data and re-trained the model from scratch (the model training procedure is described in the manuscript).  The training data set contained all 16224 GSV panoramas and we used 60% of these to train SCNN-FC-8, holding back 20% for model validation during training, and the last 20% were held back for testing the model once we achieved our desired model validation accuracy. All 16224 panorama pairs were shuffled/permuted prior to being split.  To retrain the model once again, we simply reshuffled all 16224 panorama pairs and reapplied the training procedure.   After training this second model instance, all GSV image sequences were fed through the model and the results were mapped (Figure \ref{fig:run2}).  The spatial pattern of intensity between SCNN-FC-8 (Figure \ref{fig:run2}a) and the second model (Figure \ref{fig:run2}b) are nearly identical.  This suggests that the results obtained using SCNN-FC-8 are not significantly biased by the train/validation/test split.
 
 
 #Activation maps
-Activation maps can be used to explore which features in a GSV image are most strongly reinforced in SCNN-FC-8.  The activation maps of the last convolutional block for each image in a properties sequence (Figure S\ref{fig:saliency}), aid in revealing the potential reasons why some false-positive detections were made by SCNN-FC-8. Generally, we expect similar activation maps on the t[0] and t[0]+1 panoramas when no gentrification-like visual change is detected by SCNN-FC-8.  Conversely, when a change is detected, there should be differences in which features are most strongly activated upon by SCNN-FC-8.   The activation maps in Figure S\ref{fig:saliency} correspond to the images in the manuscript Figure 7.  See manuscript for further explanations.
+Activation maps can be used to explore which features in a GSV image are most strongly reinforced in SCNN-FC-8.  The activation maps of the last convolution block for each image in a properties sequence (Figure \ref{fig:saliency}), aid in revealing the potential reasons why some false-positive detection's were made by SCNN-FC-8. Generally, we expect similar activation maps on the t[0] and t[0]+1 panoramas when no gentrification-like visual change is detected by SCNN-FC-8.  Conversely, when a change is detected, there should be differences in which features are most strongly activated upon by SCNN-FC-8.   The activation maps in Figure \ref{fig:saliency} correspond to the images in the manuscript Figure 7.  See manuscript for further explanations.
 
 ```{r examples, eval=FALSE, message=FALSE,  echo=FALSE,message=FALSE,results='hide',fig.width=8,fig.height=11,fig.cap="\\label{fig:examples}Illustrative examples of SCNN-FC-8 predictions.  Each row represents the time series of GSV images for the unique location specified in the map plot at the end of each row. The delta symbol between any two years indicates where the SCNN-FC-8 predicted a visual change; (a to d) Normal cases of a single predicted change across the series of images at a given unique location. (e to k) represent cases where the model predicted more than one change or a false positive change wihtin the sequence.  See text for further details."}
 library(imager)

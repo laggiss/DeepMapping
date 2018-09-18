@@ -24,7 +24,7 @@ from scipy import misc
 from sklearn.metrics import cohen_kappa_score, confusion_matrix
 from keras.models import load_model
 ## Import classes from same folder (only necessary when run interactively)
-sys.path.append(r'F:/OneDrive/DeepMapping')#F:/OneDrive/DeepMapping)
+sys.path.append(r'F:/OneDrive/DeepMapping')
 from datagen_class_aug_test import myDataGeneratorAug
 from dataStep import DataSplit
 import tensorflow as tf
@@ -269,14 +269,6 @@ for iteration in range(n_iter):
         for i in v:
             mdict[k].append(i)
 
-    # Predictions to qulify the classification quality
-    # pred = (classification_model.predict([X_valid[:, 0], X_valid[:, 1]]) > 0.5).astype(int)
-    # tr_acc = compute_accuracy(pred, y_valid)
-    # ev = classification_model.evaluate([X_valid[:, 0], X_valid[:, 1]], y_valid, batch_size=24)
-    # test_eval.append(ev)
-    # print("MODEL EVAL: {}".format(ev))
-    # print("PRED KAPPA: {}".format(tr_acc))
-    # print("AUC SCORE: {}".format(auc_score(y_valid, pred)))
     test_val=mdict['val_binary_accuracy'][-1]
     if test_val > threashold:
         print("\n\nSaving model....\n\n")
@@ -312,3 +304,12 @@ ev = classification_model.evaluate([X_test[:, 0], X_test[:, 1]], y_test, batch_s
 print("MODEL EVAL: {}".format(ev))
 print("PRED KAPPA: {}".format(tr_acc))
 print("AUC SCORE: {}".format(auc_score(y_test, pred)))
+
+# Predictions to qulify the classification quality
+# pred = (classification_model.predict([X_valid[:, 0], X_valid[:, 1]]) > 0.5).astype(int)
+# tr_acc = compute_accuracy(pred, y_valid)
+# ev = classification_model.evaluate([X_valid[:, 0], X_valid[:, 1]], y_valid, batch_size=24)
+# test_eval.append(ev)
+# print("MODEL EVAL: {}".format(ev))
+# print("PRED KAPPA: {}".format(tr_acc))
+# print("AUC SCORE: {}".format(auc_score(y_valid, pred)))
