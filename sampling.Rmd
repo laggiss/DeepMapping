@@ -282,12 +282,12 @@ with open("f:/models/ff_old_young2.csv", "w") as f:
 ```
 
 #Introduction
-We use SCNN-FC-8 to detect gentrification-like visual changes within the sequence of GSV images for a property.   Subsequently, we map the locations of GSV panoramas within which a change was detected. 
+In the main manuscript we describe the use of SCNN-FC-8 to detect gentrification-like visual changes within the sequence of GSV images for a property.  This document contains supplementary explanations and figures that elaborate upon information in the main manuscript. 
 
 #Github repository
-The python programmes used to create and train SCNN-FC-8 can be found at: 
+The set of python scripts used to create and train SCNN-FC-8 can be found at: 
 
--https://github.com/laggiss/DeepMapping. 
+*https://github.com/laggiss/DeepMapping
 
 >**NOTE**: *This document was created from an RMarkdown file.  The RMarkdown version of this doucument contains all of the R-language code used to access datasets as well as create the maps (except Figure 1 in the manuscript which was created elsewhere) and graphs in this supplementary document and manuscript. However, the R code is suppressed in the version you are currently reading.  Should you wish to examine the raw data or code, you can find the RMarkdown document with R-language code containing all references at: https://github.com/laggiss/DeepMapping/blob/master/sampling.Rmd
 
@@ -448,7 +448,7 @@ Concerning the spatial distribution of GSV images over the study period and with
 
 #Results
 ##SCNN-FC-8 model training and validation
-```{python valcurves, echo=FALSE,eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:valcurves}Training and validation of SCNN-FC-8 (Epoch 1 to min(loss))."}
+```{python valcurves, echo=FALSE,eval=TRUE, fig.width=7,fig.height=3,fig.cap="\\label{fig:valcurves}Training and validation of SCNN-FC-8 (Epoch 1 to min(loss))."}
 import os
 os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = 'c:/programdata/Anaconda3/Library/plugins/platforms'
 import numpy as np
@@ -587,8 +587,8 @@ dev.off()
 par(bty="n")
 par(mfrow=c(1,2),mai=c(0,.5,0,0),oma=c(0,0,0,4),bty="n")
 
-kdepredict200=ptDensity(predpts.gt2011,studyarea,res=10)
-kdepermits200=ptDensity(permits,studyarea,res=10)
+kdepredict200=ptDensity(predpts.gt2011,studyarea,res=200)
+kdepermits200=ptDensity(permits,studyarea,res=200)
 
 kdepredict.n=(kdepredict200-0)/(cellStats(kdepredict200,stat='max')-0)
 kdepermits.n=(kdepermits200-0)/(cellStats(kdepermits200,stat='max')-0)
@@ -634,20 +634,7 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
       cex = 0.6
     )
   )
-  
-  # compute local correlation to examine.
-rasterStack=stack(kdepermits.n,kdepredict.n)#crop(kdepredict.n,studyarea),crop(kdepermits.n,studyarea))
-positionRaster <- raster(rasterStack, 1)
-values(positionRaster) <- 1:ncell(rasterStack)
 
-focal_cor <- focal(
-  x = positionRaster,
-  w = matrix(1, 5, 5),
-  fun = function(x, y = rasterStack){
-    cor(values(y)[x, 1], values(y)[x, 2],
-        use = "na.or.complete")
-  }
-)
 
 # compute local correlation to examine.
 rasterStack=stack(kdepermits.n,kdepredict.n)#crop(kdepredict.n,studyarea),crop(kdepermits.n,studyarea))
@@ -712,7 +699,7 @@ plot(nbrhoods,add=TRUE,border=rgb(144/255,144/255,144/255,1),lwd=0.5)
   
 ```
 
-Figure \ref{fig:differencemap}a illustrates the difference between the standardized intensity {lambda} of the SCNN-FC-8 KDE prediction map and KDE of building permits. The two isolated regions of intensity in Figure \ref{fig:differencemap}a, x and x', clearly stand out as the two largest differences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdowne Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detection's of gentrification-like visual change because of offset/FOV issues.  In particular, in the region denoted by x', there were a number of new homes constructed which normally would have been detected by SCNN-FC-8 within the image sequence.  However, after examining the sequences of GSV images in the region of x', a common theme became apparent in the sequence of visual changes: Initially, a park was present and that was followed by construction of a large wall. The wall was eventual removed and a new house was constructed.  The change from a wall to a residential structure, or from a park to wall for that matter, was not something that SCNN-FC-8 encountered in our training data set.  Thus such changes were not reinforced in training as being gentrification-like instances of visual change.
+Figure \ref{fig:differencemap}a illustrates the difference between the standardized intensity, $\lambda$, of the SCNN-FC-8 KDE prediction map and KDE of building permits. The two isolated regions of intensity in Figure \ref{fig:differencemap}a, x and x', clearly stand out as the two largest differences between the model predictions and the building permits.   As discussed in the main text, x' is due to a large development of Landsdowne Park (https://en.wikipedia.org/wiki/Lansdowne_Park_redevelopment), and x was due to false positive detection's of gentrification-like visual change because of offset/FOV issues.  In particular, in the region denoted by x', there were a number of new homes constructed which normally would have been detected by SCNN-FC-8 within the image sequence.  However, after examining the sequences of GSV images in the region of x', a common theme became apparent in the sequence of visual changes: Initially, a park was present and that was followed by construction of a large wall. The wall was eventual removed and a new house was constructed.  The change from a wall to a residential structure, or from a park to wall for that matter, was not something that SCNN-FC-8 encountered in our training data set.  Thus such changes were not reinforced in training as being gentrification-like instances of visual change.
 
 Figure \ref{fig:differencemap}b represents the local Pearson's correlation coefficient between the standardized intensity {lambda} of the SCNN-FC-8 KDE prediction map and KDE of building permits. We use the correlation coefficient **r** as an exploratory tool to identify local regions of similarity/dissimilarity in intensity between the model predictions and the permits.  This map represents the correlation coefficient in a 5x5 moving window between the standardized values from manuscript Figure 5a and b.  The large amount of green area in Figure \ref{fig:differencemap}b, indicates that the majority of the intensity values strongly covary, which is evident in the visual inspection of Figure 5ab (Manuscript).  There are strong dissimilarities or negative correlations locally, but these are generally in areas of very low spatial intensity around the southern boundary of the study region. In other words, the majority of disagreements in the model/permits comparison are in regions where there are few gentrification-like visual changes.  This further reinforces the concordance seen between SCNN-FC-8 and the building permits upon visual comparison of their mapped intensities.
 
@@ -734,7 +721,7 @@ plot.time=function(){
     predpts.gt2009=subset(predpts,YEAR2==year)
     predpts.gt2009@bbox=studyarea@bbox
     # Calculate KDE on training locations & convert to raster obj
-    kde=ptDensity(predpts.gt2009,studyarea,res=10)
+    kde=ptDensity(predpts.gt2009,studyarea,res=20)
     return(kde*tokmsq)
   }
   
@@ -830,7 +817,7 @@ dev.off()
 ```
 
 
-```{r run2, echo=FALSE, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:run2}Comparison of SCNN-FC-8 predictions (a) using first run (b) using second run"}
+```{r run2, echo=FALSE, eval=TRUE, fig.width=8,fig.height=4,fig.cap="\\label{fig:run2}Comparison of (a) SCNN-FC-8 results with (b) the replicate model results"}
 spdrep@bbox=studyarea@bbox
 spdo@bbox=studyarea@bbox
 kderun1=ptDensity(spdo,studyarea,res=200)
