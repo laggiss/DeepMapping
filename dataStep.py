@@ -29,7 +29,7 @@ class DataSplit(object):
         # validation and test arrays remain constant so can be created beforehand.
         # Currently the validation data is stored in the valid_results_continue_training file and
         # the training data in the train_results_continue_training file. If run_new=False then
-        # these files are loaded so that hyperparamater optimization can be preformed without
+        # these files are loaded so that hyperparameter optimization can be preformed without
         # the new model runs seeing the validation data at any time.
 
         # Array that contains all the results of the training dataset
