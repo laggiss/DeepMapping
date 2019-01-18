@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7912cac4-f054-46f0-9690-f2f0973b80bb" name="Default" comment="testcommit">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/laggi.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GSVFIGS/fig7_online.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/compute_accuracies.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.Rhistory" beforeDir="false" afterPath="$PROJECT_DIR$/.Rhistory" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GSVFIGS/figS8_online.png" beforeDir="false" afterPath="$PROJECT_DIR$/GSVFIGS/figS8_online.png" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -307,7 +303,7 @@
       <option name="presentableId" value="Default" />
       <updated>1529345567457</updated>
       <workItem from="1547557276109" duration="52000" />
-      <workItem from="1547557370565" duration="9092000" />
+      <workItem from="1547557370565" duration="9944000" />
     </task>
     <task id="LOCAL-00001" summary="testcommit">
       <created>1529345869720</created>
@@ -463,11 +459,18 @@
       <option name="project" value="LOCAL" />
       <updated>1542068390066</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="testcommit">
+      <created>1547831485558</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1547831485558</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9144000" />
+    <option name="totallyTimeSpent" value="9996000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-6" y="-6" width="1633" height="1053" extended-state="6" />
